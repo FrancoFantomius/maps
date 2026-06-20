@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" class="h-screen w-screen overflow-hidden">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maps</title>
+    <link rel="icon" type="image/svg+xml" href="img/icon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#0b0f19',
+                            900: '#111827',
+                            800: '#1f2937',
+                            700: '#374151',
+                            600: '#4b5563',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="css/style.css">
+    <script type="module" src="js/app.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .font-display {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 h-screen w-screen relative overflow-hidden select-none">
+
+    <!-- Leaflet GIS Map Canvas (z-0 background) -->
+    <div id="map" class="absolute inset-0 w-full h-full z-0"></div>
+
+    <!-- Floating HUD Stack (Top-Left area, z-10) -->
+    <div class="fixed top-4 left-4 right-4 md:right-auto md:w-96 z-10 pointer-events-none flex flex-col gap-3">
+        <!-- Floating Search pill -->
+        <div
+            class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-1.5 flex items-center gap-2 pointer-events-auto">
+            <!-- App Logo/Icon -->
+            <div class="w-7 h-7 overflow-hidden flex items-center justify-center flex-shrink-0">
+                <img src="./img/search_icon.svg" alt="Maps Logo" class="w-full h-full object-cover">
+            </div>
+
+            <div class="flex-1 min-w-0">
+                <!-- Search input form -->
+                <form id="search-form" class="relative flex items-center">
+                    <input type="text" id="search-input" placeholder="Search address, city, coords..."
+                        class="w-full bg-transparent pl-1 pr-7 py-1 text-sm font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
+                    <button type="button" id="btn-clear-search"
+                        class="hidden absolute right-7 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center">
+                        <span class="material-icons-outlined text-base">clear</span>
+                    </button>
+                    <button type="submit"
+                        class="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex-shrink-0 flex items-center justify-center">
+                        <span class="material-icons-outlined text-lg leading-none">search</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Floating Multi-State HUD Control Panel (below search) -->
+        <div id="hud-panel"
+            class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl p-4 flex flex-col max-h-[45vh] md:max-h-[calc(100vh-120px)] transition-all duration-300 pointer-events-auto overflow-hidden">
+
+            <!-- Dynamic State 1: Saved Places (My Places) list -->
+            <div id="panel-places" class="flex flex-col h-full overflow-hidden">
+                <div class="flex items-center justify-between mb-3 flex-shrink-0">
+                    <div>
+                        <h2
+                            class="font-display font-bold text-base text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                            My Places
+                            <span id="markers-count"
+                                class="text-xs px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-100 dark:border-indigo-900/20">0</span>
+                        </h2>
+                        <p class="text-[10px] text-slate-400 dark:text-slate-500">Your personalized custom pins</p>
+                    </div>
+                </div>
+
+                <!-- Custom Places List Scrollable area -->
+                <div id="saved-markers-list" class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-2 text-xs">
+                    <div class="text-center py-6 text-slate-400 dark:text-slate-500">
+                        No custom places saved yet. Click the map to drop a pin.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic State 2: Search Results -->
+            <div id="panel-search" class="hidden flex flex-col h-full overflow-hidden">
+                <div
+                    class="flex items-center justify-between mb-2.5 flex-shrink-0 border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <h2 class="font-display font-bold text-sm text-slate-900 dark:text-slate-100">Search Results</h2>
+                    <button type="button" id="btn-close-search"
+                        class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        ✕ Clear
+                    </button>
+                </div>
+                <div id="search-results" class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-1">
+                    <!-- Dynamic search list gets loaded here -->
+                </div>
+            </div>
+
+            <!-- Dynamic State 3: Distance Measurement Panel -->
+            <div id="measure-panel" class="hidden flex flex-col h-full overflow-hidden">
+                <div
+                    class="flex items-center justify-between mb-2.5 flex-shrink-0 border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <h2
+                        class="font-display font-bold text-sm text-teal-600 dark:text-teal-400 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                        Measuring Mode
+                    </h2>
+                    <button id="btn-exit-measure"
+                        class="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 font-medium">
+                        ✕ Exit
+                    </button>
+                </div>
+                <div class="space-y-3">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Click sequential points on the map to
+                        calculate linear distance path.</p>
+                    <div
+                        class="bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-900 rounded-xl p-3 flex flex-col gap-0.5 shadow-sm">
+                        <span
+                            class="text-[9px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Linear
+                            Distance</span>
+                        <span id="measure-output"
+                            class="font-display font-bold text-base text-slate-800 dark:text-slate-100">Total Distance:
+                            0.00 km</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic State 4: Routing Engine Panel -->
+            <div id="routing-panel" class="hidden flex flex-col h-full overflow-hidden">
+                <div
+                    class="flex items-center justify-between mb-2.5 flex-shrink-0 border-b border-slate-100 dark:border-slate-800 pb-2">
+                    <h2
+                        class="font-display font-bold text-sm text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                        🗺️ Routing Engine
+                    </h2>
+                    <button id="btn-exit-routing"
+                        class="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 font-medium">
+                        ✕ Exit
+                    </button>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Routing Profile Toggles -->
+                    <div
+                        class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-200/50 dark:border-slate-800/30">
+                        <button id="mode-driving-car"
+                            class="py-1.5 text-xs font-bold rounded-lg transition-all bg-amber-600 text-white shadow-sm">Drive</button>
+                        <button id="mode-cycling"
+                            class="py-1.5 text-xs font-semibold rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">Bike</button>
+                        <button id="mode-foot"
+                            class="py-1.5 text-xs font-semibold rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">Walk</button>
+                    </div>
+
+                    <!-- Waypoints Info -->
+                    <div
+                        class="bg-slate-50 dark:bg-slate-950 border border-slate-200/40 dark:border-slate-800/40 rounded-xl p-3 space-y-2.5 shadow-sm text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20"></span>
+                            <div class="flex-1 min-w-0">
+                                <span class="block text-[9px] uppercase font-bold text-slate-400">Start Position</span>
+                                <span id="route-start-txt"
+                                    class="block font-mono text-slate-600 dark:text-slate-300 truncate font-semibold">Click
+                                    map to set Start</span>
+                            </div>
+                        </div>
+                        <div class="border-t border-slate-200/40 dark:border-slate-800/30 pt-2 flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500 ring-4 ring-red-500/20"></span>
+                            <div class="flex-1 min-w-0">
+                                <span class="block text-[9px] uppercase font-bold text-slate-400">End Destination</span>
+                                <span id="route-end-txt"
+                                    class="block font-mono text-slate-600 dark:text-slate-300 truncate font-semibold">Click
+                                    map to set End</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Outputs -->
+                    <div id="route-meta"
+                        class="hidden border-t border-slate-100 dark:border-slate-800 pt-2.5 grid grid-cols-2 gap-2 text-xs">
+                        <div
+                            class="bg-slate-50 dark:bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-200/30 dark:border-slate-800/20">
+                            <span class="block text-[9px] text-slate-400 uppercase font-semibold">Distance</span>
+                            <span id="route-dist" class="font-display font-bold text-sm text-amber-500">-</span>
+                        </div>
+                        <div
+                            class="bg-slate-50 dark:bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-200/30 dark:border-slate-800/20">
+                            <span class="block text-[9px] text-slate-400 uppercase font-semibold">Travel Time</span>
+                            <span id="route-time" class="font-display font-bold text-sm text-amber-500">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic State 5: Active Place Details -->
+            <div id="panel-details" class="hidden flex flex-col h-full overflow-hidden">
+                <!-- Injected dynamically from js/app.js -->
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Floating Settings Drawer/Popover (Top-Right area, z-10) -->
+    <div class="fixed top-4 right-4 z-10 pointer-events-auto flex flex-col items-end gap-2">
+        <button id="btn-settings-toggle"
+            class="p-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 flex items-center justify-center">
+            <span class="material-icons-outlined text-lg leading-none">settings</span>
+        </button>
+
+        <!-- Settings dropdown modal card -->
+        <div id="settings-panel"
+            class="hidden w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-2xl p-4 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">
+            <div>
+                <h3 class="font-display font-bold text-sm text-slate-900 dark:text-slate-100">Map Settings</h3>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500">Configure map layers, overlays, and system
+                    appearance</p>
+            </div>
+
+            <!-- Map style selector -->
+            <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+                <span class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Map
+                    Mode</span>
+                <div class="grid grid-cols-2 gap-3">
+                    <button data-layer-btn="street"
+                        class="group flex flex-col items-center gap-1.5 p-1 rounded-xl border border-transparent transition-all active-layer focus:outline-none">
+                        <div
+                            class="w-full aspect-[4/3] rounded-lg overflow-hidden border border-slate-200/60 dark:border-slate-800/60 shadow-sm relative group-hover:scale-[1.02] transition-transform duration-200">
+                            <img id="preview-img-street" src="https://a.tile.openstreetmap.org/13/4366/2933.png"
+                                alt="Street Map Preview" class="w-full h-full object-cover">
+                            <div
+                                class="layer-indicator absolute inset-0 bg-indigo-600/10 border-2 border-indigo-600 rounded-lg">
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">Street Map</span>
+                    </button>
+                    <button data-layer-btn="satellite"
+                        class="group flex flex-col items-center gap-1.5 p-1 rounded-xl border border-transparent transition-all focus:outline-none">
+                        <div
+                            class="w-full aspect-[4/3] rounded-lg overflow-hidden border border-slate-200/60 dark:border-slate-800/60 shadow-sm relative group-hover:scale-[1.02] transition-transform duration-200">
+                            <img id="preview-img-satellite"
+                                src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/13/2933/4366"
+                                alt="Satellite Preview" class="w-full h-full object-cover">
+                            <div
+                                class="layer-indicator absolute inset-0 bg-indigo-600/10 border-2 border-indigo-600 rounded-lg hidden">
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-semibold text-slate-650 dark:text-slate-350">Satellite</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Overlays switch toggles -->
+            <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+                <span
+                    class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Show
+                    Details</span>
+                <div class="space-y-2.5">
+                    <label class="flex items-center justify-between cursor-pointer group">
+                        <span
+                            class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Street
+                            Names</span>
+                        <div class="relative w-8 h-4">
+                            <input type="checkbox" id="toggle-overlay-labels" class="sr-only peer">
+                            <div
+                                class="w-8 h-4 bg-slate-200 dark:bg-slate-850 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4">
+                            </div>
+                        </div>
+                    </label>
+                    <label class="flex items-center justify-between cursor-pointer group">
+                        <span
+                            class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Bike
+                            Paths</span>
+                        <div class="relative w-8 h-4">
+                            <input type="checkbox" id="toggle-overlay-bike" class="sr-only peer">
+                            <div
+                                class="w-8 h-4 bg-slate-200 dark:bg-slate-850 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4">
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Home Location settings -->
+            <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+                <span
+                    class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Home
+                    Location</span>
+                <div class="flex flex-col gap-1.5">
+                    <button id="btn-set-home"
+                        class="w-full py-1.5 px-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 text-indigo-650 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 font-semibold text-[11px] transition-colors border border-indigo-200/50 dark:border-indigo-900/20">
+                        Set Current View as Home
+                    </button>
+                    <button id="btn-clear-home"
+                        class="w-full py-1.5 px-3 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 font-semibold text-[11px] transition-colors border border-red-200/50 dark:border-red-900/20 hidden">
+                        Clear Home Location
+                    </button>
+                </div>
+            </div>
+
+            <!-- System theme selections -->
+            <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
+                <span
+                    class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Appearance
+                    Theme</span>
+                <div
+                    class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-250/50 dark:border-slate-800/30 text-center text-xs">
+                    <button data-theme-btn="light" class="py-1 rounded-lg font-semibold transition-all">Light</button>
+                    <button data-theme-btn="dark" class="py-1 rounded-lg font-semibold transition-all">Dark</button>
+                    <button data-theme-btn="system" class="py-1 rounded-lg font-semibold transition-all">System</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button Stack (Bottom-Right area, z-10) -->
+    <div class="fixed bottom-4 right-4 z-10 pointer-events-auto flex flex-col gap-2.5">
+        <!-- Distance Measure Button -->
+        <button id="btn-draw"
+            class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/30 transition-all duration-300 relative">
+            <span class="material-icons-outlined text-lg leading-none">straighten</span>
+            <span
+                class="absolute right-14 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 pointer-events-none transition-all duration-200 bg-slate-900/90 dark:bg-slate-950/95 text-white text-[10.5px] font-bold px-2.5 py-1.5 rounded-lg shadow-md whitespace-nowrap">Measure
+                Distance</span>
+        </button>
+
+        <!-- Routes Toggle Button -->
+        <button id="btn-route"
+            class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all duration-300 relative">
+            <span class="material-icons-outlined text-lg leading-none">directions</span>
+            <span
+                class="absolute right-14 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 pointer-events-none transition-all duration-200 bg-slate-900/90 dark:bg-slate-950/95 text-white text-[10.5px] font-bold px-2.5 py-1.5 rounded-lg shadow-md whitespace-nowrap">Routing
+                Engine</span>
+        </button>
+
+        <!-- GPS Geolocation Button -->
+        <button id="btn-gps"
+            class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300 relative">
+            <span class="material-icons-outlined text-lg leading-none">my_location</span>
+            <span
+                class="absolute right-14 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 pointer-events-none transition-all duration-200 bg-slate-900/90 dark:bg-slate-950/95 text-white text-[10.5px] font-bold px-2.5 py-1.5 rounded-lg shadow-md whitespace-nowrap">GPS
+                Locate</span>
+        </button>
+    </div>
+
+    <!-- Screen toast popup alerts (z-50) -->
+    <div id="toast"
+        class="fixed bottom-5 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-5 z-50 transform translate-y-12 opacity-0 transition-all duration-300 bg-white/95 dark:bg-slate-900/95 border border-slate-200/50 dark:border-slate-800/50 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+        <div id="toast-icon-container"
+            class="p-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+            <span class="material-icons-outlined text-base leading-none">info</span>
+        </div>
+        <p id="toast-text" class="text-xs text-slate-700 dark:text-slate-200 font-semibold"></p>
+    </div>
+
+    <!-- Modal 1: Place Marker Creation/Editing Form (z-[1000]) -->
+    <div id="marker-modal"
+        class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[1000] hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-sm w-full p-5 shadow-2xl transform scale-95 transition-all">
+            <h3 class="font-display text-base font-bold text-slate-900 dark:text-slate-100 mb-4" id="modal-title">Save
+                Location</h3>
+            <form id="marker-form" class="space-y-4">
+                <input type="hidden" id="modal-lat">
+                <input type="hidden" id="modal-lng">
+                <input type="hidden" id="modal-id">
+
+                <div>
+                    <label
+                        class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">Place
+                        Name</label>
+                    <input type="text" id="modal-name" required placeholder="Scenic overview, local cafe..."
+                        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 focus:outline-none transition-all">
+                </div>
+                <div>
+                    <label
+                        class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">Category
+                        Type</label>
+                    <select id="modal-category"
+                        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 focus:outline-none transition-all">
+                        <option value="poi">🎯 Point of Interest</option>
+                        <option value="food">🍕 Food & Drink</option>
+                        <option value="lodging">🏨 Lodging</option>
+                        <option value="nature">🌿 Nature / Scenic</option>
+                    </select>
+                </div>
+                <div>
+                    <label
+                        class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1.5">Description
+                        & Notes</label>
+                    <textarea id="modal-desc" rows="3" placeholder="Add specific notes, descriptions..."
+                        class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 focus:outline-none transition-all resize-none"></textarea>
+                </div>
+                <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" id="btn-close-marker-modal"
+                        class="px-4 py-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-semibold transition-colors">Cancel</button>
+                    <button type="submit"
+                        class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md transition-colors">Save
+                        Marker</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
