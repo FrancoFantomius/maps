@@ -32,12 +32,20 @@ export const state = {
     
     // Routing State
     isRouteMode: false,
-    routingProfile: 'driving-car',
+    routingProfile: 'driving',
     routeStart: null,
     routeEnd: null,
+    routeStartName: '',
+    routeEndName: '',
     routeStartMarker: null,
     routeEndMarker: null,
     routeLineInstance: null,
+    routeOutlineInstance: null,
+    routeAlternatives: [],
+    routeSteps: [],
+    activeRouteIndex: 0,
+    navAutocompleteTimeout: null,
+    navFocusedInput: null,
     
     // HUD / Panel state
     currentHUDState: 'places'

@@ -25,7 +25,12 @@ export function renderSearchResults(results) {
             setHUDState('place-details', {
                 isTemp: true,
                 lat: lat,
-                lng: lon
+                lng: lon,
+                name: item.display_name.split(',')[0],
+                address: item.display_name,
+                wikiSummary: '',
+                shopInfo: null,
+                streetName: ''
             });
         });
         searchResults.appendChild(rDiv);

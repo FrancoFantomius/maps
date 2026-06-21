@@ -20,18 +20,18 @@ export function setHUDState(hudState, data = null) {
     const panelSearch = document.getElementById('panel-search');
     const panelDetails = document.getElementById('panel-details');
     const measurePanel = document.getElementById('measure-panel');
-    const routingPanel = document.getElementById('routing-panel');
+    const navPanel = document.getElementById('nav-panel');
     const drawBtn = document.getElementById('btn-draw');
     const routeBtn = document.getElementById('btn-route');
 
     panelPlaces.classList.add('hidden');
     panelSearch.classList.add('hidden');
     measurePanel.classList.add('hidden');
-    routingPanel.classList.add('hidden');
+    navPanel.classList.add('hidden');
     panelDetails.classList.add('hidden');
 
     drawBtn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/30 transition-all duration-300 relative';
-    routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 transition-all duration-300 relative';
+    routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all duration-300 relative';
 
     if (hudState === 'places') {
         panelPlaces.classList.remove('hidden');
@@ -41,8 +41,8 @@ export function setHUDState(hudState, data = null) {
         measurePanel.classList.remove('hidden');
         drawBtn.className = 'group flex items-center justify-center w-12 h-12 bg-teal-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-teal-500 transition-all duration-300 relative border border-teal-500';
     } else if (hudState === 'route') {
-        routingPanel.classList.remove('hidden');
-        routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-amber-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-amber-500 transition-all duration-300 relative border border-amber-500';
+        navPanel.classList.remove('hidden');
+        routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-blue-500 transition-all duration-300 relative border border-blue-500';
     } else if (hudState === 'place-details') {
         panelDetails.classList.remove('hidden');
         renderPlaceDetails(data);
