@@ -1,7 +1,7 @@
 // maps Markers Module
 
 import { state, colorPalette } from './state.js';
-import { showToast } from './toast.js';
+
 import { setHUDState } from './hud.js';
 
 export function createCustomPin(category = 'poi', colorOverride = null) {
@@ -175,5 +175,5 @@ export function deleteSavedMarker(id) {
     saveMarkersToStorage();
     renderAllMarkers();
     setHUDState('places');
-    showToast("Place deleted.", "info");
+
 }

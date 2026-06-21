@@ -1,16 +1,17 @@
 // maps Measure Module
 
 import { state } from './state.js';
-import { showToast } from './toast.js';
+
 import { setHUDState } from './hud.js';
+import { exitRoutingMode } from './routing.js';
 
 export function enterMeasureMode() {
-    import('./routing.js').then(r => r.exitRoutingMode());
+    exitRoutingMode();
     exitMeasureMode();
     state.isMeasureMode = true;
     state.map.getContainer().style.cursor = 'crosshair';
     setHUDState('measure');
-    showToast("Measure Mode Active. Click points on map.", "info");
+
 }
 
 export function exitMeasureMode() {

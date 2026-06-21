@@ -2,7 +2,7 @@
 // Core JavaScript Orchestrator (ES Module)
 
 import { state } from './state.js';
-import { showToast } from './toast.js';
+
 import { initTheme } from './theme.js';
 import { initMap, initOverlays, setBaseLayer, toggleOverlay } from './map.js';
 import { setHUDState } from './hud.js';
@@ -16,7 +16,7 @@ import {
     deleteSavedMarker
 } from './markers.js';
 import { enterMeasureMode, exitMeasureMode, handleMeasureClick } from './measure.js';
-import { enterRoutingMode, exitRoutingMode, setRoutingMode, handleRoutingClick } from './routing.js';
+import { enterRoutingMode, exitRoutingMode, setRoutingProfile, handleRoutingClick, setupAutocomplete, swapWaypoints, useMyLocation, closeAllAutocomplete } from './routing.js';
 import { renderSearchResults } from './search.js';
 import { locateUser } from './gps.js';
 
@@ -271,10 +271,10 @@ function setupEventListeners() {
                 renderSearchResults(data);
                 setHUDState('search-results');
             } else {
-                showToast("No locations match query.", "error");
+
             }
         } catch (err) {
-            showToast("Network search failed.", "error");
+
         }
     });
 
@@ -324,20 +324,59 @@ function setupEventListeners() {
         saveMarkerFromForm();
     });
 
-    // Mode Selector controls
-    document.querySelectorAll('[data-layer-btn]').forEach(btn => {
+    // Layer Switcher - Toggle button
+    const layerToggleBtn = document.getElementById('layer-toggle-btn');
+    if (layerToggleBtn) {
+        layerToggleBtn.addEventListener('click', () => {
+            const nextLayer = state.activeLayerKey === 'street' ? 'satellite' : 'street';
+            setBaseLayer(nextLayer);
+        });
+    }
+
+    // Layer Switcher - Labels button
+    const layerLabelsBtn = document.getElementById('layer-labels-btn');
+    if (layerLabelsBtn) {
+        layerLabelsBtn.addEventListener('click', () => {
+            const isActive = state.activeOverlays.labels;
+            toggleOverlay('labels', !isActive);
+        });
+    }
+
+    // Measure Panel Controls
+    document.getElementById('btn-exit-measure').addEventListener('click', exitMeasureMode);
+
+    // Navigation Panel Controls
+    document.getElementById('btn-exit-nav').addEventListener('click', exitRoutingMode);
+
+    // Transport mode buttons
+    document.querySelectorAll('.nav-mode-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            const layerKey = btn.getAttribute('data-layer-btn');
-            setBaseLayer(layerKey);
+            const mode = btn.getAttribute('data-nav-mode');
+            if (mode) setRoutingProfile(mode);
         });
     });
 
-    // Measure & Routing Panels Controls
-    document.getElementById('btn-exit-measure').addEventListener('click', exitMeasureMode);
-    document.getElementById('btn-exit-routing').addEventListener('click', exitRoutingMode);
-    document.getElementById('mode-driving-car').addEventListener('click', () => setRoutingMode('driving-car'));
-    document.getElementById('mode-cycling').addEventListener('click', () => setRoutingMode('cycling'));
-    document.getElementById('mode-foot').addEventListener('click', () => setRoutingMode('foot'));
+    // Autocomplete for origin & destination inputs
+    const originInput = document.getElementById('nav-origin-input');
+    const destInput = document.getElementById('nav-dest-input');
+    const originDropdown = document.getElementById('nav-origin-autocomplete');
+    const destDropdown = document.getElementById('nav-dest-autocomplete');
+
+    if (originInput && originDropdown) setupAutocomplete(originInput, originDropdown, 'origin');
+    if (destInput && destDropdown) setupAutocomplete(destInput, destDropdown, 'destination');
+
+    // Swap waypoints button
+    document.getElementById('nav-swap-btn').addEventListener('click', swapWaypoints);
+
+    // Use my location button
+    document.getElementById('nav-use-location').addEventListener('click', useMyLocation);
+
+    // Close autocomplete when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-autocomplete') && !e.target.closest('#nav-origin-input') && !e.target.closest('#nav-dest-input')) {
+            closeAllAutocomplete();
+        }
+    });
 
     // Modal Control Buttons
     document.getElementById('btn-close-marker-modal').addEventListener('click', closeMarkerModal);
@@ -362,13 +401,13 @@ function setupEventListeners() {
         const center = state.map.getCenter();
         const homeCoords = { lat: center.lat, lng: center.lng };
         localStorage.setItem('maps_home_coords', JSON.stringify(homeCoords));
-        showToast("Home location saved to this view center.", "info");
+
         updateHomeButtonsVisibility();
     });
 
     btnClearHome.addEventListener('click', () => {
         localStorage.removeItem('maps_home_coords');
-        showToast("Home location cleared. Will use GPS next load.", "info");
+
         updateHomeButtonsVisibility();
     });
 }

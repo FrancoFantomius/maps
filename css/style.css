@@ -145,3 +145,209 @@
 .dark .leaflet-popup-close-button:hover {
     color: #818cf8 !important;
 }
+
+/* ─── Navigation Panel Styles ─── */
+
+/* Autocomplete dropdown */
+.nav-autocomplete {
+    backdrop-filter: blur(8px);
+    animation: navDropdownIn 0.15s ease-out;
+}
+
+@keyframes navDropdownIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.nav-autocomplete-item:first-child {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.nav-autocomplete-item:last-child {
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+/* Step items */
+.nav-step-item {
+    position: relative;
+}
+
+.nav-step-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: transparent;
+    transition: background 0.2s ease;
+}
+
+.nav-step-item:hover::before {
+    background: #4285F4;
+}
+
+/* Navigation markers */
+.nav-origin-marker,
+.nav-dest-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* Route line pulse animation on hover */
+.route-line-hover {
+    animation: routePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes routePulse {
+    0%, 100% { opacity: 0.9; }
+    50% { opacity: 0.6; }
+}
+
+/* ─── Google Maps-style Layer Switcher ─── */
+
+.layer-switcher-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.layer-toggle-btn {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.95);
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+    background: #1a1a2e;
+}
+
+.layer-toggle-btn:hover {
+    transform: scale(1.06);
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.layer-toggle-btn:active {
+    transform: scale(0.97);
+}
+
+.layer-toggle-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.layer-toggle-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2px 0;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.0));
+    letter-spacing: 0.01em;
+    pointer-events: none;
+    line-height: 1.3;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Labels sub-button */
+.layer-labels-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    outline: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.layer-labels-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.04);
+}
+
+.layer-labels-btn.active {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
+}
+
+.layer-labels-btn.active:hover {
+    background: #4338ca;
+    border-color: #4338ca;
+}
+
+/* Dark mode layer switcher */
+.dark .layer-toggle-btn {
+    border-color: rgba(30, 41, 59, 0.95);
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(0, 0, 0, 0.3);
+}
+
+.dark .layer-toggle-btn:hover {
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.dark .layer-labels-btn {
+    background: rgba(17, 24, 39, 0.92);
+    border-color: rgba(30, 41, 59, 0.9);
+    color: #94a3b8;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.dark .layer-labels-btn:hover {
+    background: rgba(17, 24, 39, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+}
+
+.dark .layer-labels-btn.active {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+.dark .layer-labels-btn.active:hover {
+    background: #4f46e5;
+    border-color: #4f46e5;
+}
+
+/* Hidden utility for layer-labels-btn */
+.layer-labels-btn.hidden {
+    display: none;
+}
