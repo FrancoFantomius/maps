@@ -44,36 +44,6 @@ A modern, high-performance, and feature-rich interactive map application built w
 
 ---
 
-## Architecture & Modules
-
-The application is structured cleanly using HTML5, modern Tailwind CSS, and modular ES6 JavaScript:
-
-```
-maps/
-├── css/
-│   └── style.css            # Custom CSS animations & Leaflet style overrides
-├── img/
-│   ├── icon.svg             # Application squircle vector favicon
-│   └── search_icon.svg      # Search bar brand visual
-├── js/
-│   ├── app.js               # Main orchestrator & click/event listeners
-│   ├── state.js             # Global reactive state management
-│   ├── map.js               # Leaflet initialization, layer toggles, and base layers
-│   ├── markers.js           # Pins generation, editing, storage, and rendering
-│   ├── measure.js           # Polyline drawing & distance calculations
-│   ├── routing.js           # Route calculations using OSRM API & polyline rendering
-│   ├── search.js            # Search response parsing and list injection
-│   ├── gps.js               # Geolocation triggers and centering
-│   ├── hud.js               # HUD layout state machine (Details, Search, Routing, Places)
-│   ├── theme.js             # System & user-defined theme sync
-│   └── toast.js             # Bottom popup notifier helper
-├── index.html               # Main application layout and Tailwind settings
-├── LICENSE                  # MIT License & Third-Party Attributions
-└── README.md                # Project documentation
-```
-
----
-
 ## Getting Started
 
 ### Prerequisites
