@@ -33,6 +33,9 @@ const settingsPanel = document.getElementById('settings-panel');
 const toggleOverlayLabels = document.getElementById('toggle-overlay-labels');
 const toggleOverlayBike = document.getElementById('toggle-overlay-bike');
 
+// Rotation state animation controller variables
+let bearingAnimId = null;
+
 // Initialize Application
 window.addEventListener('load', () => {
     initMap();
@@ -410,6 +413,107 @@ function setupEventListeners() {
 
         updateHomeButtonsVisibility();
     });
+
+    // Map Rotation Controls
+    const btnCompass = document.getElementById('btn-compass');
+    const btnRotateCcw = document.getElementById('btn-rotate-ccw');
+    const btnRotateCw = document.getElementById('btn-rotate-cw');
+    const btnRotateLeft = document.getElementById('btn-rotate-left');
+    const btnRotateRight = document.getElementById('btn-rotate-right');
+    const bearingSlider = document.getElementById('bearing-slider');
+
+    if (btnCompass) {
+        btnCompass.addEventListener('click', () => {
+            animateBearingTo(0, 400);
+        });
+    }
+
+    if (btnRotateCcw) {
+        btnRotateCcw.addEventListener('click', () => {
+            const current = state.map ? state.map.getBearing() : 0;
+            // Snap to nearest 90deg and go CCW
+            const target = (Math.round(current / 90) * 90 - 90);
+            animateBearingTo(target, 300);
+        });
+    }
+
+    if (btnRotateCw) {
+        btnRotateCw.addEventListener('click', () => {
+            const current = state.map ? state.map.getBearing() : 0;
+            // Snap to nearest 90deg and go CW
+            const target = (Math.round(current / 90) * 90 + 90);
+            animateBearingTo(target, 300);
+        });
+    }
+
+    if (btnRotateLeft) {
+        btnRotateLeft.addEventListener('click', () => {
+            const current = state.map ? state.map.getBearing() : 0;
+            // Rotate CCW by 15 degrees
+            const target = current - 15;
+            animateBearingTo(target, 200);
+        });
+    }
+
+    if (btnRotateRight) {
+        btnRotateRight.addEventListener('click', () => {
+            const current = state.map ? state.map.getBearing() : 0;
+            // Rotate CW by 15 degrees
+            const target = current + 15;
+            animateBearingTo(target, 200);
+        });
+    }
+
+    if (bearingSlider) {
+        bearingSlider.addEventListener('input', (e) => {
+            if (bearingAnimId) {
+                cancelAnimationFrame(bearingAnimId);
+                bearingAnimId = null;
+            }
+            if (state.map) {
+                state.map.setBearing(parseFloat(e.target.value));
+            }
+        });
+    }
+}
+
+/**
+ * Smoothly animate the map bearing to the target angle using requestAnimationFrame
+ */
+function animateBearingTo(targetBearing, duration = 300) {
+    if (!state.map) return;
+    if (bearingAnimId) {
+        cancelAnimationFrame(bearingAnimId);
+    }
+    
+    const startBearing = state.map.getBearing();
+    // Normalize target bearing to be between 0 and 360
+    const target = (targetBearing % 360 + 360) % 360;
+    
+    const diff = target - startBearing;
+    // Find shortest path for rotation (-180 to 180 degrees)
+    let shortestDiff = ((diff + 180) % 360) - 180;
+    if (shortestDiff < -180) shortestDiff += 360;
+
+    const startTime = performance.now();
+
+    function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function: easeOutQuad
+        const ease = progress * (2 - progress);
+        const current = startBearing + shortestDiff * ease;
+        state.map.setBearing(current);
+
+        if (progress < 1) {
+            bearingAnimId = requestAnimationFrame(step);
+        } else {
+            state.map.setBearing(target);
+            bearingAnimId = null;
+        }
+    }
+    bearingAnimId = requestAnimationFrame(step);
 }
 
 // Expose handlers globally for HTML elements

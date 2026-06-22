@@ -30,16 +30,71 @@ export function initMap() {
     const initialLayer = (savedLayer === 'satellite') ? 'satellite' : 'street';
     state.activeLayerKey = initialLayer;
 
+    // Restore persisted bearing preference (default: 0)
+    const savedBearing = localStorage.getItem('maps_bearing');
+    const initialBearing = savedBearing ? parseFloat(savedBearing) : 0;
+
     state.map = L.map('map', {
         center: [initialLat, initialLng],
         zoom: DEFAULT_ZOOM,
         minZoom: MIN_ZOOM,
         maxZoom: MAX_ZOOM,
         layers: [state.baseLayers[initialLayer]],
-        zoomControl: false
+        zoomControl: false,
+        rotate: true,
+        bearing: initialBearing,
+        touchRotate: true,
+        shiftKeyRotate: true,
+        rotateControl: false
     });
 
     L.control.zoom({ position: 'bottomleft' }).addTo(state.map);
+
+    // Setup rotation state synchronization
+    state.map.on('rotate', () => {
+        const bearing = state.map.getBearing();
+        
+        // Update compass needle rotation (rotate opposite to match geo-North)
+        const compassNeedle = document.getElementById('compass-needle');
+        if (compassNeedle) {
+            compassNeedle.style.transform = `rotate(${-bearing}deg)`;
+        }
+
+        // Highlight compass button when rotated
+        const btnCompass = document.getElementById('btn-compass');
+        if (btnCompass) {
+            if (Math.round(bearing) !== 0) {
+                btnCompass.classList.add('border-indigo-500', 'text-indigo-600', 'dark:text-indigo-400');
+                btnCompass.classList.remove('border-slate-200/50', 'dark:border-slate-800/50', 'text-slate-700', 'dark:text-slate-350');
+            } else {
+                btnCompass.classList.remove('border-indigo-500', 'text-indigo-600', 'dark:text-indigo-400');
+                btnCompass.classList.add('border-slate-200/50', 'dark:border-slate-800/50', 'text-slate-700', 'dark:text-slate-350');
+            }
+        }
+
+        // Update settings panel controls
+        const bearingValue = document.getElementById('bearing-value');
+        if (bearingValue) {
+            bearingValue.textContent = `${Math.round(bearing)}°`;
+        }
+
+        const bearingSlider = document.getElementById('bearing-slider');
+        if (bearingSlider) {
+            bearingSlider.value = Math.round(bearing);
+        }
+
+        // Persist bearing choice
+        localStorage.setItem('maps_bearing', bearing);
+    });
+
+    // Run initial sync for loaded bearing preference
+    if (initialBearing !== 0) {
+        setTimeout(() => {
+            if (state.map) {
+                state.map.fire('rotate');
+            }
+        }, 100);
+    }
 
     // Update layer switcher preview dynamically when map finishes moving
     state.map.on('moveend', updateLayerSwitcherPreview);
