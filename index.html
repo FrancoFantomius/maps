@@ -254,130 +254,154 @@
         </div>
     </div>
 
-    <!-- Floating Settings Drawer/Popover (Bottom-Left area, z-10) -->
-    <div class="fixed bottom-4 left-20 z-10 pointer-events-auto flex flex-col-reverse items-start gap-2">
+    <!-- Settings Toggle Button (Bottom-Left area, z-10) -->
+    <div class="fixed bottom-4 left-20 z-10 pointer-events-auto bottom-ui-element">
         <button id="btn-settings-toggle"
             class="p-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-300 flex items-center justify-center">
-            <span class="material-icons-outlined text-lg leading-none">settings</span>
+            <span class="material-icons-outlined text-lg leading-none">keyboard_double_arrow_up</span>
         </button>
+    </div>
 
-        <!-- Settings dropdown modal card -->
-        <div id="settings-panel"
-            class="hidden w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-2xl p-4 flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-2 duration-200 origin-bottom-left">
-            <div>
-                <h3 class="font-display font-bold text-sm text-slate-900 dark:text-slate-100">Map Settings</h3>
-                <p class="text-[10px] text-slate-400 dark:text-slate-500">Configure map layers, overlays, and system
-                    appearance</p>
+    <!-- Settings Bottom Sheet Panel (z-20, slides up from bottom) -->
+    <div id="settings-panel"
+        class="settings-bottom-sheet fixed bottom-0 left-0 right-0 z-20 pointer-events-auto translate-y-full">
+        <div
+            class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200/60 dark:border-slate-800/60 shadow-[0_-8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_-8px_30px_rgba(0,0,0,0.4)] px-4 py-4 md:px-8">
+
+            <!-- Close button -->
+            <div class="flex justify-end mb-2">
+                <button id="btn-settings-close"
+                    class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-200 flex items-center gap-1">
+                    <span class="material-icons-outlined text-base leading-none">keyboard_double_arrow_down</span>
+                    <span class="text-[10px] font-semibold">Close</span>
+                </button>
             </div>
 
+            <!-- Settings content in horizontal layout -->
+            <div class="flex flex-col md:flex-row gap-4 md:gap-6 max-w-5xl mx-auto">
 
-            <!-- Overlays switch toggles -->
-            <div class="space-y-2 pt-1">
-                <span
-                    class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Show
-                    Details</span>
-                <div class="space-y-2.5">
-                    <label class="flex items-center justify-between cursor-pointer group">
-                        <span
-                            class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Street
-                            Names</span>
-                        <div class="relative w-8 h-4">
-                            <input type="checkbox" id="toggle-overlay-labels" class="sr-only peer">
-                            <div
-                                class="w-8 h-4 bg-slate-200 dark:bg-slate-850 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4">
-                            </div>
-                        </div>
-                    </label>
-                    <label class="flex items-center justify-between cursor-pointer group">
-                        <span
-                            class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Bike
-                            Paths</span>
-                        <div class="relative w-8 h-4">
-                            <input type="checkbox" id="toggle-overlay-bike" class="sr-only peer">
-                            <div
-                                class="w-8 h-4 bg-slate-200 dark:bg-slate-850 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4">
-                            </div>
-                        </div>
-                    </label>
-                    <label class="flex items-center justify-between cursor-pointer group">
-                        <span
-                            class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Perspective</span>
-                        <div class="relative w-8 h-4">
-                            <input type="checkbox" id="toggle-overlay-perspective" class="sr-only peer">
-                            <div
-                                class="w-8 h-4 bg-slate-200 dark:bg-slate-850 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4">
-                            </div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Home Location settings -->
-            <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
-                <span
-                    class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Home
-                    Location</span>
-                <div class="flex flex-col gap-1.5">
-                    <button id="btn-set-home"
-                        class="w-full py-1.5 px-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 font-semibold text-[11px] transition-colors border border-indigo-200/50 dark:border-indigo-900/20">
-                        Set Current View as Home
-                    </button>
-                    <button id="btn-clear-home"
-                        class="w-full py-1.5 px-3 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 font-semibold text-[11px] transition-colors border border-red-200/50 dark:border-red-900/20 hidden">
-                        Clear Home Location
-                    </button>
-                </div>
-            </div>
-
-            <!-- Map Rotation settings -->
-            <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
-                <span class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Map
-                    Rotation</span>
-                <div class="flex items-center justify-between gap-2">
-                    <button id="btn-rotate-ccw" title="Rotate Counter-Clockwise"
-                        class="flex-1 py-1.5 px-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-850 font-semibold text-[11px] transition-colors border border-slate-200/50 dark:border-slate-800/30">
-                        Rotate CCW
-                    </button>
-                    <button id="btn-rotate-cw" title="Rotate Clockwise"
-                        class="flex-1 py-1.5 px-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-850 font-semibold text-[11px] transition-colors border border-slate-200/50 dark:border-slate-800/30">
-                        Rotate CW
-                    </button>
-                </div>
-                <div class="flex flex-col gap-1 mt-1">
-                    <div class="flex justify-between text-[10px] text-slate-400 dark:text-slate-500 font-medium">
-                        <span>Bearing Angle</span>
-                        <span id="bearing-value">0°</span>
+                <!-- Column 1: Header + Overlays -->
+                <div class="flex-1 min-w-0">
+                    <div class="mb-3">
+                        <h3 class="font-display font-bold text-sm text-slate-900 dark:text-slate-100">Map Settings</h3>
+                        <p class="text-[10px] text-slate-400 dark:text-slate-500">Configure map layers, overlays, and
+                            system appearance</p>
                     </div>
-                    <input type="range" id="bearing-slider" min="-180" max="180" value="0"
-                        class="w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600 dark:accent-indigo-400">
-                </div>
-                <div class="flex flex-col gap-1 mt-2">
-                    <div class="flex justify-between text-[10px] text-slate-400 dark:text-slate-500 font-medium">
-                        <span>Tilt / Pitch</span>
-                        <span id="pitch-value">0°</span>
+                    <div class="space-y-2 pt-1">
+                        <span
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Show
+                            Details</span>
+                        <div class="space-y-2.5">
+                            <label class="flex items-center justify-between cursor-pointer group">
+                                <span
+                                    class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Street
+                                    Names</span>
+                                <div class="relative w-8 h-4">
+                                    <input type="checkbox" id="toggle-overlay-labels" class="sr-only peer">
+                                    <div
+                                        class="w-8 h-4 bg-slate-200 dark:bg-slate-850 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4">
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer group">
+                                <span
+                                    class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Bike
+                                    Paths</span>
+                                <div class="relative w-8 h-4">
+                                    <input type="checkbox" id="toggle-overlay-bike" class="sr-only peer">
+                                    <div
+                                        class="w-8 h-4 bg-slate-200 dark:bg-slate-850 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4">
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="flex items-center justify-between cursor-pointer group">
+                                <span
+                                    class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Perspective</span>
+                                <div class="relative w-8 h-4">
+                                    <input type="checkbox" id="toggle-overlay-perspective" class="sr-only peer">
+                                    <div
+                                        class="w-8 h-4 bg-slate-200 dark:bg-slate-850 rounded-full peer peer-checked:bg-indigo-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:after:translate-x-4">
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
                     </div>
-                    <input type="range" id="pitch-slider" min="0" max="60" value="0"
-                        class="w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600 dark:accent-indigo-400">
                 </div>
-            </div>
 
-            <!-- System theme selections -->
-            <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3">
-                <span
-                    class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Appearance
-                    Theme</span>
-                <div
-                    class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-250/50 dark:border-slate-800/30 text-center text-xs">
-                    <button data-theme-btn="light" class="py-1 rounded-lg font-semibold transition-all">Light</button>
-                    <button data-theme-btn="dark" class="py-1 rounded-lg font-semibold transition-all">Dark</button>
-                    <button data-theme-btn="system" class="py-1 rounded-lg font-semibold transition-all">System</button>
+                <!-- Column 2: Home Location + Rotation -->
+                <div class="flex-1 min-w-0 md:border-l md:border-slate-100 md:dark:border-slate-800 md:pl-6">
+                    <div class="space-y-2">
+                        <span
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Home
+                            Location</span>
+                        <div class="flex flex-col gap-1.5">
+                            <button id="btn-set-home"
+                                class="w-full py-1.5 px-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 font-semibold text-[11px] transition-colors border border-indigo-200/50 dark:border-indigo-900/20">
+                                Set Current View as Home
+                            </button>
+                            <button id="btn-clear-home"
+                                class="w-full py-1.5 px-3 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 font-semibold text-[11px] transition-colors border border-red-200/50 dark:border-red-900/20 hidden">
+                                Clear Home Location
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3 mt-3">
+                        <span
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Map
+                            Rotation</span>
+                        <div class="flex items-center justify-between gap-2">
+                            <button id="btn-rotate-ccw" title="Rotate Counter-Clockwise"
+                                class="flex-1 py-1.5 px-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-850 font-semibold text-[11px] transition-colors border border-slate-200/50 dark:border-slate-800/30">
+                                Rotate CCW
+                            </button>
+                            <button id="btn-rotate-cw" title="Rotate Clockwise"
+                                class="flex-1 py-1.5 px-2 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-350 hover:bg-slate-100 dark:hover:bg-slate-850 font-semibold text-[11px] transition-colors border border-slate-200/50 dark:border-slate-800/30">
+                                Rotate CW
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Column 3: Sliders + Theme -->
+                <div class="flex-1 min-w-0 md:border-l md:border-slate-100 md:dark:border-slate-800 md:pl-6">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                            <span>Bearing Angle</span>
+                            <span id="bearing-value">0°</span>
+                        </div>
+                        <input type="range" id="bearing-slider" min="-180" max="180" value="0"
+                            class="w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600 dark:accent-indigo-400">
+                    </div>
+                    <div class="flex flex-col gap-1 mt-3">
+                        <div class="flex justify-between text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                            <span>Tilt / Pitch</span>
+                            <span id="pitch-value">0°</span>
+                        </div>
+                        <input type="range" id="pitch-slider" min="0" max="60" value="0"
+                            class="w-full h-1 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-600 dark:accent-indigo-400">
+                    </div>
+                    <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3 mt-3">
+                        <span
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Appearance
+                            Theme</span>
+                        <div
+                            class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-250/50 dark:border-slate-800/30 text-center text-xs">
+                            <button data-theme-btn="light"
+                                class="py-1 rounded-lg font-semibold transition-all">Light</button>
+                            <button data-theme-btn="dark"
+                                class="py-1 rounded-lg font-semibold transition-all">Dark</button>
+                            <button data-theme-btn="system"
+                                class="py-1 rounded-lg font-semibold transition-all">System</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
     <!-- Google Maps-style Floating Layer Switcher (Bottom-Left, z-10) -->
-    <div id="layer-switcher" class="fixed bottom-24 left-4 z-10 pointer-events-auto">
+    <div id="layer-switcher" class="fixed bottom-24 left-4 z-10 pointer-events-auto bottom-ui-element">
         <!-- Main tile toggle button -->
         <div class="layer-switcher-container">
             <button id="layer-toggle-btn" class="layer-toggle-btn" title="Switch map type">
@@ -395,7 +419,7 @@
     </div>
 
     <!-- Floating Action Button Stack (Bottom-Right area, z-10) -->
-    <div class="fixed bottom-4 right-16 z-10 pointer-events-auto flex flex-col gap-2.5">
+    <div class="fixed bottom-4 right-16 z-10 pointer-events-auto flex flex-col gap-2.5 bottom-ui-element">
         <!-- Distance Measure Button -->
         <button id="btn-draw"
             class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/30 transition-all duration-300 relative">

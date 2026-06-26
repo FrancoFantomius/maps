@@ -351,3 +351,29 @@
 .layer-labels-btn.hidden {
     display: none;
 }
+
+/* ─── Settings Bottom Sheet ─── */
+
+.settings-bottom-sheet {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+.settings-bottom-sheet.translate-y-full {
+    transform: translateY(100%);
+    pointer-events: none;
+}
+
+.settings-bottom-sheet.settings-open {
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Bottom UI elements slide up with the settings panel */
+.bottom-ui-element {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.maplibregl-ctrl-bottom-left {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}

@@ -263,31 +263,55 @@ function setupEventListeners() {
         }
     });
 
-    // Settings Dropdown Popover Toggles
+    // Settings Bottom Sheet Toggles
+    const btnSettingsClose = document.getElementById('btn-settings-close');
+
+    function openSettingsPanel() {
+        settingsPanel.classList.add('settings-open');
+        settingsPanel.classList.remove('translate-y-full');
+        // Swap toggle icon to down arrow
+        btnSettingsToggle.querySelector('.material-icons-outlined').textContent = 'keyboard_double_arrow_down';
+        // After transition starts, measure height and shift bottom UI up
+        requestAnimationFrame(() => {
+            const panelHeight = settingsPanel.offsetHeight;
+            document.documentElement.style.setProperty('--settings-panel-height', panelHeight + 'px');
+            document.querySelectorAll('.bottom-ui-element').forEach(el => {
+                el.style.transform = `translateY(-${panelHeight}px)`;
+            });
+            // Also shift MapLibre zoom control
+            const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
+            if (mapControls) mapControls.style.transform = `translateY(-${panelHeight}px)`;
+        });
+    }
+
+    function closeSettingsPanel() {
+        settingsPanel.classList.remove('settings-open');
+        settingsPanel.classList.add('translate-y-full');
+        // Swap toggle icon back to up arrow
+        btnSettingsToggle.querySelector('.material-icons-outlined').textContent = 'keyboard_double_arrow_up';
+        document.querySelectorAll('.bottom-ui-element').forEach(el => {
+            el.style.transform = '';
+        });
+        const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
+        if (mapControls) mapControls.style.transform = '';
+    }
+
     btnSettingsToggle.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isHidden = settingsPanel.classList.contains('hidden');
-        if (isHidden) {
-            settingsPanel.classList.remove('hidden');
-            setTimeout(() => {
-                settingsPanel.classList.remove('opacity-0', 'scale-95');
-                settingsPanel.classList.add('opacity-100', 'scale-100');
-            }, 20);
-        } else {
-            settingsPanel.classList.remove('opacity-100', 'scale-100');
-            settingsPanel.classList.add('opacity-0', 'scale-95');
-            setTimeout(() => {
-                settingsPanel.classList.add('hidden');
-            }, 200);
-        }
+        const isOpen = settingsPanel.classList.contains('settings-open');
+        if (isOpen) closeSettingsPanel();
+        else openSettingsPanel();
+    });
+
+    btnSettingsClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeSettingsPanel();
     });
 
     document.addEventListener('click', (e) => {
         if (!settingsPanel.contains(e.target) && !btnSettingsToggle.contains(e.target)) {
-            if (!settingsPanel.classList.contains('hidden')) {
-                settingsPanel.classList.remove('opacity-100', 'scale-100');
-                settingsPanel.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => { settingsPanel.classList.add('hidden'); }, 200);
+            if (settingsPanel.classList.contains('settings-open')) {
+                closeSettingsPanel();
             }
         }
     });
