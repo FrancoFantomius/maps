@@ -27,6 +27,11 @@ export function initMap() {
     const initialLayer = (savedLayer === 'satellite') ? 'satellite' : 'street';
     state.activeLayerKey = initialLayer;
 
+    // Restore persisted perspective/pitch preference
+    const savedPerspective = localStorage.getItem('maps_perspective_enabled') === 'true';
+    state.activeOverlays.perspective = savedPerspective;
+    const initialPitch = savedPerspective ? 45 : 0;
+
     // Restore persisted bearing preference (default: 0)
     const savedBearing = localStorage.getItem('maps_bearing');
     const initialBearing = savedBearing ? parseFloat(savedBearing) : 0;
@@ -41,7 +46,7 @@ export function initMap() {
         zoom: DEFAULT_ZOOM,
         minZoom: MIN_ZOOM,
         maxZoom: MAX_ZOOM,
-        pitch: 0, // tilt for 3D structures and terrain
+        pitch: initialPitch, // tilt for 3D structures and terrain
         bearing: initialBearing,
         antialias: true
     });
@@ -104,6 +109,27 @@ export function initMap() {
         const pitchSlider = document.getElementById('pitch-slider');
         if (pitchSlider) {
             pitchSlider.value = Math.round(pitch);
+        }
+
+        // Auto-sync perspective toggle based on pitch
+        const hasPerspective = pitch > 0;
+        if (state.activeOverlays.perspective !== hasPerspective) {
+            state.activeOverlays.perspective = hasPerspective;
+            localStorage.setItem('maps_perspective_enabled', hasPerspective ? 'true' : 'false');
+            
+            if (state.map.getLayer('3d-buildings')) {
+                state.map.setLayoutProperty('3d-buildings', 'visibility', hasPerspective ? 'visible' : 'none');
+            }
+            if (hasPerspective) {
+                state.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
+            } else {
+                state.map.setTerrain(null);
+            }
+
+            const overlayTogglePerspective = document.getElementById('toggle-overlay-perspective');
+            if (overlayTogglePerspective) {
+                overlayTogglePerspective.checked = hasPerspective;
+            }
         }
     });
 
@@ -200,6 +226,9 @@ export function setupMapLayersAndSources() {
             'source-layer': 'building',
             type: 'fill-extrusion',
             minzoom: 15,
+            layout: {
+                visibility: state.activeOverlays.perspective ? 'visible' : 'none'
+            },
             paint: {
                 // Premium realistic height-based shading
                 'fill-extrusion-color': [
@@ -236,7 +265,11 @@ export function setupMapLayersAndSources() {
             encoding: 'terrarium'
         });
     }
-    state.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
+    if (state.activeOverlays.perspective) {
+        state.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
+    } else {
+        state.map.setTerrain(null);
+    }
 
     // 5. Add route layers and sources
     if (!state.map.getSource('route-source')) {
@@ -515,6 +548,12 @@ export function initOverlays() {
     state.activeOverlays.labels = (savedLabels === 'true' || savedLabels === null); // default labels to true or saved state
     setLabelsVisibility(state.activeOverlays.labels);
     syncLabelsButtonState();
+
+    // Sync perspective checkbox state
+    const overlayTogglePerspective = document.getElementById('toggle-overlay-perspective');
+    if (overlayTogglePerspective) {
+        overlayTogglePerspective.checked = state.activeOverlays.perspective;
+    }
 }
 
 export function setBaseLayer(layerKey) {
@@ -564,6 +603,28 @@ export function toggleOverlay(key, show) {
         const overlayToggleBike = document.getElementById('toggle-overlay-bike');
         if (overlayToggleBike) {
             overlayToggleBike.checked = show;
+        }
+    } else if (key === 'perspective') {
+        if (state.map) {
+            if (state.map.getLayer('3d-buildings')) {
+                state.map.setLayoutProperty('3d-buildings', 'visibility', show ? 'visible' : 'none');
+            }
+            if (show) {
+                state.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
+                if (state.map.getPitch() === 0) {
+                    state.map.easeTo({ pitch: 45, duration: 300 });
+                }
+            } else {
+                state.map.setTerrain(null);
+                if (state.map.getPitch() !== 0) {
+                    state.map.easeTo({ pitch: 0, duration: 300 });
+                }
+            }
+        }
+        localStorage.setItem('maps_perspective_enabled', show ? 'true' : 'false');
+        const overlayTogglePerspective = document.getElementById('toggle-overlay-perspective');
+        if (overlayTogglePerspective) {
+            overlayTogglePerspective.checked = show;
         }
     }
 }

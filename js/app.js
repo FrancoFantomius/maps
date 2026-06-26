@@ -32,6 +32,7 @@ const btnSettingsToggle = document.getElementById('btn-settings-toggle');
 const settingsPanel = document.getElementById('settings-panel');
 const toggleOverlayLabels = document.getElementById('toggle-overlay-labels');
 const toggleOverlayBike = document.getElementById('toggle-overlay-bike');
+const toggleOverlayPerspective = document.getElementById('toggle-overlay-perspective');
 
 // Initialize Application
 window.addEventListener('load', () => {
@@ -298,6 +299,12 @@ function setupEventListeners() {
     toggleOverlayBike.addEventListener('change', (e) => {
         toggleOverlay('bike', e.target.checked);
     });
+
+    if (toggleOverlayPerspective) {
+        toggleOverlayPerspective.addEventListener('change', (e) => {
+            toggleOverlay('perspective', e.target.checked);
+        });
+    }
 
     // Search Box Form Handler
     searchForm.addEventListener('submit', async (e) => {

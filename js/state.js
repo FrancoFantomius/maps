@@ -18,7 +18,7 @@ export const state = {
     baseLayers: {},
     overlayLayers: {},
     activeLayerKey: 'street',
-    activeOverlays: { labels: false, bike: false },
+    activeOverlays: { labels: false, bike: false, perspective: false },
     customMarkers: [],
     markerInstances: [],
     tempMarker: null,
