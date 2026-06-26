@@ -28,7 +28,7 @@ export const ThemeController = {
 
         if (isDark) {
             document.documentElement.classList.add('dark');
-            MapService.setStyle('https://tiles.openfreemap.org/styles/darkmatter');
+            MapService.setStyle('https://tiles.openfreemap.org/styles/dark');
         } else {
             document.documentElement.classList.remove('dark');
             MapService.setStyle('https://tiles.openfreemap.org/styles/liberty');

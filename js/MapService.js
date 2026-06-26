@@ -44,6 +44,7 @@ export const MapService = {
         const savedBearing = localStorage.getItem('maps_bearing');
         const initialBearing = savedBearing ? parseFloat(savedBearing) : 0;
 
+        const isDark = document.documentElement.classList.contains('dark');
         const initialStyle = isDark ? 'https://tiles.openfreemap.org/styles/dark' : 'https://tiles.openfreemap.org/styles/liberty';
 
         this.map = new maplibregl.Map({
