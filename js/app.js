@@ -1,24 +1,15 @@
 // maps - Interactive Map Platform
-// Core JavaScript Orchestrator (ES Module)
+// Core JavaScript Orchestrator (ES Module) - js/app.js
 
-import { state } from './state.js';
-
-import { initTheme } from './theme.js';
-import { initMap, initOverlays, setBaseLayer, toggleOverlay } from './map.js';
-import { setHUDState } from './hud.js';
-import {
-    createCustomPin,
-    openMarkerModal,
-    closeMarkerModal,
-    saveMarkerFromForm,
-    loadMarkersFromStorage,
-    mapFocusMarker,
-    deleteSavedMarker
-} from './markers.js';
-import { enterMeasureMode, exitMeasureMode, handleMeasureClick } from './measure.js';
-import { enterRoutingMode, exitRoutingMode, setRoutingProfile, handleRoutingClick, setupAutocomplete, swapWaypoints, useMyLocation, closeAllAutocomplete } from './routing.js';
-import { renderSearchResults } from './search.js';
-import { locateUser } from './gps.js';
+import { MapService } from './MapService.js';
+import { ApiService } from './ApiService.js';
+import { HUDController } from './HUDController.js';
+import { MarkerController } from './MarkerController.js';
+import { MeasurementController } from './MeasurementController.js';
+import { RoutingController } from './RoutingController.js';
+import { SearchController } from './SearchController.js';
+import { GPSController } from './GPSController.js';
+import { ThemeController } from './ThemeController.js';
 
 // DOM Elements
 const searchForm = document.getElementById('search-form');
@@ -32,16 +23,15 @@ const btnSettingsToggle = document.getElementById('btn-settings-toggle');
 const settingsPanel = document.getElementById('settings-panel');
 const toggleOverlayLabels = document.getElementById('toggle-overlay-labels');
 const toggleOverlayBike = document.getElementById('toggle-overlay-bike');
-
-// Rotation state animation controller variables
-let bearingAnimId = null;
+const toggleOverlayPerspective = document.getElementById('toggle-overlay-perspective');
+const btnPerspective = document.getElementById('btn-perspective');
 
 // Initialize Application
 window.addEventListener('load', () => {
-    initMap();
-    initOverlays();
-    initTheme();
-    loadMarkersFromStorage();
+    MapService.init();
+    MapService.initOverlays();
+    ThemeController.init();
+    MarkerController.loadFromStorage();
     setupEventListeners();
 });
 
@@ -50,12 +40,7 @@ async function loadPoiAndPathDetails(latlng) {
     const lng = latlng.lng;
 
     // Show loading HUD
-    setHUDState('place-details', { isLoading: true });
-
-    // 1. Prepare fetches
-    const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
-    const wikipediaUrl = `https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gsradius=100&gscoord=${lat}|${lng}&format=json&origin=*`;
-    const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];(way(around:20,${lat},${lng})[highway];node(around:50,${lat},${lng})[shop];node(around:50,${lat},${lng})[amenity];);out geom;`;
+    HUDController.setState('place-details', { isLoading: true });
 
     let placeName = "Dropped Pin";
     let wikiSummary = "";
@@ -64,11 +49,11 @@ async function loadPoiAndPathDetails(latlng) {
     let streetName = "";
 
     try {
-        // Run fetches in parallel
+        // Run fetches in parallel via centralized ApiService
         const [nomRes, wikiRes, ovRes] = await Promise.allSettled([
-            fetch(nominatimUrl).then(r => r.json()),
-            fetch(wikipediaUrl).then(r => r.json()),
-            fetch(overpassUrl).then(r => r.json())
+            ApiService.reverseGeocode(lat, lng),
+            ApiService.fetchWikipediaNearby(lat, lng),
+            ApiService.fetchOverpassFeatures(lat, lng)
         ]);
 
         // Process Nominatim
@@ -89,8 +74,7 @@ async function loadPoiAndPathDetails(latlng) {
             if (geosearch.length > 0) {
                 const nearestPage = geosearch[0];
                 try {
-                    const sumRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(nearestPage.title)}`);
-                    const summaryData = await sumRes.json();
+                    const summaryData = await ApiService.fetchWikipediaSummary(nearestPage.title);
                     if (summaryData && summaryData.extract) {
                         wikiSummary = summaryData.extract;
                         if (placeName === "Dropped Pin" || !placeName) {
@@ -115,7 +99,7 @@ async function loadPoiAndPathDetails(latlng) {
             ways.forEach(way => {
                 if (way.geometry) {
                     way.geometry.forEach(pt => {
-                        const dist = L.latLng(pt.lat, pt.lon).distanceTo(latlng);
+                        const dist = MeasurementController.getDistance({ lat: pt.lat, lng: pt.lon }, latlng);
                         if (dist < minDistance) {
                             minDistance = dist;
                             closestWay = way;
@@ -127,27 +111,15 @@ async function loadPoiAndPathDetails(latlng) {
             // Highlight street/trail if within 20 meters
             if (closestWay && minDistance <= 20) {
                 streetName = closestWay.tags.name || closestWay.tags.highway.replace(/_/g, ' ');
-                const coords = closestWay.geometry.map(pt => [pt.lat, pt.lon]);
-                if (state.highlightedPath) {
-                    state.map.removeLayer(state.highlightedPath);
-                }
-                
-                const glowBg = L.polyline(coords, {
-                    color: '#6366f1',
-                    weight: 10,
-                    opacity: 0.4,
-                    lineCap: 'round',
-                    lineJoin: 'round'
+                const coords = closestWay.geometry.map(pt => [pt.lon, pt.lat]); // MapLibre uses [lng, lat]
+                MapService.highlightedPathCoords = coords;
+                MapService.updateSourceData('highlight-path-source', {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: coords
+                    }
                 });
-                const glowFg = L.polyline(coords, {
-                    color: '#4f46e5',
-                    weight: 3,
-                    opacity: 0.9,
-                    lineCap: 'round',
-                    lineJoin: 'round'
-                });
-
-                state.highlightedPath = L.layerGroup([glowBg, glowFg]).addTo(state.map);
             }
 
             // Find closest shop or amenity node to display specific info
@@ -155,7 +127,7 @@ async function loadPoiAndPathDetails(latlng) {
             let closestNode = null;
             let nodeMinDist = Infinity;
             nodes.forEach(node => {
-                const dist = L.latLng(node.lat, node.lon).distanceTo(latlng);
+                const dist = MeasurementController.getDistance({ lat: node.lat, lng: node.lon }, latlng);
                 if (dist < nodeMinDist) {
                     nodeMinDist = dist;
                     closestNode = node;
@@ -184,7 +156,7 @@ async function loadPoiAndPathDetails(latlng) {
     }
 
     // Update HUD with loaded details
-    setHUDState('place-details', {
+    HUDController.setState('place-details', {
         isTemp: true,
         lat: lat,
         lng: lng,
@@ -197,70 +169,107 @@ async function loadPoiAndPathDetails(latlng) {
 }
 
 function onMapClick(e) {
-    const latlng = e.latlng;
+    const latlng = { lat: e.lngLat.lat, lng: e.lngLat.lng };
 
-    if (state.isRouteMode) {
-        handleRoutingClick(latlng);
+    if (RoutingController.isRouteMode) {
+        RoutingController.handleClick(latlng);
         return;
     }
 
-    if (state.isMeasureMode) {
-        handleMeasureClick(latlng);
+    if (MeasurementController.isMeasureMode) {
+        MeasurementController.handleClick(latlng);
         return;
     }
 
-    if (state.highlightedPath) {
-        state.map.removeLayer(state.highlightedPath);
-        state.highlightedPath = null;
-    }
-
-    if (state.tempMarker) state.map.removeLayer(state.tempMarker);
-    state.tempMarker = L.marker([latlng.lat, latlng.lng], { icon: createCustomPin('poi', '#94a3b8') }).addTo(state.map);
+    HUDController.clearHighlightedPath();
+    MarkerController.removeTempMarker();
     
-    state.map.panTo(latlng);
+    MarkerController.setTempMarker(latlng.lat, latlng.lng);
+    MapService.panTo([latlng.lng, latlng.lat]);
     loadPoiAndPathDetails(latlng);
 }
 
 function setupEventListeners() {
-    state.map.on('click', onMapClick);
+    MapService.on('click', onMapClick);
 
-    // Settings Dropdown Popover Toggles
+    // Zoom listener for GPS accuracy circle updates
+    MapService.on('zoom', () => {
+        GPSController.updateAccuracyCircle();
+    });
+
+    // Handle clicks on alternative routing paths
+    MapService.on('click', 'alternative-routes-layer', (e) => {
+        if (e.features && e.features.length > 0) {
+            const routeIndex = e.features[0].properties.routeIndex;
+            if (RoutingController.lastRoutingData) {
+                RoutingController.promoteAlternativeRoute(RoutingController.lastRoutingData, routeIndex);
+            }
+        }
+    });
+
+    // Settings Bottom Sheet Toggles
+    const btnSettingsClose = document.getElementById('btn-settings-close');
+
+    function openSettingsPanel() {
+        settingsPanel.classList.add('settings-open');
+        settingsPanel.classList.remove('translate-y-full');
+        btnSettingsToggle.querySelector('.material-icons-outlined').textContent = 'keyboard_double_arrow_down';
+        requestAnimationFrame(() => {
+            const panelHeight = settingsPanel.offsetHeight;
+            document.documentElement.style.setProperty('--settings-panel-height', panelHeight + 'px');
+            document.querySelectorAll('.bottom-ui-element').forEach(el => {
+                el.style.transform = `translateY(-${panelHeight}px)`;
+            });
+            const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
+            if (mapControls) mapControls.style.transform = `translateY(-${panelHeight}px)`;
+        });
+    }
+
+    function closeSettingsPanel() {
+        settingsPanel.classList.remove('settings-open');
+        settingsPanel.classList.add('translate-y-full');
+        btnSettingsToggle.querySelector('.material-icons-outlined').textContent = 'keyboard_double_arrow_up';
+        document.querySelectorAll('.bottom-ui-element').forEach(el => {
+            el.style.transform = '';
+        });
+        const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
+        if (mapControls) mapControls.style.transform = '';
+    }
+
     btnSettingsToggle.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isHidden = settingsPanel.classList.contains('hidden');
-        if (isHidden) {
-            settingsPanel.classList.remove('hidden');
-            setTimeout(() => {
-                settingsPanel.classList.remove('opacity-0', 'scale-95');
-                settingsPanel.classList.add('opacity-100', 'scale-100');
-            }, 20);
-        } else {
-            settingsPanel.classList.remove('opacity-100', 'scale-100');
-            settingsPanel.classList.add('opacity-0', 'scale-95');
-            setTimeout(() => {
-                settingsPanel.classList.add('hidden');
-            }, 200);
-        }
+        const isOpen = settingsPanel.classList.contains('settings-open');
+        if (isOpen) closeSettingsPanel();
+        else openSettingsPanel();
+    });
+
+    btnSettingsClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeSettingsPanel();
     });
 
     document.addEventListener('click', (e) => {
         if (!settingsPanel.contains(e.target) && !btnSettingsToggle.contains(e.target)) {
-            if (!settingsPanel.classList.contains('hidden')) {
-                settingsPanel.classList.remove('opacity-100', 'scale-100');
-                settingsPanel.classList.add('opacity-0', 'scale-95');
-                setTimeout(() => { settingsPanel.classList.add('hidden'); }, 200);
+            if (settingsPanel.classList.contains('settings-open')) {
+                closeSettingsPanel();
             }
         }
     });
 
     // Layer Overlay Checks
     toggleOverlayLabels.addEventListener('change', (e) => {
-        toggleOverlay('labels', e.target.checked);
+        MapService.toggleOverlay('labels', e.target.checked);
     });
 
     toggleOverlayBike.addEventListener('change', (e) => {
-        toggleOverlay('bike', e.target.checked);
+        MapService.toggleOverlay('bike', e.target.checked);
     });
+
+    if (toggleOverlayPerspective) {
+        toggleOverlayPerspective.addEventListener('change', (e) => {
+            MapService.toggleOverlay('perspective', e.target.checked);
+        });
+    }
 
     // Search Box Form Handler
     searchForm.addEventListener('submit', async (e) => {
@@ -268,16 +277,13 @@ function setupEventListeners() {
         const query = searchInput.value.trim();
         if (!query) return;
         try {
-            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
-            const data = await res.json();
+            const data = await ApiService.searchGeocode(query);
             if (data && data.length > 0) {
-                renderSearchResults(data);
-                setHUDState('search-results');
-            } else {
-
+                SearchController.renderResults(data);
+                HUDController.setState('search-results');
             }
         } catch (err) {
-
+            console.error("Search failed", err);
         }
     });
 
@@ -292,47 +298,49 @@ function setupEventListeners() {
     btnClearSearch.addEventListener('click', () => {
         searchInput.value = '';
         btnClearSearch.classList.add('hidden');
-        setHUDState('places');
-        if (state.tempMarker) {
-            state.map.removeLayer(state.tempMarker);
-            state.tempMarker = null;
-        }
+        HUDController.setState('places');
+        MarkerController.removeTempMarker();
     });
 
     document.getElementById('btn-close-search').addEventListener('click', () => {
         searchInput.value = '';
         btnClearSearch.classList.add('hidden');
-        setHUDState('places');
-        if (state.tempMarker) {
-            state.map.removeLayer(state.tempMarker);
-            state.tempMarker = null;
-        }
+        HUDController.setState('places');
+        MarkerController.removeTempMarker();
     });
 
     // Toolbar triggers toggling
-    gpsBtn.addEventListener('click', locateUser);
+    gpsBtn.addEventListener('click', () => {
+        GPSController.locateUser();
+    });
 
     drawBtn.addEventListener('click', () => {
-        if (state.isMeasureMode) exitMeasureMode();
-        else enterMeasureMode();
+        if (MeasurementController.isMeasureMode) MeasurementController.exit();
+        else MeasurementController.enter();
     });
 
     routeBtn.addEventListener('click', () => {
-        if (state.isRouteMode) exitRoutingMode();
-        else enterRoutingMode();
+        if (RoutingController.isRouteMode) RoutingController.exit();
+        else RoutingController.enter();
     });
+
+    if (btnPerspective) {
+        btnPerspective.addEventListener('click', () => {
+            MapService.toggleOverlay('perspective', !MapService.activeOverlays.perspective);
+        });
+    }
 
     markerForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        saveMarkerFromForm();
+        MarkerController.saveFromForm();
     });
 
     // Layer Switcher - Toggle button
     const layerToggleBtn = document.getElementById('layer-toggle-btn');
     if (layerToggleBtn) {
         layerToggleBtn.addEventListener('click', () => {
-            const nextLayer = state.activeLayerKey === 'street' ? 'satellite' : 'street';
-            setBaseLayer(nextLayer);
+            const nextLayer = MapService.activeLayerKey === 'street' ? 'satellite' : 'street';
+            MapService.setBaseLayer(nextLayer);
         });
     }
 
@@ -340,22 +348,26 @@ function setupEventListeners() {
     const layerLabelsBtn = document.getElementById('layer-labels-btn');
     if (layerLabelsBtn) {
         layerLabelsBtn.addEventListener('click', () => {
-            const isActive = state.activeOverlays.labels;
-            toggleOverlay('labels', !isActive);
+            const isActive = MapService.activeOverlays.labels;
+            MapService.toggleOverlay('labels', !isActive);
         });
     }
 
     // Measure Panel Controls
-    document.getElementById('btn-exit-measure').addEventListener('click', exitMeasureMode);
+    document.getElementById('btn-exit-measure').addEventListener('click', () => {
+        MeasurementController.exit();
+    });
 
     // Navigation Panel Controls
-    document.getElementById('btn-exit-nav').addEventListener('click', exitRoutingMode);
+    document.getElementById('btn-exit-nav').addEventListener('click', () => {
+        RoutingController.exit();
+    });
 
     // Transport mode buttons
     document.querySelectorAll('.nav-mode-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const mode = btn.getAttribute('data-nav-mode');
-            if (mode) setRoutingProfile(mode);
+            if (mode) RoutingController.setProfile(mode);
         });
     });
 
@@ -365,24 +377,30 @@ function setupEventListeners() {
     const originDropdown = document.getElementById('nav-origin-autocomplete');
     const destDropdown = document.getElementById('nav-dest-autocomplete');
 
-    if (originInput && originDropdown) setupAutocomplete(originInput, originDropdown, 'origin');
-    if (destInput && destDropdown) setupAutocomplete(destInput, destDropdown, 'destination');
+    if (originInput && originDropdown) RoutingController.setupAutocomplete(originInput, originDropdown, 'origin');
+    if (destInput && destDropdown) RoutingController.setupAutocomplete(destInput, destDropdown, 'destination');
 
     // Swap waypoints button
-    document.getElementById('nav-swap-btn').addEventListener('click', swapWaypoints);
+    document.getElementById('nav-swap-btn').addEventListener('click', () => {
+        RoutingController.swapWaypoints();
+    });
 
     // Use my location button
-    document.getElementById('nav-use-location').addEventListener('click', useMyLocation);
+    document.getElementById('nav-use-location').addEventListener('click', () => {
+        RoutingController.useMyLocation();
+    });
 
     // Close autocomplete when clicking outside
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.nav-autocomplete') && !e.target.closest('#nav-origin-input') && !e.target.closest('#nav-dest-input')) {
-            closeAllAutocomplete();
+            RoutingController.closeAllAutocomplete();
         }
     });
 
     // Modal Control Buttons
-    document.getElementById('btn-close-marker-modal').addEventListener('click', closeMarkerModal);
+    document.getElementById('btn-close-marker-modal').addEventListener('click', () => {
+        MarkerController.closeModal();
+    });
 
     // Home Location Controls
     const btnSetHome = document.getElementById('btn-set-home');
@@ -400,17 +418,15 @@ function setupEventListeners() {
     updateHomeButtonsVisibility();
 
     btnSetHome.addEventListener('click', () => {
-        if (!state.map) return;
-        const center = state.map.getCenter();
+        if (!MapService.map) return;
+        const center = MapService.map.getCenter();
         const homeCoords = { lat: center.lat, lng: center.lng };
         localStorage.setItem('maps_home_coords', JSON.stringify(homeCoords));
-
         updateHomeButtonsVisibility();
     });
 
     btnClearHome.addEventListener('click', () => {
         localStorage.removeItem('maps_home_coords');
-
         updateHomeButtonsVisibility();
     });
 
@@ -421,103 +437,53 @@ function setupEventListeners() {
     const btnRotateLeft = document.getElementById('btn-rotate-left');
     const btnRotateRight = document.getElementById('btn-rotate-right');
     const bearingSlider = document.getElementById('bearing-slider');
+    const pitchSlider = document.getElementById('pitch-slider');
 
     if (btnCompass) {
         btnCompass.addEventListener('click', () => {
-            animateBearingTo(0, 400);
+            MapService.easeTo(0, 0, 400);
         });
     }
 
     if (btnRotateCcw) {
         btnRotateCcw.addEventListener('click', () => {
-            const current = state.map ? state.map.getBearing() : 0;
-            // Snap to nearest 90deg and go CCW
+            const current = MapService.getBearing();
             const target = (Math.round(current / 90) * 90 - 90);
-            animateBearingTo(target, 300);
+            MapService.easeTo(target, undefined, 300);
         });
     }
 
     if (btnRotateCw) {
         btnRotateCw.addEventListener('click', () => {
-            const current = state.map ? state.map.getBearing() : 0;
-            // Snap to nearest 90deg and go CW
+            const current = MapService.getBearing();
             const target = (Math.round(current / 90) * 90 + 90);
-            animateBearingTo(target, 300);
+            MapService.easeTo(target, undefined, 300);
         });
     }
 
     if (btnRotateLeft) {
         btnRotateLeft.addEventListener('click', () => {
-            const current = state.map ? state.map.getBearing() : 0;
-            // Rotate CCW by 15 degrees
-            const target = current - 15;
-            animateBearingTo(target, 200);
+            const current = MapService.getBearing();
+            MapService.easeTo(current - 15, undefined, 200);
         });
     }
 
     if (btnRotateRight) {
         btnRotateRight.addEventListener('click', () => {
-            const current = state.map ? state.map.getBearing() : 0;
-            // Rotate CW by 15 degrees
-            const target = current + 15;
-            animateBearingTo(target, 200);
+            const current = MapService.getBearing();
+            MapService.easeTo(current + 15, undefined, 200);
         });
     }
 
     if (bearingSlider) {
         bearingSlider.addEventListener('input', (e) => {
-            if (bearingAnimId) {
-                cancelAnimationFrame(bearingAnimId);
-                bearingAnimId = null;
-            }
-            if (state.map) {
-                state.map.setBearing(parseFloat(e.target.value));
-            }
+            MapService.setBearing(parseFloat(e.target.value));
+        });
+    }
+
+    if (pitchSlider) {
+        pitchSlider.addEventListener('input', (e) => {
+            MapService.setPitch(parseFloat(e.target.value));
         });
     }
 }
-
-/**
- * Smoothly animate the map bearing to the target angle using requestAnimationFrame
- */
-function animateBearingTo(targetBearing, duration = 300) {
-    if (!state.map) return;
-    if (bearingAnimId) {
-        cancelAnimationFrame(bearingAnimId);
-    }
-    
-    const startBearing = state.map.getBearing();
-    // Normalize target bearing to be between 0 and 360
-    const target = (targetBearing % 360 + 360) % 360;
-    
-    const diff = target - startBearing;
-    // Find shortest path for rotation (-180 to 180 degrees)
-    let shortestDiff = ((diff + 180) % 360) - 180;
-    if (shortestDiff < -180) shortestDiff += 360;
-
-    const startTime = performance.now();
-
-    function step(now) {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        // Easing function: easeOutQuad
-        const ease = progress * (2 - progress);
-        const current = startBearing + shortestDiff * ease;
-        state.map.setBearing(current);
-
-        if (progress < 1) {
-            bearingAnimId = requestAnimationFrame(step);
-        } else {
-            state.map.setBearing(target);
-            bearingAnimId = null;
-        }
-    }
-    bearingAnimId = requestAnimationFrame(step);
-}
-
-// Expose handlers globally for HTML elements
-window.openMarkerModal = openMarkerModal;
-window.deleteSavedMarker = deleteSavedMarker;
-window.mapFocusMarker = mapFocusMarker;
-window.setHUDState = setHUDState;
