@@ -33,6 +33,7 @@ const settingsPanel = document.getElementById('settings-panel');
 const toggleOverlayLabels = document.getElementById('toggle-overlay-labels');
 const toggleOverlayBike = document.getElementById('toggle-overlay-bike');
 const toggleOverlayPerspective = document.getElementById('toggle-overlay-perspective');
+const btnPerspective = document.getElementById('btn-perspective');
 
 // Initialize Application
 window.addEventListener('load', () => {
@@ -363,6 +364,12 @@ function setupEventListeners() {
         if (state.isRouteMode) exitRoutingMode();
         else enterRoutingMode();
     });
+
+    if (btnPerspective) {
+        btnPerspective.addEventListener('click', () => {
+            toggleOverlay('perspective', !state.activeOverlays.perspective);
+        });
+    }
 
     markerForm.addEventListener('submit', (e) => {
         e.preventDefault();

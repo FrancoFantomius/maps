@@ -111,26 +111,6 @@ export function initMap() {
             pitchSlider.value = Math.round(pitch);
         }
 
-        // Auto-sync perspective toggle based on pitch
-        const hasPerspective = pitch > 0;
-        if (state.activeOverlays.perspective !== hasPerspective) {
-            state.activeOverlays.perspective = hasPerspective;
-            localStorage.setItem('maps_perspective_enabled', hasPerspective ? 'true' : 'false');
-            
-            if (state.map.getLayer('3d-buildings')) {
-                state.map.setLayoutProperty('3d-buildings', 'visibility', hasPerspective ? 'visible' : 'none');
-            }
-            if (hasPerspective) {
-                state.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
-            } else {
-                state.map.setTerrain(null);
-            }
-
-            const overlayTogglePerspective = document.getElementById('toggle-overlay-perspective');
-            if (overlayTogglePerspective) {
-                overlayTogglePerspective.checked = hasPerspective;
-            }
-        }
     });
 
     // Update layer switcher preview dynamically when map finishes moving
@@ -270,6 +250,9 @@ export function setupMapLayersAndSources() {
     } else {
         state.map.setTerrain(null);
     }
+
+    // Hide all fill-extrusion layers (including base style ones) when perspective is off
+    setAllExtrusionsVisibility(state.activeOverlays.perspective);
 
     // 5. Add route layers and sources
     if (!state.map.getSource('route-source')) {
@@ -542,6 +525,17 @@ function syncLabelsButtonState() {
     }
 }
 
+export function syncPerspectiveButtonState() {
+    const btn = document.getElementById('btn-perspective');
+    if (!btn) return;
+    const isActive = state.activeOverlays.perspective;
+    if (isActive) {
+        btn.className = 'group flex items-center justify-center w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-indigo-500 transition-all duration-300 relative border border-indigo-500';
+    } else {
+        btn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all duration-300 relative';
+    }
+}
+
 export function initOverlays() {
     // Restore persisted labels preference
     const savedLabels = localStorage.getItem(STORAGE_KEY_LABELS);
@@ -554,6 +548,9 @@ export function initOverlays() {
     if (overlayTogglePerspective) {
         overlayTogglePerspective.checked = state.activeOverlays.perspective;
     }
+
+    // Sync perspective button state
+    syncPerspectiveButtonState();
 }
 
 export function setBaseLayer(layerKey) {
@@ -606,19 +603,12 @@ export function toggleOverlay(key, show) {
         }
     } else if (key === 'perspective') {
         if (state.map) {
-            if (state.map.getLayer('3d-buildings')) {
-                state.map.setLayoutProperty('3d-buildings', 'visibility', show ? 'visible' : 'none');
-            }
+            // Toggle ALL fill-extrusion layers (custom + base style)
+            setAllExtrusionsVisibility(show);
             if (show) {
                 state.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
-                if (state.map.getPitch() === 0) {
-                    state.map.easeTo({ pitch: 45, duration: 300 });
-                }
             } else {
                 state.map.setTerrain(null);
-                if (state.map.getPitch() !== 0) {
-                    state.map.easeTo({ pitch: 0, duration: 300 });
-                }
             }
         }
         localStorage.setItem('maps_perspective_enabled', show ? 'true' : 'false');
@@ -626,6 +616,7 @@ export function toggleOverlay(key, show) {
         if (overlayTogglePerspective) {
             overlayTogglePerspective.checked = show;
         }
+        syncPerspectiveButtonState();
     }
 }
 
@@ -635,6 +626,17 @@ export function setLabelsVisibility(show) {
     if (!style || !style.layers) return;
     style.layers.forEach(layer => {
         if (layer.type === 'symbol') {
+            state.map.setLayoutProperty(layer.id, 'visibility', show ? 'visible' : 'none');
+        }
+    });
+}
+
+function setAllExtrusionsVisibility(show) {
+    if (!state.map) return;
+    const style = state.map.getStyle();
+    if (!style || !style.layers) return;
+    style.layers.forEach(layer => {
+        if (layer.type === 'fill-extrusion') {
             state.map.setLayoutProperty(layer.id, 'visibility', show ? 'visible' : 'none');
         }
     });
