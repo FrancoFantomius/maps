@@ -135,7 +135,7 @@ export function setupAutocomplete(inputEl, dropdownEl, type) {
             const results = await geocodeSearch(query);
             renderAutocomplete(results, dropdownEl, (place) => {
                 inputEl.value = place.name;
-                const latlng = L.latLng(place.lat, place.lng);
+                const latlng = { lat: place.lat, lng: place.lng };
                 if (type === 'origin') {
                     setOrigin(latlng, place.name);
                 } else {
@@ -150,7 +150,6 @@ export function setupAutocomplete(inputEl, dropdownEl, type) {
     });
 
     inputEl.addEventListener('blur', () => {
-        // Delay to allow autocomplete click
         setTimeout(() => {
             if (state.navFocusedInput === type) {
                 state.navFocusedInput = null;
@@ -158,7 +157,6 @@ export function setupAutocomplete(inputEl, dropdownEl, type) {
         }, 200);
     });
 
-    // Close autocomplete on Escape
     inputEl.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             dropdownEl.innerHTML = '';
@@ -168,7 +166,6 @@ export function setupAutocomplete(inputEl, dropdownEl, type) {
     });
 }
 
-// Close autocomplete dropdowns when clicking outside
 export function closeAllAutocomplete() {
     document.querySelectorAll('.nav-autocomplete').forEach(el => {
         el.innerHTML = '';
@@ -178,40 +175,33 @@ export function closeAllAutocomplete() {
 
 // ─── Marker creation (Google Maps style) ───
 function createNavMarker(latlng, type) {
-    let icon;
+    const el = document.createElement('div');
     if (type === 'origin') {
-        icon = L.divIcon({
-            className: 'nav-origin-marker',
-            html: `<div style="width:18px;height:18px;border-radius:50%;border:3px solid #4285F4;background:white;box-shadow:0 2px 6px rgba(66,133,244,0.5);"></div>`,
-            iconSize: [18, 18],
-            iconAnchor: [9, 9]
-        });
+        el.className = 'nav-origin-marker';
+        el.innerHTML = `<div style="width:18px;height:18px;border-radius:50%;border:3px solid #4285F4;background:white;box-shadow:0 2px 6px rgba(66,133,244,0.5);cursor:pointer;"></div>`;
     } else {
-        icon = L.divIcon({
-            className: 'nav-dest-marker',
-            html: `<div style="position:relative;width:28px;height:36px;">
-                <svg viewBox="0 0 28 36" width="28" height="36">
-                    <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z" fill="#EA4335"/>
-                    <circle cx="14" cy="14" r="5" fill="white"/>
-                </svg>
-            </div>`,
-            iconSize: [28, 36],
-            iconAnchor: [14, 36]
-        });
+        el.className = 'nav-dest-marker';
+        el.innerHTML = `<div style="position:relative;width:28px;height:36px;cursor:pointer;">
+            <svg viewBox="0 0 28 36" width="28" height="36">
+                <path d="M14 0C6.27 0 0 6.27 0 14c0 10.5 14 22 14 22s14-11.5 14-22C28 6.27 21.73 0 14 0z" fill="#EA4335"/>
+                <circle cx="14" cy="14" r="5" fill="white"/>
+            </svg>
+        </div>`;
     }
 
-    const marker = L.marker(latlng, { draggable: true, icon });
+    const marker = new maplibregl.Marker({
+        element: el,
+        draggable: true,
+        anchor: type === 'origin' ? 'center' : 'bottom'
+    })
+    .setLngLat([latlng.lng, latlng.lat]);
 
-    marker.on('click', (e) => {
-        if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
-    });
+    el.addEventListener('click', (e) => e.stopPropagation());
+    el.addEventListener('mousedown', (e) => e.stopPropagation());
 
-    marker.on('mousedown', (e) => {
-        if (e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent);
-    });
-
-    marker.on('dragend', async (e) => {
-        const newLatLng = e.target.getLatLng();
+    marker.on('dragend', async () => {
+        const lngLat = marker.getLngLat();
+        const newLatLng = { lat: lngLat.lat, lng: lngLat.lng };
         const name = await reverseGeocode(newLatLng);
         if (type === 'origin') {
             setOrigin(newLatLng, name, true);
@@ -233,8 +223,7 @@ function setOrigin(latlng, name, skipInputUpdate = false) {
         if (input) input.value = name || `${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`;
     }
 
-    // Update marker
-    if (state.routeStartMarker) state.map.removeLayer(state.routeStartMarker);
+    if (state.routeStartMarker) state.routeStartMarker.remove();
     state.routeStartMarker = createNavMarker(latlng, 'origin').addTo(state.map);
 
     tryCalculateRoute();
@@ -249,8 +238,7 @@ function setDestination(latlng, name, skipInputUpdate = false) {
         if (input) input.value = name || `${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`;
     }
 
-    // Update marker
-    if (state.routeEndMarker) state.map.removeLayer(state.routeEndMarker);
+    if (state.routeEndMarker) state.routeEndMarker.remove();
     state.routeEndMarker = createNavMarker(latlng, 'destination').addTo(state.map);
 
     tryCalculateRoute();
@@ -270,19 +258,16 @@ export function swapWaypoints() {
     const originInput = document.getElementById('nav-origin-input');
     const destInput = document.getElementById('nav-dest-input');
 
-    // Swap state
     state.routeStart = state.routeEnd;
     state.routeStartName = state.routeEndName;
     state.routeEnd = tempCoord;
     state.routeEndName = tempName;
 
-    // Swap input values
     if (originInput) originInput.value = state.routeStartName || (state.routeStart ? `${state.routeStart.lat.toFixed(4)}, ${state.routeStart.lng.toFixed(4)}` : '');
     if (destInput) destInput.value = state.routeEndName || (state.routeEnd ? `${state.routeEnd.lat.toFixed(4)}, ${state.routeEnd.lng.toFixed(4)}` : '');
 
-    // Swap markers
-    if (state.routeStartMarker) state.map.removeLayer(state.routeStartMarker);
-    if (state.routeEndMarker) state.map.removeLayer(state.routeEndMarker);
+    if (state.routeStartMarker) state.routeStartMarker.remove();
+    if (state.routeEndMarker) state.routeEndMarker.remove();
     state.routeStartMarker = null;
     state.routeEndMarker = null;
 
@@ -304,7 +289,7 @@ export function useMyLocation() {
 
     navigator.geolocation.getCurrentPosition(
         async (pos) => {
-            const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            const latlng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
             const name = await reverseGeocode(latlng);
             if (originInput) originInput.value = name;
             setOrigin(latlng, name, true);
@@ -323,7 +308,6 @@ export function enterRoutingMode() {
     state.isRouteMode = true;
     setHUDState('route');
 
-    // Focus origin input
     setTimeout(() => {
         const input = document.getElementById('nav-origin-input');
         if (input) input.focus();
@@ -340,20 +324,27 @@ export function exitRoutingMode() {
 }
 
 function clearRouteDisplay() {
-    if (state.routeLineInstance) state.map.removeLayer(state.routeLineInstance);
-    if (state.routeOutlineInstance) state.map.removeLayer(state.routeOutlineInstance);
+    state.currentRouteGeoJSON = null;
+    state.currentAlternativesGeoJSON = null;
+    state.lastRoutingData = null;
+
+    if (state.map) {
+        const rSource = state.map.getSource('route-source');
+        if (rSource) {
+            rSource.setData({ type: 'FeatureCollection', features: [] });
+        }
+        const aSource = state.map.getSource('alternative-routes-source');
+        if (aSource) {
+            aSource.setData({ type: 'FeatureCollection', features: [] });
+        }
+    }
+
     state.routeLineInstance = null;
     state.routeOutlineInstance = null;
-
-    // Clear alternatives
-    state.routeAlternatives.forEach(layer => {
-        if (layer) state.map.removeLayer(layer);
-    });
     state.routeAlternatives = [];
     state.routeSteps = [];
     state.activeRouteIndex = 0;
 
-    // Reset summary & steps UI
     const summary = document.getElementById('nav-route-summary');
     const stepsList = document.getElementById('nav-steps-list');
     if (summary) summary.classList.add('hidden');
@@ -368,8 +359,8 @@ function clearRouteDisplay() {
 }
 
 function clearWaypoints() {
-    if (state.routeStartMarker) state.map.removeLayer(state.routeStartMarker);
-    if (state.routeEndMarker) state.map.removeLayer(state.routeEndMarker);
+    if (state.routeStartMarker) state.routeStartMarker.remove();
+    if (state.routeEndMarker) state.routeEndMarker.remove();
     state.routeStart = null;
     state.routeEnd = null;
     state.routeStartName = '';
@@ -384,7 +375,6 @@ function clearWaypoints() {
 }
 
 export function setRoutingProfile(profile) {
-    // Update button styles
     document.querySelectorAll('.nav-mode-btn').forEach(btn => {
         const mode = btn.getAttribute('data-nav-mode');
         if (mode === profile) {
@@ -398,17 +388,14 @@ export function setRoutingProfile(profile) {
     tryCalculateRoute();
 }
 
-// ─── Map click handler (sets origin or destination) ───
 export function handleRoutingClick(latlng) {
     if (state.navFocusedInput === 'destination' || state.routeStart) {
-        // Set destination
         reverseGeocode(latlng).then(name => {
             const input = document.getElementById('nav-dest-input');
             if (input) input.value = name;
             setDestination(latlng, name, true);
         });
     } else {
-        // Set origin
         reverseGeocode(latlng).then(name => {
             const input = document.getElementById('nav-origin-input');
             if (input) input.value = name;
@@ -416,6 +403,28 @@ export function handleRoutingClick(latlng) {
         });
     }
     closeAllAutocomplete();
+}
+
+function fitRouteBounds(geometry) {
+    if (!state.map || !geometry || !geometry.coordinates) return;
+    const coords = geometry.coordinates;
+    if (coords.length === 0) return;
+
+    let minLng = Infinity, maxLng = -Infinity;
+    let minLat = Infinity, maxLat = -Infinity;
+
+    coords.forEach(c => {
+        const lng = c[0], lat = c[1];
+        if (lng < minLng) minLng = lng;
+        if (lng > maxLng) maxLng = lng;
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+    });
+
+    state.map.fitBounds([
+        [minLng, minLat],
+        [maxLng, maxLat]
+    ], { padding: 60 });
 }
 
 // ─── Route calculation ───
@@ -428,7 +437,6 @@ export async function calculateRoute() {
 
     const url = `https://router.project-osrm.org/route/v1/${profileSlug}/${state.routeStart.lng},${state.routeStart.lat};${state.routeEnd.lng},${state.routeEnd.lat}?geometries=geojson&overview=full&steps=true&alternatives=true`;
 
-    // Show loading state in steps
     const stepsList = document.getElementById('nav-steps-list');
     if (stepsList) {
         stepsList.innerHTML = `
@@ -455,40 +463,19 @@ export async function calculateRoute() {
             return;
         }
 
-        // Clear previous route display
         clearRouteDisplay();
 
-        // Draw alternative routes first (so they're behind the main route)
-        if (data.routes.length > 1) {
-            for (let i = 1; i < data.routes.length; i++) {
-                const altCoords = data.routes[i].geometry.coordinates.map(c => [c[1], c[0]]);
-                const altLine = L.polyline(altCoords, {
-                    color: ALT_ROUTE_COLOR,
-                    weight: 5,
-                    opacity: 0.5,
-                    lineCap: 'round',
-                    lineJoin: 'round'
-                }).addTo(state.map);
+        state.lastRoutingData = data;
 
-                // Click to promote alternative
-                const routeIndex = i;
-                altLine.on('click', (e) => {
-                    L.DomEvent.stopPropagation(e);
-                    promoteAlternativeRoute(data, routeIndex);
-                });
-
-                state.routeAlternatives.push(altLine);
-            }
-        }
+        // Draw alternatives
+        drawAlternativeRoutes(data.routes);
 
         // Draw main route
         drawMainRoute(data.routes[0]);
         state.activeRouteIndex = 0;
 
         // Fit bounds
-        if (state.routeLineInstance) {
-            state.map.fitBounds(state.routeLineInstance.getBounds(), { padding: [60, 60] });
-        }
+        fitRouteBounds(data.routes[0].geometry);
 
         // Render summary & steps
         renderRouteSummary(data.routes[0]);
@@ -508,61 +495,50 @@ export async function calculateRoute() {
 }
 
 function drawMainRoute(route) {
-    const coordinates = route.geometry.coordinates.map(c => [c[1], c[0]]);
-
-    // Outline (darker, wider)
-    state.routeOutlineInstance = L.polyline(coordinates, {
-        color: ROUTE_OUTLINE_COLOR,
-        weight: ROUTE_OUTLINE_WEIGHT,
-        opacity: 0.4,
-        lineCap: 'round',
-        lineJoin: 'round'
-    }).addTo(state.map);
-
-    // Main line
-    state.routeLineInstance = L.polyline(coordinates, {
-        color: ROUTE_COLOR,
-        weight: ROUTE_WEIGHT,
-        opacity: 0.9,
-        lineCap: 'round',
-        lineJoin: 'round'
-    }).addTo(state.map);
+    state.currentRouteGeoJSON = {
+        type: 'Feature',
+        geometry: route.geometry
+    };
+    if (state.map && state.map.getSource('route-source')) {
+        state.map.getSource('route-source').setData(state.currentRouteGeoJSON);
+    }
+    state.routeLineInstance = true; // flag to signify active route exists
 }
 
-function promoteAlternativeRoute(data, newIndex) {
-    // Clear current display
-    if (state.routeLineInstance) state.map.removeLayer(state.routeLineInstance);
-    if (state.routeOutlineInstance) state.map.removeLayer(state.routeOutlineInstance);
-    state.routeAlternatives.forEach(l => { if (l) state.map.removeLayer(l); });
-    state.routeAlternatives = [];
-
-    // Redraw alternatives (all except the new main)
-    for (let i = 0; i < data.routes.length; i++) {
-        if (i === newIndex) continue;
-        const altCoords = data.routes[i].geometry.coordinates.map(c => [c[1], c[0]]);
-        const altLine = L.polyline(altCoords, {
-            color: ALT_ROUTE_COLOR,
-            weight: 5,
-            opacity: 0.5,
-            lineCap: 'round',
-            lineJoin: 'round'
-        }).addTo(state.map);
-
-        const idx = i;
-        altLine.on('click', (e) => {
-            L.DomEvent.stopPropagation(e);
-            promoteAlternativeRoute(data, idx);
+function drawAlternativeRoutes(routes) {
+    const features = [];
+    for (let i = 1; i < routes.length; i++) {
+        features.push({
+            type: 'Feature',
+            properties: { routeIndex: i },
+            geometry: routes[i].geometry
         });
-        state.routeAlternatives.push(altLine);
     }
+    state.currentAlternativesGeoJSON = {
+        type: 'FeatureCollection',
+        features: features
+    };
+    if (state.map && state.map.getSource('alternative-routes-source')) {
+        state.map.getSource('alternative-routes-source').setData(state.currentAlternativesGeoJSON);
+    }
+}
 
-    // Draw new main route
-    drawMainRoute(data.routes[newIndex]);
+export function promoteAlternativeRoute(data, newIndex) {
+    const routesCopy = [...data.routes];
+    const promoted = routesCopy.splice(newIndex, 1)[0];
+    routesCopy.unshift(promoted);
+
+    // Redraw
+    drawMainRoute(routesCopy[0]);
+    drawAlternativeRoutes(routesCopy);
     state.activeRouteIndex = newIndex;
 
+    // Update state.lastRoutingData with rearranged list
+    state.lastRoutingData = { ...data, routes: routesCopy };
+
     // Update summary & steps
-    renderRouteSummary(data.routes[newIndex]);
-    renderRouteSteps(data.routes[newIndex]);
+    renderRouteSummary(routesCopy[0]);
+    renderRouteSteps(routesCopy[0]);
 }
 
 // ─── Render route summary ───
@@ -575,13 +551,11 @@ function renderRouteSummary(route) {
     if (!summary) return;
 
     let seconds = route.duration;
-    // Apply correction for foot profile
     if (state.routingProfile === 'foot') seconds *= 1.2;
 
     if (timeEl) timeEl.innerText = formatDuration(seconds);
     if (distEl) distEl.innerText = formatDistance(route.distance);
 
-    // Try to extract "via" road name from the longest step
     if (viaEl) {
         let viaRoad = 'Fastest route';
         if (route.legs && route.legs[0] && route.legs[0].steps) {
@@ -637,11 +611,14 @@ function renderRouteSteps(route) {
             </div>
         `;
 
-        // Click step to pan map to that maneuver point
         stepEl.addEventListener('click', () => {
             const loc = step.maneuver.location;
-            if (loc) {
-                state.map.flyTo([loc[1], loc[0]], Math.max(state.map.getZoom(), 16), { duration: 0.5 });
+            if (loc && state.map) {
+                state.map.flyTo({
+                    center: [loc[0], loc[1]],
+                    zoom: Math.max(state.map.getZoom(), 16),
+                    duration: 0.5
+                });
             }
         });
 

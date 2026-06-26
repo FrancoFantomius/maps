@@ -1,5 +1,7 @@
 // maps Theme Management Module
 
+import { state } from './state.js';
+
 export function initTheme() {
     const savedTheme = localStorage.getItem('theme_preference') || 'system';
     applyTheme(savedTheme);
@@ -27,8 +29,14 @@ export function applyTheme(theme) {
 
     if (isDark) {
         document.documentElement.classList.add('dark');
+        if (state.map) {
+            state.map.setStyle('https://tiles.openfreemap.org/styles/darkmatter');
+        }
     } else {
         document.documentElement.classList.remove('dark');
+        if (state.map) {
+            state.map.setStyle('https://tiles.openfreemap.org/styles/liberty');
+        }
     }
 
     // Toggle segment select UI highlight state

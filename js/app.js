@@ -4,7 +4,7 @@
 import { state } from './state.js';
 
 import { initTheme } from './theme.js';
-import { initMap, initOverlays, setBaseLayer, toggleOverlay } from './map.js';
+import { initMap, initOverlays, setBaseLayer, toggleOverlay, metersToPixels } from './map.js';
 import { setHUDState } from './hud.js';
 import {
     createCustomPin,
@@ -15,8 +15,8 @@ import {
     mapFocusMarker,
     deleteSavedMarker
 } from './markers.js';
-import { enterMeasureMode, exitMeasureMode, handleMeasureClick } from './measure.js';
-import { enterRoutingMode, exitRoutingMode, setRoutingProfile, handleRoutingClick, setupAutocomplete, swapWaypoints, useMyLocation, closeAllAutocomplete } from './routing.js';
+import { enterMeasureMode, exitMeasureMode, handleMeasureClick, getDistance } from './measure.js';
+import { enterRoutingMode, exitRoutingMode, setRoutingProfile, handleRoutingClick, setupAutocomplete, swapWaypoints, useMyLocation, closeAllAutocomplete, promoteAlternativeRoute } from './routing.js';
 import { renderSearchResults } from './search.js';
 import { locateUser } from './gps.js';
 
@@ -32,9 +32,6 @@ const btnSettingsToggle = document.getElementById('btn-settings-toggle');
 const settingsPanel = document.getElementById('settings-panel');
 const toggleOverlayLabels = document.getElementById('toggle-overlay-labels');
 const toggleOverlayBike = document.getElementById('toggle-overlay-bike');
-
-// Rotation state animation controller variables
-let bearingAnimId = null;
 
 // Initialize Application
 window.addEventListener('load', () => {
@@ -115,7 +112,7 @@ async function loadPoiAndPathDetails(latlng) {
             ways.forEach(way => {
                 if (way.geometry) {
                     way.geometry.forEach(pt => {
-                        const dist = L.latLng(pt.lat, pt.lon).distanceTo(latlng);
+                        const dist = getDistance({ lat: pt.lat, lng: pt.lon }, latlng);
                         if (dist < minDistance) {
                             minDistance = dist;
                             closestWay = way;
@@ -127,27 +124,19 @@ async function loadPoiAndPathDetails(latlng) {
             // Highlight street/trail if within 20 meters
             if (closestWay && minDistance <= 20) {
                 streetName = closestWay.tags.name || closestWay.tags.highway.replace(/_/g, ' ');
-                const coords = closestWay.geometry.map(pt => [pt.lat, pt.lon]);
-                if (state.highlightedPath) {
-                    state.map.removeLayer(state.highlightedPath);
-                }
+                const coords = closestWay.geometry.map(pt => [pt.lon, pt.lat]); // MapLibre uses [lng, lat]
+                state.highlightedPathCoords = coords;
                 
-                const glowBg = L.polyline(coords, {
-                    color: '#6366f1',
-                    weight: 10,
-                    opacity: 0.4,
-                    lineCap: 'round',
-                    lineJoin: 'round'
-                });
-                const glowFg = L.polyline(coords, {
-                    color: '#4f46e5',
-                    weight: 3,
-                    opacity: 0.9,
-                    lineCap: 'round',
-                    lineJoin: 'round'
-                });
-
-                state.highlightedPath = L.layerGroup([glowBg, glowFg]).addTo(state.map);
+                const source = state.map.getSource('highlight-path-source');
+                if (source) {
+                    source.setData({
+                        type: 'Feature',
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: coords
+                        }
+                    });
+                }
             }
 
             // Find closest shop or amenity node to display specific info
@@ -155,7 +144,7 @@ async function loadPoiAndPathDetails(latlng) {
             let closestNode = null;
             let nodeMinDist = Infinity;
             nodes.forEach(node => {
-                const dist = L.latLng(node.lat, node.lon).distanceTo(latlng);
+                const dist = getDistance({ lat: node.lat, lng: node.lon }, latlng);
                 if (dist < nodeMinDist) {
                     nodeMinDist = dist;
                     closestNode = node;
@@ -197,7 +186,7 @@ async function loadPoiAndPathDetails(latlng) {
 }
 
 function onMapClick(e) {
-    const latlng = e.latlng;
+    const latlng = { lat: e.lngLat.lat, lng: e.lngLat.lng };
 
     if (state.isRouteMode) {
         handleRoutingClick(latlng);
@@ -209,20 +198,68 @@ function onMapClick(e) {
         return;
     }
 
-    if (state.highlightedPath) {
-        state.map.removeLayer(state.highlightedPath);
-        state.highlightedPath = null;
+    if (state.highlightedPathCoords) {
+        state.highlightedPathCoords = null;
+        const source = state.map.getSource('highlight-path-source');
+        if (source) {
+            source.setData({
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: []
+                }
+            });
+        }
     }
 
-    if (state.tempMarker) state.map.removeLayer(state.tempMarker);
-    state.tempMarker = L.marker([latlng.lat, latlng.lng], { icon: createCustomPin('poi', '#94a3b8') }).addTo(state.map);
+    if (state.tempMarker) {
+        state.tempMarker.remove();
+    }
     
-    state.map.panTo(latlng);
+    state.tempMarker = new maplibregl.Marker({
+        element: createCustomPin('poi', '#94a3b8'),
+        anchor: 'bottom'
+    })
+    .setLngLat([latlng.lng, latlng.lat])
+    .addTo(state.map);
+    
+    state.map.panTo([latlng.lng, latlng.lat]);
     loadPoiAndPathDetails(latlng);
 }
 
 function setupEventListeners() {
     state.map.on('click', onMapClick);
+
+    // Zoom listener for GPS accuracy circle updates
+    state.map.on('zoom', () => {
+        if (state.gpsCoords && state.gpsAccuracy && state.map) {
+            const pixels = metersToPixels(state.gpsAccuracy, state.gpsCoords.lat, state.map.getZoom());
+            const source = state.map.getSource('gps-source');
+            if (source) {
+                source.setData({
+                    type: 'FeatureCollection',
+                    features: [{
+                        type: 'Feature',
+                        properties: { accuracy_pixels: pixels },
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [state.gpsCoords.lng, state.gpsCoords.lat]
+                        }
+                    }]
+                });
+            }
+        }
+    });
+
+    // Handle clicks on alternative routing paths
+    state.map.on('click', 'alternative-routes-layer', (e) => {
+        if (e.features && e.features.length > 0) {
+            const routeIndex = e.features[0].properties.routeIndex;
+            if (state.lastRoutingData) {
+                promoteAlternativeRoute(state.lastRoutingData, routeIndex);
+            }
+        }
+    });
 
     // Settings Dropdown Popover Toggles
     btnSettingsToggle.addEventListener('click', (e) => {
@@ -273,11 +310,9 @@ function setupEventListeners() {
             if (data && data.length > 0) {
                 renderSearchResults(data);
                 setHUDState('search-results');
-            } else {
-
             }
         } catch (err) {
-
+            console.error("Search failed", err);
         }
     });
 
@@ -294,7 +329,7 @@ function setupEventListeners() {
         btnClearSearch.classList.add('hidden');
         setHUDState('places');
         if (state.tempMarker) {
-            state.map.removeLayer(state.tempMarker);
+            state.tempMarker.remove();
             state.tempMarker = null;
         }
     });
@@ -304,7 +339,7 @@ function setupEventListeners() {
         btnClearSearch.classList.add('hidden');
         setHUDState('places');
         if (state.tempMarker) {
-            state.map.removeLayer(state.tempMarker);
+            state.tempMarker.remove();
             state.tempMarker = null;
         }
     });
@@ -404,13 +439,11 @@ function setupEventListeners() {
         const center = state.map.getCenter();
         const homeCoords = { lat: center.lat, lng: center.lng };
         localStorage.setItem('maps_home_coords', JSON.stringify(homeCoords));
-
         updateHomeButtonsVisibility();
     });
 
     btnClearHome.addEventListener('click', () => {
         localStorage.removeItem('maps_home_coords');
-
         updateHomeButtonsVisibility();
     });
 
@@ -421,99 +454,65 @@ function setupEventListeners() {
     const btnRotateLeft = document.getElementById('btn-rotate-left');
     const btnRotateRight = document.getElementById('btn-rotate-right');
     const bearingSlider = document.getElementById('bearing-slider');
+    const pitchSlider = document.getElementById('pitch-slider');
 
     if (btnCompass) {
         btnCompass.addEventListener('click', () => {
-            animateBearingTo(0, 400);
+            if (state.map) {
+                state.map.easeTo({ bearing: 0, pitch: 0, duration: 400 });
+            }
         });
     }
 
     if (btnRotateCcw) {
         btnRotateCcw.addEventListener('click', () => {
-            const current = state.map ? state.map.getBearing() : 0;
-            // Snap to nearest 90deg and go CCW
+            if (!state.map) return;
+            const current = state.map.getBearing();
             const target = (Math.round(current / 90) * 90 - 90);
-            animateBearingTo(target, 300);
+            state.map.easeTo({ bearing: target, duration: 300 });
         });
     }
 
     if (btnRotateCw) {
         btnRotateCw.addEventListener('click', () => {
-            const current = state.map ? state.map.getBearing() : 0;
-            // Snap to nearest 90deg and go CW
+            if (!state.map) return;
+            const current = state.map.getBearing();
             const target = (Math.round(current / 90) * 90 + 90);
-            animateBearingTo(target, 300);
+            state.map.easeTo({ bearing: target, duration: 300 });
         });
     }
 
     if (btnRotateLeft) {
         btnRotateLeft.addEventListener('click', () => {
-            const current = state.map ? state.map.getBearing() : 0;
-            // Rotate CCW by 15 degrees
-            const target = current - 15;
-            animateBearingTo(target, 200);
+            if (!state.map) return;
+            const current = state.map.getBearing();
+            state.map.easeTo({ bearing: current - 15, duration: 200 });
         });
     }
 
     if (btnRotateRight) {
         btnRotateRight.addEventListener('click', () => {
-            const current = state.map ? state.map.getBearing() : 0;
-            // Rotate CW by 15 degrees
-            const target = current + 15;
-            animateBearingTo(target, 200);
+            if (!state.map) return;
+            const current = state.map.getBearing();
+            state.map.easeTo({ bearing: current + 15, duration: 200 });
         });
     }
 
     if (bearingSlider) {
         bearingSlider.addEventListener('input', (e) => {
-            if (bearingAnimId) {
-                cancelAnimationFrame(bearingAnimId);
-                bearingAnimId = null;
-            }
             if (state.map) {
                 state.map.setBearing(parseFloat(e.target.value));
             }
         });
     }
-}
 
-/**
- * Smoothly animate the map bearing to the target angle using requestAnimationFrame
- */
-function animateBearingTo(targetBearing, duration = 300) {
-    if (!state.map) return;
-    if (bearingAnimId) {
-        cancelAnimationFrame(bearingAnimId);
+    if (pitchSlider) {
+        pitchSlider.addEventListener('input', (e) => {
+            if (state.map) {
+                state.map.setPitch(parseFloat(e.target.value));
+            }
+        });
     }
-    
-    const startBearing = state.map.getBearing();
-    // Normalize target bearing to be between 0 and 360
-    const target = (targetBearing % 360 + 360) % 360;
-    
-    const diff = target - startBearing;
-    // Find shortest path for rotation (-180 to 180 degrees)
-    let shortestDiff = ((diff + 180) % 360) - 180;
-    if (shortestDiff < -180) shortestDiff += 360;
-
-    const startTime = performance.now();
-
-    function step(now) {
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        
-        // Easing function: easeOutQuad
-        const ease = progress * (2 - progress);
-        const current = startBearing + shortestDiff * ease;
-        state.map.setBearing(current);
-
-        if (progress < 1) {
-            bearingAnimId = requestAnimationFrame(step);
-        } else {
-            state.map.setBearing(target);
-            bearingAnimId = null;
-        }
-    }
-    bearingAnimId = requestAnimationFrame(step);
 }
 
 // Expose handlers globally for HTML elements

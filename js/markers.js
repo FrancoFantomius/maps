@@ -1,12 +1,21 @@
 // maps Markers Module
 
 import { state, colorPalette } from './state.js';
-
 import { setHUDState } from './hud.js';
 
 export function createCustomPin(category = 'poi', colorOverride = null) {
     const config = colorPalette[category] || colorPalette.poi;
-    return L.divIcon({ html: `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 0C7.61 0 0 7.61 0 17C0 26.5 17 42 17 42C17 42 34 26.5 34 17C34 7.61 26.39 0 17 0Z" fill="${colorOverride || config.main}"/><circle cx="17" cy="17" r="11" fill="white"/><g transform="translate(10, 10) scale(0.6)"><path d="${config.svg}" fill="${colorOverride || config.main}"/></g></svg>`, iconSize: [34, 42], iconAnchor: [17, 42], popupAnchor: [0, -38], className: 'custom-map-pin-div' });
+    const el = document.createElement('div');
+    el.className = 'custom-map-pin-div';
+    el.style.cursor = 'pointer';
+    el.innerHTML = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 0C7.61 0 0 7.61 0 17C0 26.5 17 42 17 42C17 42 34 26.5 34 17C34 7.61 26.39 0 17 0Z" fill="${colorOverride || config.main}"/>
+        <circle cx="17" cy="17" r="11" fill="white"/>
+        <g transform="translate(10, 10) scale(0.6)">
+            <path d="${config.svg}" fill="${colorOverride || config.main}"/>
+        </g>
+    </svg>`;
+    return el;
 }
 
 export function openMarkerModal(lat, lng, id = null) {
@@ -44,7 +53,7 @@ export function closeMarkerModal() {
     const markerModal = document.getElementById('marker-modal');
     markerModal.classList.add('hidden');
     if (state.tempMarker) {
-        state.map.removeLayer(state.tempMarker);
+        state.tempMarker.remove();
         state.tempMarker = null;
     }
     setHUDState('places');
@@ -57,7 +66,6 @@ export function saveMarkerFromForm() {
     const modalName = document.getElementById('modal-name');
     const modalCategory = document.getElementById('modal-category');
     const modalDesc = document.getElementById('modal-desc');
-    const markerModal = document.getElementById('marker-modal');
 
     const id = modalId.value || 'id_' + Date.now();
     const lat = parseFloat(modalLat.value);
@@ -80,15 +88,17 @@ export function saveMarkerFromForm() {
     
     saveMarkersToStorage();
     renderAllMarkers();
+    
+    const markerModal = document.getElementById('marker-modal');
     markerModal.classList.add('hidden');
     
     if (state.tempMarker) {
-        state.map.removeLayer(state.tempMarker);
+        state.tempMarker.remove();
         state.tempMarker = null;
     }
 
     setHUDState('place-details', data);
-    state.map.setView([lat, lng], 15);
+    state.map.flyTo({ center: [lng, lat], zoom: 15 });
 }
 
 export function loadMarkersFromStorage() {
@@ -111,7 +121,9 @@ export function renderAllMarkers() {
     const savedMarkersList = document.getElementById('saved-markers-list');
     const markersCount = document.getElementById('markers-count');
 
-    state.markerInstances.forEach(m => state.map.removeLayer(m));
+    if (state.markerInstances) {
+        state.markerInstances.forEach(m => m.remove());
+    }
     state.markerInstances = [];
     savedMarkersList.innerHTML = '';
     markersCount.innerText = state.customMarkers.length;
@@ -122,23 +134,30 @@ export function renderAllMarkers() {
     }
 
     state.customMarkers.forEach((m, idx) => {
-        const pin = L.marker([m.lat, m.lng], { icon: createCustomPin(m.category) }).addTo(state.map);
+        const el = createCustomPin(m.category);
         
-        pin.bindTooltip(m.name, {
-            direction: 'top',
+        const popup = new maplibregl.Popup({
             offset: [0, -35],
-            className: 'font-semibold text-xs border-none shadow-md rounded-md bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 px-2 py-1'
-        });
+            closeButton: false,
+            closeOnClick: false,
+            className: 'custom-marker-popup'
+        }).setHTML(`<div class="font-semibold text-xs text-slate-800 dark:text-slate-100">${m.name}</div>`);
 
-        pin.on('click', (e) => {
+        const pin = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+            .setLngLat([m.lng, m.lat])
+            .setPopup(popup)
+            .addTo(state.map);
+        
+        el.addEventListener('mouseenter', () => popup.addTo(state.map));
+        el.addEventListener('mouseleave', () => popup.remove());
+
+        el.addEventListener('click', (e) => {
+            e.stopPropagation();
             if (state.isMeasureMode || state.isRouteMode) {
-                if (e.originalEvent) {
-                    L.DomEvent.stopPropagation(e.originalEvent);
-                }
                 return;
             }
             setHUDState('place-details', m);
-            state.map.setView([m.lat, m.lng], 15);
+            state.map.flyTo({ center: [m.lng, m.lat], zoom: 15 });
         });
 
         state.markerInstances.push(pin);
@@ -162,10 +181,13 @@ export function renderAllMarkers() {
 }
 
 export function mapFocusMarker(lat, lng, idx) {
-    state.map.setView([lat, lng], 15);
+    state.map.flyTo({ center: [lng, lat], zoom: 15 });
     setTimeout(() => {
         if (state.markerInstances[idx]) {
-            state.markerInstances[idx].fire('click');
+            const m = state.customMarkers[idx];
+            if (m) {
+                setHUDState('place-details', m);
+            }
         }
     }, 250);
 }
@@ -175,5 +197,4 @@ export function deleteSavedMarker(id) {
     saveMarkersToStorage();
     renderAllMarkers();
     setHUDState('places');
-
 }
