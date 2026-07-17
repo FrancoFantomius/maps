@@ -1,7 +1,7 @@
 # maps — Interactive Map Platform
 **Beta**: This project is currently in beta and may contain bugs or incomplete features.
 
-A modern, high-performance, and feature-rich interactive map application built with **Leaflet.js**, **Tailwind CSS**, and vanilla ES modules. The platform delivers a premium, responsive user interface with support for multiple map styles, saved places, routing engine, distance measurements, dark mode, and real-time POI information retrieval.
+A modern, high-performance, and feature-rich interactive map application built with **MapLibre GL JS**, **Tailwind CSS**, and vanilla ES modules. The platform delivers a premium, responsive user interface with support for multiple map styles, saved places, routing engine, distance measurements, dark mode, and real-time POI information retrieval.
 
 ---
 
@@ -44,36 +44,36 @@ A modern, high-performance, and feature-rich interactive map application built w
 
 ---
 
-## Getting Started
+## File Architecture & Component Documentation
 
-### Prerequisites
+The application is modularly structured into ES modules, separating concerns between user interface controls, map services, APIs, and functional utilities:
 
-Since the project is built using native **ES Modules**, you need to run it through a local development server to bypass CORS restrictions for module imports.
+### Core Files
+- **[`index.html`](file:///c:/Users/franc/OneDrive/Programmazione/maps/index.html)**: The single-page application entry point. Houses the map container, imports UI scripts and styles, and declares HTML/Tailwind templates used dynamically for autocomplete lists, search items, place details, and navigation step listings.
+- **[`css/style.css`](./css/style.css)**: Custom stylesheets detailing variables, glassmorphism layouts, custom SVG map pin scaling/placements, custom marker popups, and the GPS pulse animation.
+- **[`js/app.js`](./js/app.js)**: The core JavaScript orchestrator. Boots components, binds DOM events, and coordinates parallel queries for Nominatim address lookup, Overpass API local features, and Wikipedia article details.
 
-### Running Locally
+### Service Modules
+- **[`js/MapService.js`](./js/MapService.js)**: The primary facade wrapper for MapLibre GL JS. Sets up vector layer styles (Liberty/Dark via OpenFreeMap), Esri Satellite base raster tiles, cycling path overlays, 3D building extrusions, and 3D terrain integration.
+- **[`js/ApiService.js`](./js/ApiService.js)**: Aggregates external API queries, including geocoding (Nominatim), Wikipedia query summaries, Overpass API queries, and routing (OSRM).
 
-1. Clone or download this repository.
-2. Open your terminal in the project directory.
-3. Start a local development server (e.g., using Python, Node.js, or VS Code's Live Server):
-   
-   **Using Python 3:**
-   ```bash
-   python -m http.server 8000
-   ```
-   **Using Node.js (`npx`):**
-   ```bash
-   npx serve .
-   ```
-4. Open your browser and navigate to `http://localhost:8000` (or the port specified by your server).
+### Controller Modules
+- **[`js/HUDController.js`](./js/HUDController.js)**: Manages visibility and dynamic DOM rendering of the main Head-Up Display panel views (Saved Places, Search Results, Distance Measurements, OSRM Navigation, and Place details templates).
+- **[`js/MarkerController.js`](./js/MarkerController.js)**: Coordinates custom-created map markers ("My Places"). Supports custom categories (POI, Food, Lodging, Nature), manages `localStorage` persistence, and binds details page actions (save, edit, delete).
+- **[`js/RoutingController.js`](./js/RoutingController.js)**: Integrates OSRM-based navigation. Handles profile selection (driving, cycling, walking), geocoded waypoint search autocomplete, waypoint swapping, dragging of endpoints, alternative routes, and turn-by-turn directions.
+- **[`js/MeasurementController.js`](./js/MeasurementController.js)**: Operates the linear path distance tool. Draws path lines between interactive, draggable nodes and computes geodesic distance totals.
+- **[`js/SearchController.js`](./js/SearchController.js)**: Performs query geocoding searches and manages mapping of selected search items into active temporary pins.
+- **[`js/ThemeController.js`](./js/ThemeController.js)**: Updates class preferences (Light, Dark, and System Default) and triggers corresponding tile style updates (Liberty/Dark vector tiles).
+- **[`js/GPSController.js`](./js/GPSController.js)**: Connects to the browser's Geolocation API to pan map location, draw accuracy circles, and place custom animated user markers.
 
 ---
 
 ## License & Attributions
 
-This project is licensed under the **MIT License** — see the [LICENSE](file:///c:/Users/franc/OneDrive/Programmazione/2026/maps/LICENSE) file for the full text.
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for the full text.
 
 ### Third-Party Software & Data Attributions
-- **Leaflet.js:** BSD 2-Clause License © Volodymyr Agafonkin
+- **MapLibre GL JS:** BSD 3-Clause License © MapLibre contributors
 - **Map Data:** © OpenStreetMap contributors (ODbL)
 - **Map Styles:** CartoDB (Carto Light/Dark) & Esri World Imagery
 - **Routing Services:** Project OSRM API
