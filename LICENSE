@@ -26,9 +26,9 @@ SOFTWARE.
 
 This project utilizes several open-source libraries and map services. Their respective licenses and attributions apply:
 
-1. **Leaflet.js**
-   - License: BSD 2-Clause "Simplified" License
-   - Copyright (c) 2010-2023, Volodymyr Agafonkin; 2010-2011, CloudMade
+1. **MapLibre GL JS**
+   - License: BSD 3-Clause License
+   - Copyright (c) 2020, MapLibre contributors
 
 2. **OpenStreetMap Data**
    - License: Open Database License (ODbL)
