@@ -1,7 +1,5 @@
 # maps — Interactive Map Platform
-**Beta**: This project is currently in beta and may contain bugs or incomplete features.
-
-A modern, high-performance, and feature-rich interactive map application built with **MapLibre GL JS**, **Tailwind CSS**, and vanilla ES modules. The platform delivers a premium, responsive user interface with support for multiple map styles, saved places, routing engine, distance measurements, dark mode, and real-time POI information retrieval.
+A map application with support for bike trails and route planning built with MapLibre GL JS, Tailwind CSS, and vanilla ES modules.
 
 ---
 

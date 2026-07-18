@@ -3,7 +3,8 @@
 #map {
     height: 100%;
     width: 100%;
-    background-color: #0b0f19; /* Matches dark-slate fallback background */
+    background-color: #0b0f19;
+    /* Matches dark-slate fallback background */
 }
 
 /* Custom Scrollbar Styles for Left HUD list */
@@ -17,7 +18,8 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.3); /* Slate-400 with opacity */
+    background: rgba(148, 163, 184, 0.3);
+    /* Slate-400 with opacity */
     border-radius: 9999px;
 }
 
@@ -26,7 +28,8 @@
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(71, 85, 105, 0.4); /* Slate-600 with opacity */
+    background: rgba(71, 85, 105, 0.4);
+    /* Slate-600 with opacity */
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
@@ -46,6 +49,7 @@
         opacity: 0;
         transform: translateY(-4px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -96,11 +100,18 @@
 }
 
 @keyframes routePulse {
-    0%, 100% { opacity: 0.9; }
-    50% { opacity: 0.6; }
+
+    0%,
+    100% {
+        opacity: 0.9;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
 }
 
-/* ─── Google Maps-style Layer Switcher ─── */
+/* ─── Layer Switcher ─── */
 
 .layer-switcher-container {
     display: flex;
