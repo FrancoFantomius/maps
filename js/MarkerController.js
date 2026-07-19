@@ -4,6 +4,7 @@ import { MapService } from './MapService.js';
 import { HUDController } from './HUDController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { RoutingController } from './RoutingController.js';
+import { savePlace, deletePlaceFromDB, loadAllPlaces } from './db.js';
 
 export const MarkerController = {
     customMarkers: [],
@@ -11,10 +12,10 @@ export const MarkerController = {
     tempMarker: null,
 
     colorPalette: {
-        poi: { main: '#6366f1', fill: '#818cf8', svg: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z' },
-        food: { main: '#ef4444', fill: '#f87171', svg: 'M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm4-3h2v16h2V2h-4c0 2.21 1.79 4 4 4z' },
-        lodging: { main: '#a855f7', fill: '#c084fc', svg: 'M7 14c1.66 0 3-1.34 3-3S8.66 8 7 8s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z' },
-        nature: { main: '#10b981', fill: '#34d399', svg: 'M2 22h20v-2h-3l-3.23-6.46L19 12h-3l-3.32-6.64L15 4H9l2.32 4.64L8 10H5l3.23 6.46L5 18H2v4z' }
+        poi: { main: '#6366f1', fill: '#818cf8', emoji: '🎯', svg: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z' },
+        food: { main: '#ef4444', fill: '#f87171', emoji: '🍕', svg: 'M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm4-3h2v16h2V2h-4c0 2.21 1.79 4 4 4z' },
+        lodging: { main: '#a855f7', fill: '#c084fc', emoji: '🏨', svg: 'M7 14c1.66 0 3-1.34 3-3S8.66 8 7 8s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z' },
+        nature: { main: '#10b981', fill: '#34d399', emoji: '🌿', svg: 'M2 22h20v-2h-3l-3.23-6.46L19 12h-3l-3.32-6.64L15 4H9l2.32 4.64L8 10H5l3.23 6.46L5 18H2v4z' }
     },
 
     createPin(category = 'poi', colorOverride = null) {
@@ -22,13 +23,14 @@ export const MarkerController = {
         const el = document.createElement('div');
         el.className = 'custom-map-pin-div';
         el.style.cursor = 'pointer';
+        el.style.position = 'relative';
+        el.style.width = '34px';
+        el.style.height = '42px';
         el.innerHTML = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M17 0C7.61 0 0 7.61 0 17C0 26.5 17 42 17 42C17 42 34 26.5 34 17C34 7.61 26.39 0 17 0Z" fill="${colorOverride || config.main}"/>
             <circle cx="17" cy="17" r="11" fill="white"/>
-            <g transform="translate(10, 10) scale(0.6)">
-                <path d="${config.svg}" fill="${colorOverride || config.main}"/>
-            </g>
-        </svg>`;
+        </svg>
+        <span style="position:absolute;top:7px;left:0;width:34px;height:22px;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;pointer-events:none;">${config.emoji}</span>`;
         return el;
     },
 
@@ -85,7 +87,7 @@ export const MarkerController = {
         HUDController.setState('places');
     },
 
-    saveFromForm() {
+    async saveFromForm() {
         const modalId = document.getElementById('modal-id');
         const modalLat = document.getElementById('modal-lat');
         const modalLng = document.getElementById('modal-lng');
@@ -93,7 +95,7 @@ export const MarkerController = {
         const modalCategory = document.getElementById('modal-category');
         const modalDesc = document.getElementById('modal-desc');
 
-        const id = modalId.value || 'id_' + Date.now();
+        const id = modalId.value || 'place_' + Date.now();
         const lat = parseFloat(modalLat.value);
         const lng = parseFloat(modalLng.value);
         const data = {
@@ -102,42 +104,38 @@ export const MarkerController = {
             lng,
             name: modalName.value.trim(),
             category: modalCategory.value,
-            desc: modalDesc.value.trim()
+            desc: modalDesc.value.trim(),
+            updatedAt: Date.now()
         };
         
-        const idx = this.customMarkers.findIndex(x => x.id === id);
-        if (idx > -1) {
-            this.customMarkers[idx] = data;
-        } else {
-            this.customMarkers.push(data);
-        }
-        
-        this.saveToStorage();
-        this.renderAll();
-        
-        const markerModal = document.getElementById('marker-modal');
-        markerModal.classList.add('hidden');
-        
-        this.removeTempMarker();
+        try {
+            await savePlace(id, data);
+            this.customMarkers = await loadAllPlaces();
+            this.renderAll();
+            
+            const markerModal = document.getElementById('marker-modal');
+            markerModal.classList.add('hidden');
+            
+            this.removeTempMarker();
 
-        HUDController.setState('place-details', data);
-        MapService.flyTo([lng, lat], 15);
+            HUDController.setState('place-details', data);
+            MapService.flyTo([lng, lat], 15);
+        } catch (err) {
+            console.error("Failed to save place:", err);
+        }
     },
 
-    loadFromStorage() {
+    async loadFromStorage() {
         try {
-            const d = localStorage.getItem('maps_markers');
-            if (d) {
-                this.customMarkers = JSON.parse(d);
-                this.renderAll();
-            }
+            this.customMarkers = await loadAllPlaces();
+            this.renderAll();
         } catch (e) {
             console.error("Marker database load failed", e);
         }
     },
 
     saveToStorage() {
-        localStorage.setItem('maps_markers', JSON.stringify(this.customMarkers));
+        // No-op since we write directly via PouchDB
     },
 
     renderAll() {
@@ -224,10 +222,23 @@ export const MarkerController = {
         }, 250);
     },
 
-    delete(id) {
-        this.customMarkers = this.customMarkers.filter(x => x.id !== id);
-        this.saveToStorage();
-        this.renderAll();
-        HUDController.setState('places');
+    async delete(id) {
+        try {
+            await deletePlaceFromDB(id);
+            this.customMarkers = await loadAllPlaces();
+            this.renderAll();
+            HUDController.setState('places');
+        } catch (err) {
+            console.error("Failed to delete place:", err);
+        }
     }
 };
+
+window.addEventListener('maps-places-updated', async () => {
+    try {
+        MarkerController.customMarkers = await loadAllPlaces();
+        MarkerController.renderAll();
+    } catch (e) {
+        console.error("[Sync UI] Error re-rendering markers:", e);
+    }
+});;

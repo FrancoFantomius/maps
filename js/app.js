@@ -1,6 +1,7 @@
 // maps - Interactive Map Platform
 // Core JavaScript Orchestrator (ES Module) - js/app.js
 
+import '../css/style.css';
 import { MapService } from './MapService.js';
 import { ApiService } from './ApiService.js';
 import { HUDController } from './HUDController.js';
@@ -10,6 +11,7 @@ import { RoutingController } from './RoutingController.js';
 import { SearchController } from './SearchController.js';
 import { GPSController } from './GPSController.js';
 import { ThemeController } from './ThemeController.js';
+import { AccountController } from './AccountController.js';
 
 // DOM Elements
 const searchForm = document.getElementById('search-form');
@@ -32,6 +34,7 @@ window.addEventListener('load', () => {
     MapService.initOverlays();
     ThemeController.init();
     MarkerController.loadFromStorage();
+    AccountController.init();
     setupEventListeners();
 });
 

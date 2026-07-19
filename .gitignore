@@ -47,3 +47,12 @@ env/
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Vite
+.vite/
+dist/
+
+# Local env files
+.env
+.env.local
+.env.*.local

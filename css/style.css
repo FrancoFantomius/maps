@@ -1,3 +1,17 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+@import "./account.css";
+
+@theme {
+  --color-slate-950: #0b0f19;
+  --color-slate-900: #111827;
+  --color-slate-800: #1f2937;
+  --color-slate-700: #374151;
+  --color-slate-600: #4b5563;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Custom maps Stylesheet */
 
 #map {
@@ -274,4 +288,17 @@
 
 .maplibregl-ctrl-bottom-left {
     transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile view adjustments for map control buttons */
+@media (max-width: 767px), (max-height: 767px) {
+  #btn-perspective,
+  #btn-rotate-left,
+  #btn-rotate-right {
+    display: none !important;
+  }
+
+  #map-controls-stack {
+    right: 1rem !important;
+  }
 }

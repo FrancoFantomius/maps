@@ -1,5 +1,6 @@
 // maps Map Engine Module (Facade Pattern) - js/MapService.js
 
+import maplibregl from 'maplibre-gl';
 import { MarkerController } from './MarkerController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { RoutingController } from './RoutingController.js';
@@ -46,6 +47,7 @@ export const MapService = {
 
         const isDark = document.documentElement.classList.contains('dark');
         const initialStyle = isDark ? 'https://tiles.openfreemap.org/styles/dark' : 'https://tiles.openfreemap.org/styles/liberty';
+        this.currentStyleUrl = initialStyle;
 
         this.map = new maplibregl.Map({
             container: 'map',
@@ -553,7 +555,7 @@ export const MapService = {
 
     toggleOverlay(key, show) {
         this.activeOverlays[key] = show;
-        
+
         if (key === 'labels') {
             this.setLabelsVisibility(show);
             localStorage.setItem(STORAGE_KEY_LABELS, show ? 'true' : 'false');
@@ -607,7 +609,10 @@ export const MapService = {
     },
 
     setStyle(styleUrl) {
-        if (this.map) this.map.setStyle(styleUrl);
+        if (this.map && this.currentStyleUrl !== styleUrl) {
+            this.currentStyleUrl = styleUrl;
+            this.map.setStyle(styleUrl);
+        }
     },
 
     flyTo(center, zoom, duration) {

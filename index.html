@@ -5,37 +5,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maps</title>
-    <link rel="icon" type="image/svg+xml" href="img/icon.svg">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        slate: {
-                            950: '#0b0f19',
-                            900: '#111827',
-                            800: '#1f2937',
-                            700: '#374151',
-                            600: '#4b5563',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+
+    <!-- Search Engine & SEO Metadata -->
+    <meta name="description"
+        content="Explore and customize maps with privacy. Have acces to bike trails, routes and other points of interest.">
+    <meta name="keywords"
+        content="maps, maplibre, GIS, custom pins, navigation, routing, PWA, private maps, OpenStreetMap, travel organizer">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Maps">
+    <meta property="og:description"
+        content="Explore and customize maps with privacy. Have acces to bike trails, routes and other points of interest.">
+    <meta property="og:image" content="/img/icons/maps.png">
+    <meta property="og:url" content="https://maps.francofantomius.com">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Maps">
+    <meta property="twitter:description"
+        content="Explore and customize maps with privacy. Have acces to bike trails, routes and other points of interest.">
+    <meta property="twitter:image" content="/img/icons/maps.png">
+
+    <!-- Theme & Mobile App Config -->
+    <meta name="theme-color" content="#F8F4F0" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Maps">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="48x48" href="/img/icons/maps_x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/img/icons/maps_x192.png">
+    <link rel="apple-touch-icon" href="/img/icons/maps_x192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-    <!-- MapLibre GL JS -->
-    <link href="https://unpkg.com/maplibre-gl@4.3.0/dist/maplibre-gl.css" rel="stylesheet" />
-    <script src="https://unpkg.com/maplibre-gl@4.3.0/dist/maplibre-gl.js"></script>
-    <link rel="stylesheet" href="css/style.css">
-    <script type="module" src="js/app.js"></script>
+    <script>
+        const theme = localStorage.getItem('theme_preference') || 'system';
+        const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <script type="module" src="/js/app.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -59,14 +78,15 @@
         <div
             class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-1.5 flex items-center gap-2 pointer-events-auto">
             <!-- App Logo/Icon -->
-            <div class="w-7 h-7 overflow-hidden flex items-center justify-center flex-shrink-0">
-                <img src="./img/search_icon.svg" alt="Maps Logo" class="w-full h-full object-cover">
+            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0">
+                <span
+                    class="material-icons-outlined text-indigo-600 dark:text-indigo-400 text-xl select-none">explore</span>
             </div>
 
             <div class="flex-1 min-w-0">
                 <!-- Search input form -->
                 <form id="search-form" class="relative flex items-center">
-                    <input type="text" id="search-input" placeholder="Search address, city, coords..."
+                    <input type="text" id="search-input" placeholder="Search"
                         class="w-full bg-transparent pl-1 pr-7 py-1 text-sm font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
                     <button type="button" id="btn-clear-search"
                         class="hidden absolute right-7 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center">
@@ -78,14 +98,65 @@
                     </button>
                 </form>
             </div>
+
+            <!-- Vertical Divider -->
+            <div class="h-6 w-[1px] bg-slate-200 dark:bg-slate-800 flex-shrink-0 mx-1"></div>
+
+            <!-- Floating Account Controls (z-10) -->
+            <div class="relative flex-shrink-0 flex items-center">
+                <!-- Sign In Button (shown when logged out) -->
+                <button id="btn-sync-login"
+                    class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-750 dark:hover:bg-indigo-650 text-white text-xs font-bold rounded-full shadow-md transition-all cursor-pointer whitespace-nowrap">
+                    Sign in
+                </button>
+
+                <!-- Profile Avatar/Icon Button (shown when logged in) -->
+                <button id="btn-sync-profile" class="profile-btn shadow-md" title="Profile" style="display: none;">
+                    <img id="header-profile-avatar" src="" alt="Avatar" style="display: none;">
+                    <div id="header-profile-letter" class="profile-avatar-letter" style="display: none;"></div>
+                    <span id="header-profile-icon"
+                        class="material-icons-outlined text-slate-500 text-lg leading-none">person</span>
+                </button>
+
+                <!-- Account Dropdown Card -->
+                <div id="account-dropdown" class="account-dropdown" style="display: none;">
+                    <div id="account-dropdown-email" class="account-dropdown-email">email@example.com</div>
+
+                    <div class="dropdown-avatar-container shadow-inner">
+                        <img id="dropdown-profile-avatar" src="" alt="Avatar" style="display: none;">
+                        <div id="dropdown-profile-letter" class="dropdown-avatar-letter" style="display: none;"></div>
+                        <span id="dropdown-profile-icon"
+                            class="material-icons-outlined text-slate-400 text-3xl leading-none">person</span>
+                    </div>
+
+                    <div id="dropdown-profile-username" class="dropdown-username font-display">Username</div>
+
+                    <div class="dropdown-actions">
+                        <button id="btn-dropdown-signout" class="dropdown-btn dropdown-btn-secondary">
+                            <span class="material-icons-outlined text-base">logout</span>
+                            <span>Sign out</span>
+                        </button>
+                        <button id="btn-dropdown-purge" class="dropdown-btn dropdown-btn-danger">
+                            <span class="material-icons-outlined text-base">delete_forever</span>
+                            <span>Purge Local Cache</span>
+                        </button>
+                    </div>
+
+                    <div class="dropdown-footer flex justify-center gap-2">
+                        <a href="privacy.html" target="_blank" class="hover:underline">Privacy Policy</a>
+                        <span>•</span>
+                        <a href="terms.html" target="_blank" class="hover:underline">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Floating Multi-State HUD Control Panel (below search) -->
         <div id="hud-panel"
-            class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl p-4 flex flex-col max-h-[45vh] md:max-h-[calc(100vh-120px)] transition-all duration-300 pointer-events-auto overflow-hidden">
+            class="hidden bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl p-4 flex flex-col max-h-[45vh] md:max-h-[calc(100vh-120px)] transition-all duration-300 pointer-events-auto overflow-hidden">
 
             <!-- Dynamic State 1: Saved Places (My Places) list -->
-            <div id="panel-places" class="flex flex-col h-full overflow-hidden">
+            <div id="panel-places" class="hidden flex flex-col h-full overflow-hidden">
                 <div class="flex items-center justify-between mb-3 flex-shrink-0">
                     <div>
                         <h2
@@ -316,7 +387,7 @@
                             </label>
                             <label class="flex items-center justify-between cursor-pointer group">
                                 <span
-                                    class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Perspective</span>
+                                    class="text-xs text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-100 font-medium">Buildings</span>
                                 <div class="relative w-8 h-4">
                                     <input type="checkbox" id="toggle-overlay-perspective" class="sr-only peer">
                                     <div
@@ -388,10 +459,10 @@
                             class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-950 p-1 rounded-xl border border-slate-250/50 dark:border-slate-800/30 text-center text-xs">
                             <button data-theme-btn="light"
                                 class="py-1 rounded-lg font-semibold transition-all">Light</button>
-                            <button data-theme-btn="dark"
-                                class="py-1 rounded-lg font-semibold transition-all">Dark</button>
                             <button data-theme-btn="system"
                                 class="py-1 rounded-lg font-semibold transition-all">System</button>
+                            <button data-theme-btn="dark"
+                                class="py-1 rounded-lg font-semibold transition-all">Dark</button>
                         </div>
                     </div>
                 </div>
@@ -419,7 +490,8 @@
     </div>
 
     <!-- Floating Action Button Stack (Bottom-Right area, z-10) -->
-    <div class="fixed bottom-4 right-16 z-10 pointer-events-auto flex flex-col gap-2.5 bottom-ui-element">
+    <div id="map-controls-stack"
+        class="fixed bottom-12 right-16 z-10 pointer-events-auto flex flex-col gap-2.5 bottom-ui-element">
         <!-- Distance Measure Button -->
         <button id="btn-draw"
             class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/30 transition-all duration-300 relative">
@@ -700,6 +772,65 @@
             <div class="result-address text-slate-400 dark:text-slate-500 truncate text-[10px] mt-0.5"></div>
         </div>
     </template>
+
+    <!-- Dedicated Sign-in Modal -->
+    <div id="login-modal"
+        class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[1000] hidden flex items-center justify-center p-4">
+        <div
+            class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-sm w-full p-5 shadow-2xl transform scale-95 transition-all">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
+                <h2
+                    class="font-display text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                    <span class="material-icons-outlined text-indigo-600 dark:text-indigo-400">cloud</span>
+                    <span>Sign in to secure sync</span>
+                </h2>
+                <button id="btn-login-close"
+                    class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center rounded">
+                    <span class="material-icons-outlined text-lg leading-none">close</span>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Configure synchronization with your personal Filen account. All places synced will be fully
+                    encrypted client-side; Filen will never see your password or plaintext places.
+                </p>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                    By using this service and enabling sync, you agree to our <a href="terms.html" target="_blank"
+                        class="text-indigo-600 dark:text-indigo-400 hover:underline">Terms of Service</a> and <a
+                        href="privacy.html" target="_blank"
+                        class="text-indigo-600 dark:text-indigo-400 hover:underline">Privacy Policy</a>.
+                </p>
+
+                <div class="space-y-3">
+                    <div class="input-group">
+                        <label for="sync-email">Filen Email</label>
+                        <input type="email" id="sync-email" placeholder="your-email@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="sync-password">Filen Password</label>
+                        <input type="password" id="sync-password" placeholder="Enter your Filen password...">
+                    </div>
+                    <div class="input-group">
+                        <label for="sync-twofactor">Two-Factor Auth Code (Optional)</label>
+                        <input type="text" id="sync-twofactor" placeholder="6-digit code if enabled...">
+                    </div>
+                </div>
+
+                <div id="sync-settings-status"
+                    class="status-message text-slate-500 dark:text-slate-400 text-xs text-center min-h-[16px] w-full">
+                </div>
+
+                <div class="flex flex-col gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <button id="btn-save-sync"
+                        class="btn-primary w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-semibold text-xs transition-colors cursor-pointer">Save
+                        & Enable Sync</button>
+                    <button id="btn-login-cancel"
+                        class="btn-secondary w-full py-2 border border-slate-200 dark:border-slate-800 rounded-full font-semibold text-xs transition-colors cursor-pointer">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Maps</title>
+    <link rel="icon" type="image/png" sizes="48x48" href="/img/icons/maps_x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/img/icons/maps_x192.png">
+    <link rel="apple-touch-icon" href="/img/icons/maps_x192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script>
+        const theme = localStorage.getItem('theme_preference') || 'system';
+        const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen py-12 px-4 selection:bg-indigo-500/30">
+    <div class="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl overflow-hidden">
+        
+        <!-- Header -->
+        <header class="p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="material-icons-outlined text-indigo-600 dark:text-indigo-400 text-3xl">explore</span>
+                <span class="font-display font-extrabold text-2xl tracking-tight text-slate-900 dark:text-slate-50">Maps</span>
+            </div>
+            <h1 class="font-display font-bold text-3xl text-slate-950 dark:text-white">Terms of Service</h1>
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Last updated: July 2026</p>
+        </header>
+
+        <!-- Content -->
+        <div class="p-8 space-y-6 text-sm leading-relaxed text-slate-650 dark:text-slate-350">
+            <p class="text-base text-slate-700 dark:text-slate-200 font-medium">
+                Welcome to Maps! By using this application or enabling cloud sync, you agree to comply with and be bound by the following Terms of Service.
+            </p>
+
+            <hr class="border-slate-100 dark:border-slate-800">
+
+            <section class="space-y-3">
+                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">balance</span>
+                    <span>1. Open Source & Licensing</span>
+                </h2>
+                <p>
+                    Maps is open-source software licensed under the GNU Affero General Public License version 3 (AGPL-3.0). You are free to inspect, run, modify, host, and distribute the application under the terms specified by the license.
+                </p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">warning_amber</span>
+                    <span>2. Disclaimer of Warranties</span>
+                </h2>
+                <p class="italic">
+                    The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement. In no event shall the authors or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.
+                </p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">storage</span>
+                    <span>3. Local Persistence Responsibilities</span>
+                </h2>
+                <p>
+                    Because places are saved in your local browser sandbox (IndexedDB via PouchDB), clearing browser storage, website cookies, cache, or using temporary profiles will permanently delete your stored data. You acknowledge that you are solely responsible for initiating local backups or setting up cloud synchronization to safeguard your places.
+                </p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">cloud_queue</span>
+                    <span>4. Third-Party Cloud Integration (Filen)</span>
+                </h2>
+                <p>
+                    By activating synchronization, you agree to connect directly to the storage APIs operated by Filen. You are bound by Filen's separate Terms of Service and Privacy Policy. Maps does not control Filen's servers, storage systems, availability, or rate limits, and holds no liability for service interruptions, sync failures, or data losses experienced on your Filen account.
+                </p>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="p-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex justify-between items-center">
+            <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800/80 text-xs font-bold text-slate-700 dark:text-slate-350 transition-all cursor-pointer">
+                <span class="material-icons-outlined text-sm leading-none">arrow_back</span>
+                <span>Back to App</span>
+            </a>
+            <span class="text-xs text-slate-400 dark:text-slate-500">Maps Sync</span>
+        </footer>
+
+    </div>
+</body>
+
+</html>

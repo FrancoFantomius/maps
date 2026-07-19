@@ -14,6 +14,7 @@ export const HUDController = {
             this.clearHighlightedPath();
         }
 
+        const hudPanel = document.getElementById('hud-panel');
         const panelPlaces = document.getElementById('panel-places');
         const panelSearch = document.getElementById('panel-search');
         const panelDetails = document.getElementById('panel-details');
@@ -22,27 +23,32 @@ export const HUDController = {
         const drawBtn = document.getElementById('btn-draw');
         const routeBtn = document.getElementById('btn-route');
 
-        panelPlaces.classList.add('hidden');
-        panelSearch.classList.add('hidden');
-        measurePanel.classList.add('hidden');
-        navPanel.classList.add('hidden');
-        panelDetails.classList.add('hidden');
+        if (hudPanel) hudPanel.classList.add('hidden');
+        if (panelPlaces) panelPlaces.classList.add('hidden');
+        if (panelSearch) panelSearch.classList.add('hidden');
+        if (measurePanel) measurePanel.classList.add('hidden');
+        if (navPanel) navPanel.classList.add('hidden');
+        if (panelDetails) panelDetails.classList.add('hidden');
 
         drawBtn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/30 transition-all duration-300 relative';
         routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all duration-300 relative';
 
         if (hudState === 'places') {
-            panelPlaces.classList.remove('hidden');
+            if (panelPlaces) panelPlaces.classList.add('hidden');
         } else if (hudState === 'search-results') {
-            panelSearch.classList.remove('hidden');
+            if (hudPanel) hudPanel.classList.remove('hidden');
+            if (panelSearch) panelSearch.classList.remove('hidden');
         } else if (hudState === 'measure') {
-            measurePanel.classList.remove('hidden');
+            if (hudPanel) hudPanel.classList.remove('hidden');
+            if (measurePanel) measurePanel.classList.remove('hidden');
             drawBtn.className = 'group flex items-center justify-center w-12 h-12 bg-teal-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-teal-500 transition-all duration-300 relative border border-teal-500';
         } else if (hudState === 'route') {
-            navPanel.classList.remove('hidden');
+            if (hudPanel) hudPanel.classList.remove('hidden');
+            if (navPanel) navPanel.classList.remove('hidden');
             routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-blue-500 transition-all duration-300 relative border border-blue-500';
         } else if (hudState === 'place-details') {
-            panelDetails.classList.remove('hidden');
+            if (hudPanel) hudPanel.classList.remove('hidden');
+            if (panelDetails) panelDetails.classList.remove('hidden');
             this.renderPlaceDetails(data);
         }
     },

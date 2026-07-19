@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Maps</title>
+    <link rel="icon" type="image/png" sizes="48x48" href="/img/icons/maps_x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/img/icons/maps_x192.png">
+    <link rel="apple-touch-icon" href="/img/icons/maps_x192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <script>
+        const theme = localStorage.getItem('theme_preference') || 'system';
+        const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen py-12 px-4 selection:bg-indigo-500/30">
+    <div class="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl overflow-hidden">
+        
+        <!-- Header -->
+        <header class="p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="material-icons-outlined text-indigo-600 dark:text-indigo-400 text-3xl">explore</span>
+                <span class="font-display font-extrabold text-2xl tracking-tight text-slate-900 dark:text-slate-50">Maps</span>
+            </div>
+            <h1 class="font-display font-bold text-3xl text-slate-950 dark:text-white">Privacy Policy</h1>
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-2 font-medium">Last updated: July 2026</p>
+        </header>
+
+        <!-- Content -->
+        <div class="p-8 space-y-6 text-sm leading-relaxed text-slate-655 dark:text-slate-350">
+            <p class="text-base text-slate-700 dark:text-slate-200 font-medium">
+                At Maps, your privacy is our core value. Maps is designed as a local-first, client-side application. We do not operate server infrastructure to collect, store, track, or sell your personal details or saved place markers.
+            </p>
+
+            <hr class="border-slate-100 dark:border-slate-800">
+
+            <section class="space-y-3">
+                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">dns</span>
+                    <span>1. Local Storage & Database Security</span>
+                </h2>
+                <p>
+                    All place markers, names, descriptions, and custom categories you record are stored locally on your device in a sandboxed PouchDB database. This data is private to your browser. Clearing your browser's application cache or using incognito/private modes will remove this database.
+                </p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">vpn_key</span>
+                    <span>2. End-to-End Encrypted Cloud Sync</span>
+                </h2>
+                <p>
+                    If you choose to enable cloud synchronization, Maps links directly to the secure cloud APIs provided by <strong>Filen</strong>. Your credentials (email, password, and two-factor code) are processed purely on the client side to retrieve security keys directly from Filen.
+                </p>
+                <p>
+                    Your saved places are compiled and encrypted client-side using military-grade AES-256-GCM encryption before leaving your device, then stored as a private file named <code>places.json</code> inside a folder named <code>maps</code>. We do not have access to your decryption keys, password, or plaintext places.
+                </p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">analytics</span>
+                    <span>3. Analytics and Data Collection</span>
+                </h2>
+                <p>
+                    We do not collect diagnostics, crash logs, IP address tracking, telemetry, or user analytics. The application operates in complete anonymity.
+                </p>
+            </section>
+
+            <section class="space-y-3">
+                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">code</span>
+                    <span>4. Open Source Transparency</span>
+                </h2>
+                <p>
+                    Because this project is open-source and AGPL-3.0 licensed, you can review the source code directly, run your own builds, or contribute adjustments openly on the repository.
+                </p>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="p-8 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex justify-between items-center">
+            <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800/80 text-xs font-bold text-slate-700 dark:text-slate-350 transition-all cursor-pointer">
+                <span class="material-icons-outlined text-sm leading-none">arrow_back</span>
+                <span>Back to App</span>
+            </a>
+            <span class="text-xs text-slate-400 dark:text-slate-500">Maps Sync</span>
+        </footer>
+
+    </div>
+</body>
+
+</html>
