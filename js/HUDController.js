@@ -84,9 +84,28 @@ export const HUDController = {
             const template = document.getElementById('template-place-details-temp');
             const clone = template.content.cloneNode(true);
             
-            clone.querySelector('.place-name').textContent = data.name || "Dropped Pin";
+            clone.querySelectorAll('.place-name').forEach(el => {
+                el.textContent = data.name || "Dropped Pin";
+            });
             clone.querySelector('.place-coords').textContent = `${data.lat.toFixed(5)}, ${data.lng.toFixed(5)}`;
             clone.querySelector('.btn-close').addEventListener('click', () => this.setState('places'));
+
+            const badgeText = data.country || data.placeType;
+            if (badgeText) {
+                clone.querySelectorAll('.place-region-badge').forEach(badge => {
+                    badge.textContent = badgeText.toUpperCase();
+                    badge.classList.remove('hidden');
+                });
+            }
+
+            if (data.wikiImage) {
+                const hero = clone.querySelector('.place-hero');
+                const heroImage = clone.querySelector('.place-hero-image');
+                heroImage.src = data.wikiImage;
+                heroImage.alt = `${data.name || 'Place'} photo`;
+                hero.classList.remove('hidden');
+                clone.querySelector('.place-heroless-heading').classList.add('hidden');
+            }
 
             if (data.streetName) {
                 const highlightContainer = clone.querySelector('.street-highlight-container');

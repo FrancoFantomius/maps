@@ -61,6 +61,9 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
     let placeName = labelName || "Dropped Pin";
     let wikiSummary = "";
     let wikiUrl = "";
+    let wikiImage = "";
+    let placeCountry = "";
+    let placeType = "";
     let addressLine = "";
     let shopInfo = null;
     let streetName = "";
@@ -77,6 +80,10 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
         if (nomRes.status === 'fulfilled' && nomRes.value) {
             const val = nomRes.value;
             addressLine = val.display_name || "";
+            if (val.address) {
+                placeCountry = val.address.country || "";
+                placeType = val.type || val.addresstype || "";
+            }
             if (!labelName && val.name) {
                 placeName = val.name;
             } else if (!labelName && val.address) {
@@ -92,6 +99,7 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
                 if (summaryData && summaryData.extract) {
                     wikiSummary = summaryData.extract;
                     wikiUrl = summaryData.content_urls?.desktop?.page || '';
+                    wikiImage = summaryData.thumbnail?.source || summaryData.originalimage?.source || '';
                     placeName = summaryData.title || labelName;
                 }
             } catch (e) {
@@ -108,6 +116,7 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
                     if (summaryData && summaryData.extract) {
                         wikiSummary = summaryData.extract;
                         wikiUrl = summaryData.content_urls?.desktop?.page || '';
+                        wikiImage = summaryData.thumbnail?.source || summaryData.originalimage?.source || '';
                         if (placeName === "Dropped Pin" || !placeName) {
                             placeName = nearestPage.title;
                         }
@@ -194,6 +203,9 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
         name: placeName,
         wikiSummary: wikiSummary,
         wikiUrl: wikiUrl,
+        wikiImage: wikiImage,
+        country: placeCountry,
+        placeType: placeType,
         address: addressLine,
         shopInfo: shopInfo,
         streetName: streetName
