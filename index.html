@@ -31,6 +31,7 @@
     <!-- Theme & Mobile App Config -->
     <meta name="theme-color" content="#F8F4F0" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Maps">
@@ -77,11 +78,12 @@
         <!-- Floating Search pill -->
         <div
             class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-1.5 flex items-center gap-2 pointer-events-auto">
-            <!-- App Logo/Icon -->
-            <div class="w-7 h-7 flex items-center justify-center flex-shrink-0">
-                <span
-                    class="material-icons-outlined text-indigo-600 dark:text-indigo-400 text-xl select-none">explore</span>
-            </div>
+            <!-- Bookmarks / My Places Toggle Button -->
+            <button type="button" id="btn-toggle-places"
+                class="w-7 h-7 flex items-center justify-center flex-shrink-0 text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors cursor-pointer"
+                title="My Places">
+                <span class="material-icons-outlined text-xl select-none">bookmarks</span>
+            </button>
 
             <div class="flex-1 min-w-0">
                 <!-- Search input form -->
@@ -151,178 +153,200 @@
             </div>
         </div>
 
-        <!-- Floating Multi-State HUD Control Panel (below search) -->
-        <div id="hud-panel"
-            class="hidden bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl p-4 flex flex-col max-h-[45vh] md:max-h-[calc(100vh-120px)] transition-all duration-300 pointer-events-auto overflow-hidden">
+    </div>
 
-            <!-- Dynamic State 1: Saved Places (My Places) list -->
-            <div id="panel-places" class="hidden flex flex-col h-full overflow-hidden">
-                <div class="flex items-center justify-between mb-3 flex-shrink-0">
-                    <div>
-                        <h2
-                            class="font-display font-bold text-base text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                            My Places
-                            <span id="markers-count"
-                                class="text-xs px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-100 dark:border-indigo-900/20">0</span>
-                        </h2>
-                        <p class="text-[10px] text-slate-400 dark:text-slate-500">Your personalized custom pins</p>
-                    </div>
-                </div>
+    <!-- Multi-State HUD Control Panel (z-15) -->
+    <div id="hud-panel"
+        class="hud-closed bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 shadow-xl p-4 flex flex-col pointer-events-auto overflow-hidden">
 
-                <!-- Custom Places List Scrollable area -->
-                <div id="saved-markers-list" class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-2 text-xs">
-                    <div class="text-center py-6 text-slate-400 dark:text-slate-500">
-                        No custom places saved yet. Click the map to drop a pin.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dynamic State 2: Search Results -->
-            <div id="panel-search" class="hidden flex flex-col h-full overflow-hidden">
-                <div
-                    class="flex items-center justify-between mb-2.5 flex-shrink-0 border-b border-slate-100 dark:border-slate-800 pb-2">
-                    <h2 class="font-display font-bold text-sm text-slate-900 dark:text-slate-100">Search Results</h2>
-                    <button type="button" id="btn-close-search"
-                        class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                        ✕ Clear
-                    </button>
-                </div>
-                <div id="search-results" class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-1">
-                    <!-- Dynamic search list gets loaded here -->
-                </div>
-            </div>
-
-            <!-- Dynamic State 3: Distance Measurement Panel -->
-            <div id="measure-panel" class="hidden flex flex-col h-full overflow-hidden">
-                <div
-                    class="flex items-center justify-between mb-2.5 flex-shrink-0 border-b border-slate-100 dark:border-slate-800 pb-2">
-                    <h2
-                        class="font-display font-bold text-sm text-teal-600 dark:text-teal-400 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
-                        Measuring Mode
-                    </h2>
-                    <button id="btn-exit-measure"
-                        class="text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 font-medium">
-                        ✕ Exit
-                    </button>
-                </div>
-                <div class="space-y-3">
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Click sequential points on the map to
-                        calculate linear distance path.</p>
-                    <div
-                        class="bg-slate-50 dark:bg-slate-950 border border-slate-150 dark:border-slate-900 rounded-xl p-3 flex flex-col gap-0.5 shadow-sm">
-                        <span
-                            class="text-[9px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">Linear
-                            Distance</span>
-                        <span id="measure-output"
-                            class="font-display font-bold text-base text-slate-800 dark:text-slate-100">Total Distance:
-                            0.00 km</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dynamic State 4: Navigation Panel -->
-            <div id="nav-panel" class="hidden flex flex-col h-full overflow-hidden">
-                <!-- Header with transport modes & close -->
-                <div class="flex items-center gap-1 mb-3 flex-shrink-0">
-                    <div
-                        class="flex-1 flex items-center gap-0.5 bg-slate-100 dark:bg-slate-950 p-0.5 rounded-xl border border-slate-200/50 dark:border-slate-800/30">
-                        <button id="nav-mode-driving" data-nav-mode="driving"
-                            class="nav-mode-btn flex-1 flex items-center justify-center gap-1 py-1.5 text-[11px] font-bold rounded-lg transition-all bg-blue-600 text-white shadow-sm">
-                            <span class="material-icons-outlined text-sm">directions_car</span>
-                            <span class="hidden sm:inline">Drive</span>
-                        </button>
-                        <button id="nav-mode-cycling" data-nav-mode="cycling"
-                            class="nav-mode-btn flex-1 flex items-center justify-center gap-1 py-1.5 text-[11px] font-semibold rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">
-                            <span class="material-icons-outlined text-sm">directions_bike</span>
-                            <span class="hidden sm:inline">Bike</span>
-                        </button>
-                        <button id="nav-mode-foot" data-nav-mode="foot"
-                            class="nav-mode-btn flex-1 flex items-center justify-center gap-1 py-1.5 text-[11px] font-semibold rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all">
-                            <span class="material-icons-outlined text-sm">directions_walk</span>
-                            <span class="hidden sm:inline">Walk</span>
-                        </button>
-                    </div>
-                    <button id="btn-exit-nav"
-                        class="p-1.5 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex-shrink-0">
-                        <span class="material-icons-outlined text-lg">close</span>
-                    </button>
-                </div>
-
-                <!-- Waypoint inputs -->
-                <div class="flex gap-1.5 mb-3 flex-shrink-0">
-                    <!-- Timeline dots column -->
-                    <div class="flex flex-col items-center pt-2.5 gap-0 flex-shrink-0 w-5">
-                        <div
-                            class="w-3 h-3 rounded-full border-[2.5px] border-blue-500 bg-white dark:bg-slate-900 flex-shrink-0 z-10">
-                        </div>
-                        <div class="w-0.5 flex-1 bg-slate-300 dark:bg-slate-700 my-0.5 min-h-[16px]"></div>
-                        <div class="w-3 h-3 rounded-full bg-red-500 flex-shrink-0 z-10"></div>
-                    </div>
-
-                    <!-- Input fields column -->
-                    <div class="flex-1 flex flex-col gap-1.5 min-w-0">
-                        <div class="relative">
-                            <input type="text" id="nav-origin-input" placeholder="Choose starting point, or click map"
-                                autocomplete="off"
-                                class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/60 rounded-lg px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all pr-8">
-                            <button type="button" id="nav-use-location" title="Use my location"
-                                class="absolute right-1.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-blue-500 transition-colors rounded">
-                                <span class="material-icons-outlined text-sm">my_location</span>
-                            </button>
-                            <div id="nav-origin-autocomplete"
-                                class="nav-autocomplete hidden absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-48 overflow-y-auto custom-scrollbar">
-                            </div>
-                        </div>
-                        <div class="relative">
-                            <input type="text" id="nav-dest-input" placeholder="Choose destination" autocomplete="off"
-                                class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200/60 dark:border-slate-800/60 rounded-lg px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all">
-                            <div id="nav-dest-autocomplete"
-                                class="nav-autocomplete hidden absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-48 overflow-y-auto custom-scrollbar">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Swap button column -->
-                    <div class="flex items-center flex-shrink-0">
-                        <button id="nav-swap-btn" title="Swap origin and destination"
-                            class="p-1.5 text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-all hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg active:scale-90">
-                            <span class="material-icons-outlined text-lg">swap_vert</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Route summary (shown after calculation) -->
-                <div id="nav-route-summary" class="hidden flex-shrink-0 mb-3">
-                    <div
-                        class="bg-blue-50/80 dark:bg-blue-950/20 border border-blue-200/40 dark:border-blue-900/30 rounded-xl p-3 space-y-1">
-                        <div class="flex items-baseline justify-between">
-                            <span id="nav-route-time"
-                                class="font-display font-bold text-lg text-blue-600 dark:text-blue-400">--</span>
-                            <span id="nav-route-dist"
-                                class="text-xs font-semibold text-slate-500 dark:text-slate-400">--</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400">
-                            <span id="nav-route-via" class="truncate">Fastest route</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Turn-by-turn directions list -->
-                <div id="nav-steps-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-0 min-h-0">
-                    <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-xs">
-                        <span class="material-icons-outlined text-3xl mb-2 block opacity-40">alt_route</span>
-                        Set origin and destination to see route directions
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dynamic State 5: Active Place Details -->
-            <div id="panel-details" class="hidden flex flex-col h-full overflow-hidden">
-                <!-- Injected dynamically from js/app.js -->
-            </div>
-
+        <!-- Drag Handle for Mobile Bottom Sheet -->
+        <div id="hud-drag-handle"
+            class="md:hidden w-full py-2 flex items-center justify-center cursor-pointer select-none transition-all flex-shrink-0 border-b border-slate-200/20 dark:border-slate-800/20 bg-slate-50/50 dark:bg-slate-900/30 rounded-t-3xl">
+            <span
+                class="material-icons-outlined text-slate-450 dark:text-slate-500 text-2xl leading-none">drag_handle</span>
         </div>
+
+        <!-- Dynamic State 1: Saved Places (My Places) list -->
+        <div id="panel-places" class="hidden flex flex-col h-full overflow-hidden p-4">
+            <div
+                class="flex items-center justify-between mb-3.5 flex-shrink-0 border-b border-slate-100 dark:border-slate-800/80 pb-3">
+                <div>
+                    <h2
+                        class="font-display font-extrabold text-base text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                        <span>My Places</span>
+                        <span id="markers-count"
+                            class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-100 dark:border-indigo-900/30">0</span>
+                    </h2>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Your personalized custom pins
+                    </p>
+                </div>
+                <!-- Close button for Saved Places -->
+                <button type="button" id="btn-close-places"
+                    class="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-all flex items-center justify-center cursor-pointer">
+                    <span class="material-icons-outlined text-sm leading-none">close</span>
+                </button>
+            </div>
+
+            <!-- Custom Places List Scrollable area -->
+            <div id="saved-markers-list" class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-2 text-xs">
+                <div class="text-center py-8 px-4 text-slate-400 dark:text-slate-500 space-y-2">
+                    <span class="material-icons-outlined text-3xl block opacity-30">push_pin</span>
+                    <p class="text-xs font-medium">No custom places saved yet.</p>
+                    <p class="text-[10px] opacity-70">Click anywhere on the map to drop a pin.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic State 2: Search Results -->
+        <div id="panel-search" class="hidden flex flex-col h-full overflow-hidden p-4">
+            <div
+                class="flex items-center justify-between mb-3 flex-shrink-0 border-b border-slate-100 dark:border-slate-800/80 pb-2.5">
+                <div>
+                    <h2 class="font-display font-bold text-sm text-slate-900 dark:text-slate-100">Search Results</h2>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500">Matching locations found</p>
+                </div>
+                <button type="button" id="btn-close-search"
+                    class="px-2.5 py-1 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 transition-colors">
+                    ✕ Clear
+                </button>
+            </div>
+            <div id="search-results" class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-1.5">
+                <!-- Dynamic search list gets loaded here -->
+            </div>
+        </div>
+
+        <!-- Dynamic State 3: Distance Measurement Panel -->
+        <div id="measure-panel" class="hidden flex flex-col h-full overflow-hidden p-4">
+            <div
+                class="flex items-center justify-between mb-3 flex-shrink-0 border-b border-slate-100 dark:border-slate-800/80 pb-2.5">
+                <h2 class="font-display font-bold text-sm text-teal-600 dark:text-teal-400 flex items-center gap-2">
+                    <span
+                        class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse shadow-[0_0_8px_rgba(20,184,166,0.6)]"></span>
+                    Measuring Mode
+                </h2>
+                <button id="btn-exit-measure"
+                    class="px-2.5 py-1 text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 transition-colors">
+                    ✕ Exit
+                </button>
+            </div>
+            <div class="space-y-3">
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Click sequential points on the map
+                    to calculate linear distance path.</p>
+                <div
+                    class="bg-gradient-to-br from-teal-50/80 to-emerald-50/50 dark:from-teal-950/30 dark:to-emerald-950/20 border border-teal-200/60 dark:border-teal-900/40 rounded-2xl p-4 flex flex-col gap-1 shadow-sm relative overflow-hidden">
+                    <div class="w-1 absolute left-0 top-0 bottom-0 bg-teal-500"></div>
+                    <span
+                        class="text-[9px] uppercase font-extrabold tracking-wider text-teal-600 dark:text-teal-400">Linear
+                        Distance</span>
+                    <span id="measure-output"
+                        class="font-display font-black text-lg text-slate-900 dark:text-slate-100 tracking-tight">Total
+                        Distance: 0.00 km</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic State 4: Navigation Panel -->
+        <div id="nav-panel" class="hidden flex flex-col h-full overflow-hidden p-4">
+            <!-- Header with transport modes & close -->
+            <div class="flex items-center gap-2 mb-3 flex-shrink-0">
+                <div
+                    class="flex-1 flex items-center gap-1 bg-slate-100/90 dark:bg-slate-800/60 p-1 rounded-xl border border-slate-200/50 dark:border-slate-700/40">
+                    <button id="nav-mode-driving" data-nav-mode="driving"
+                        class="nav-mode-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-bold rounded-lg transition-all bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm">
+                        <span class="material-icons-outlined text-sm">directions_car</span>
+                        <span class="hidden sm:inline">Drive</span>
+                    </button>
+                    <button id="nav-mode-cycling" data-nav-mode="cycling"
+                        class="nav-mode-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-medium rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all">
+                        <span class="material-icons-outlined text-sm">directions_bike</span>
+                        <span class="hidden sm:inline">Bike</span>
+                    </button>
+                    <button id="nav-mode-foot" data-nav-mode="foot"
+                        class="nav-mode-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-medium rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all">
+                        <span class="material-icons-outlined text-sm">directions_walk</span>
+                        <span class="hidden sm:inline">Walk</span>
+                    </button>
+                </div>
+                <button id="btn-exit-nav"
+                    class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-all flex items-center justify-center flex-shrink-0">
+                    <span class="material-icons-outlined text-base">close</span>
+                </button>
+            </div>
+
+            <!-- Waypoint inputs -->
+            <div class="flex gap-2 mb-3 flex-shrink-0">
+                <!-- Timeline dots column -->
+                <div class="flex flex-col items-center pt-3 gap-0 flex-shrink-0 w-4">
+                    <div
+                        class="w-3 h-3 rounded-full border-2 border-blue-500 bg-white dark:bg-slate-900 flex-shrink-0 z-10 shadow-sm">
+                    </div>
+                    <div class="w-0.5 flex-1 bg-slate-200 dark:bg-slate-800 my-1 min-h-[16px]"></div>
+                    <div class="w-3 h-3 rounded-full bg-red-500 flex-shrink-0 z-10 shadow-sm"></div>
+                </div>
+
+                <!-- Input fields column -->
+                <div class="flex-1 flex flex-col gap-2 min-w-0">
+                    <div class="relative">
+                        <input type="text" id="nav-origin-input" placeholder="Choose starting point, or click map"
+                            autocomplete="off"
+                            class="w-full bg-white/70 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all pr-8">
+                        <button type="button" id="nav-use-location" title="Use my location"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-blue-500 transition-colors rounded">
+                            <span class="material-icons-outlined text-sm">my_location</span>
+                        </button>
+                        <div id="nav-origin-autocomplete"
+                            class="nav-autocomplete hidden absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-48 overflow-y-auto custom-scrollbar">
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="nav-dest-input" placeholder="Choose destination" autocomplete="off"
+                            class="w-full bg-white/70 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all">
+                        <div id="nav-dest-autocomplete"
+                            class="nav-autocomplete hidden absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-48 overflow-y-auto custom-scrollbar">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Swap button column -->
+                <div class="flex items-center flex-shrink-0">
+                    <button id="nav-swap-btn" title="Swap origin and destination"
+                        class="p-2 text-slate-400 hover:text-blue-500 dark:hover:text-blue-400 transition-all hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl active:scale-90 border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+                        <span class="material-icons-outlined text-lg">swap_vert</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Route summary (shown after calculation) -->
+            <div id="nav-route-summary" class="hidden flex-shrink-0 mb-3">
+                <div
+                    class="bg-gradient-to-br from-blue-50 to-indigo-50/80 dark:from-blue-950/30 dark:to-indigo-950/20 border border-blue-200/60 dark:border-blue-900/40 rounded-2xl p-3.5 space-y-1 shadow-sm relative overflow-hidden">
+                    <div class="w-1 absolute left-0 top-0 bottom-0 bg-blue-500"></div>
+                    <div class="flex items-baseline justify-between">
+                        <span id="nav-route-time"
+                            class="font-display font-black text-xl text-blue-600 dark:text-blue-400 tracking-tight">--</span>
+                        <span id="nav-route-dist"
+                            class="text-xs font-bold text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-slate-800/60 px-2 py-0.5 rounded-full border border-slate-200/50 dark:border-slate-700/50">--</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                        <span id="nav-route-via" class="truncate">Fastest route</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Turn-by-turn directions list -->
+            <div id="nav-steps-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-1 min-h-0">
+                <div class="text-center py-8 text-slate-400 dark:text-slate-500 text-xs">
+                    <span class="material-icons-outlined text-3xl mb-2 block opacity-40">alt_route</span>
+                    Set origin and destination to see route directions
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic State 5: Active Place Details -->
+        <div id="panel-details" class="hidden flex flex-col h-full overflow-hidden">
+            <!-- Injected dynamically from js/app.js -->
+        </div>
+
     </div>
 
     <!-- Settings Toggle Button (Bottom-Left area, z-10) -->
@@ -614,110 +638,345 @@
     </div>
     <!-- HTML Templates for Decoupled UI Rendering -->
     <template id="template-place-details-loading">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">
-            <span
-                class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 font-display">Searching...</span>
-            <button type="button"
-                class="btn-close text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-semibold transition-colors">✕
-                Close</button>
-        </div>
-        <div class="space-y-4 flex-1 overflow-y-auto pr-1 flex flex-col justify-between h-full animate-pulse">
-            <div class="space-y-3">
-                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-2/3"></div>
-                <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-1/3 mt-2"></div>
-                <div class="space-y-2 mt-4">
-                    <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-full"></div>
-                    <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-5/6"></div>
-                    <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-4/5"></div>
+        <div class="p-4 h-full flex flex-col">
+            <div class="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span
+                    class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 font-display">Searching...</span>
+                <button type="button"
+                    class="btn-close text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-semibold transition-colors">✕
+                    Close</button>
+            </div>
+            <div class="space-y-4 flex-1 overflow-y-auto pr-1 flex flex-col justify-between h-full animate-pulse">
+                <div class="space-y-3">
+                    <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-2/3"></div>
+                    <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-1/3 mt-2"></div>
+                    <div class="space-y-2 mt-4">
+                        <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-full"></div>
+                        <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-5/6"></div>
+                        <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-4/5"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </template>
 
     <template id="template-place-details-temp">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">
-            <span
-                class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 font-display">New
-                Location</span>
-            <button type="button"
-                class="btn-close text-xs text-slate-400 hover:text-slate-655 dark:hover:text-slate-250 font-semibold transition-colors">✕
-                Close</button>
-        </div>
-        <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-1 flex flex-col justify-between">
-            <div class="space-y-3">
-                <h3 class="place-name font-display font-bold text-sm text-slate-900 dark:text-slate-100 leading-snug">
-                </h3>
-                <p class="place-coords font-mono text-[10px] text-slate-450 dark:text-slate-500 mt-1"></p>
+        <div class="flex flex-col h-full overflow-hidden">
+            <!-- Cover Header Image/Gradient Card -->
+            <div
+                class="wiki-image-container relative h-48 w-full overflow-hidden group flex-shrink-0 bg-gradient-to-br from-violet-600 via-indigo-700 to-slate-900 dark:from-violet-950 dark:via-indigo-950 dark:to-slate-950">
+                <img class="wiki-image hidden w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    src="" alt="Place Image">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
 
-                <div class="street-highlight-container hidden">
-                    <div
-                        class="flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50/50 dark:bg-indigo-950/20 px-2.5 py-1.5 rounded-lg border border-indigo-100/50 dark:border-indigo-900/20">
-                        <span class="material-icons-outlined text-sm">directions_bike</span>
-                        <span class="street-name"></span>
+                <!-- Glow shapes for default cover -->
+                <div
+                    class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-400/30 rounded-full blur-2xl pointer-events-none">
+                </div>
+                <div
+                    class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl pointer-events-none">
+                </div>
+
+                <!-- Absolute Overlay Contents -->
+                <div class="absolute bottom-4 left-4 right-4 text-white">
+                    <h3 class="place-name text-xl font-black tracking-tight drop-shadow-md leading-tight text-white">
+                        Dropped Pin
+                    </h3>
+                </div>
+
+                <!-- Floating Close button -->
+                <button type="button"
+                    class="btn-close absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-200 active:scale-90 z-10 cursor-pointer">
+                    <span class="material-icons-outlined text-sm leading-none">close</span>
+                </button>
+            </div>
+
+            <!-- Padded content area below image -->
+            <div class="flex flex-col flex-1 min-h-0 px-4 pb-4 pt-4">
+                <!-- Tabs Row -->
+                <div
+                    class="flex items-center bg-slate-100/90 dark:bg-slate-800/60 p-1 rounded-xl gap-1 mb-3.5 flex-shrink-0 border border-slate-200/50 dark:border-slate-700/40">
+                    <button type="button" data-tab="overview"
+                        class="tab-btn flex-1 py-1.5 text-[11px] font-bold bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-sm rounded-lg whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-icons-outlined text-xs leading-none">menu_book</span>
+                        <span>Overview</span>
+                    </button>
+                    <button type="button" data-tab="history"
+                        class="tab-btn flex-1 py-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-icons-outlined text-xs leading-none">history</span>
+                        <span>History</span>
+                    </button>
+                    <button type="button" data-tab="landmarks"
+                        class="tab-btn flex-1 py-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-icons-outlined text-xs leading-none">location_on</span>
+                        <span>Landmarks</span>
+                    </button>
+                </div>
+
+                <!-- Scrollable Tab Content Panes -->
+                <div class="flex-1 overflow-y-auto custom-scrollbar pr-0.5 space-y-3 min-h-0">
+                    <!-- TAB: OVERVIEW -->
+                    <div data-content="overview" class="tab-pane space-y-3">
+                        <!-- Coordinates Badge -->
+                        <div
+                            class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
+                            <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
+                            <span class="place-coords"></span>
+                        </div>
+
+                        <div class="street-highlight-container hidden">
+                            <div
+                                class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50/60 dark:bg-indigo-950/30 px-3 py-2 rounded-xl border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
+                                <span class="material-icons-outlined text-base">directions_bike</span>
+                                <span class="street-name"></span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="wiki-summary-container hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed shadow-sm relative overflow-hidden">
+                            <div
+                                class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500">
+                            </div>
+                        </div>
+
+                        <p
+                            class="place-address hidden text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50 leading-relaxed">
+                        </p>
+
+                        <div
+                            class="place-default-prompt hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-500 dark:text-slate-400 leading-relaxed shadow-sm">
+                            To store this coordinate as a landmark, click the button below to assign a name, category,
+                            and description.
+                        </div>
+
+                        <div
+                            class="shop-info-container hidden bg-slate-50/80 dark:bg-slate-900/70 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-3.5 text-xs text-slate-600 dark:text-slate-300 space-y-1.5 shadow-sm">
+                            <div
+                                class="font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 pb-1 border-b border-slate-200/50 dark:border-slate-800/50">
+                                <span class="material-icons-outlined text-sm text-indigo-500">storefront</span>
+                                <span>Shop Details</span>
+                            </div>
+                            <div class="shop-type hidden flex justify-between py-0.5"><span
+                                    class="font-medium text-slate-400">Type:</span> <span
+                                    class="shop-type-val font-semibold text-slate-700 dark:text-slate-200 capitalize"></span>
+                            </div>
+                            <div class="shop-brand hidden flex justify-between py-0.5"><span
+                                    class="font-medium text-slate-400">Brand:</span> <span
+                                    class="shop-brand-val font-semibold text-slate-700 dark:text-slate-200"></span>
+                            </div>
+                            <div class="shop-hours hidden flex justify-between py-0.5"><span
+                                    class="font-medium text-slate-400">Hours:</span> <span
+                                    class="shop-hours-val font-semibold text-slate-700 dark:text-slate-200"></span>
+                            </div>
+                            <div class="shop-cuisine hidden flex justify-between py-0.5"><span
+                                    class="font-medium text-slate-400">Cuisine:</span> <span
+                                    class="shop-cuisine-val font-semibold text-slate-700 dark:text-slate-200"></span>
+                            </div>
+                            <div class="shop-web hidden flex justify-between py-0.5"><span
+                                    class="font-medium text-slate-400">Web:</span> <a href="" target="_blank"
+                                    class="shop-web-link text-indigo-600 dark:text-indigo-400 font-semibold hover:underline truncate max-w-[180px]"></a>
+                            </div>
+                            <div class="shop-phone hidden flex justify-between py-0.5"><span
+                                    class="font-medium text-slate-400">Phone:</span> <span
+                                    class="shop-phone-val font-semibold text-slate-700 dark:text-slate-200"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB: HISTORY -->
+                    <div data-content="history" class="tab-pane hidden space-y-4">
+                        <div class="space-y-2">
+                            <h4
+                                class="font-extrabold text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="material-icons-outlined text-xs">history</span>
+                                <span>Historical Background</span>
+                            </h4>
+                            <p
+                                class="history-text text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- TAB: LANDMARKS -->
+                    <div data-content="landmarks" class="tab-pane hidden space-y-3">
+                        <div>
+                            <h4
+                                class="font-extrabold text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="material-icons-outlined text-xs">location_on</span>
+                                <span>Iconic Landmarks</span>
+                            </h4>
+                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Tap a landmark to center
+                                the map at its position.</p>
+                        </div>
+                        <div class="landmarks-list space-y-2">
+                        </div>
                     </div>
                 </div>
 
+                <!-- Details Action Bar -->
                 <div
-                    class="wiki-summary-container hidden bg-indigo-50/40 dark:bg-indigo-950/10 border border-indigo-100/50 dark:border-indigo-900/10 rounded-xl p-3 text-xs text-slate-650 dark:text-slate-350 leading-relaxed italic">
+                    class="flex items-center gap-2 pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex-shrink-0">
+                    <button
+                        class="btn-save flex-1 py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-icons-outlined text-sm">bookmark_add</span>
+                        <span>Save Place</span>
+                    </button>
+                    <button
+                        class="btn-directions flex-1 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-icons-outlined text-sm">directions</span>
+                        <span>Directions</span>
+                    </button>
                 </div>
 
-                <p class="place-address hidden text-xs text-slate-500 dark:text-slate-400 leading-relaxed"></p>
-
+                <!-- FOOTER CREDITS -->
                 <div
-                    class="place-default-prompt hidden bg-indigo-50/40 dark:bg-indigo-950/10 border border-indigo-100/50 dark:border-indigo-900/10 rounded-xl p-3 text-xs text-slate-500 dark:text-slate-450 leading-relaxed">
-                    To store this coordinate as a landmark, click the button below to assign a name, category, and
-                    description.
-                </div>
-
-                <div
-                    class="shop-info-container hidden bg-indigo-50/30 dark:bg-indigo-950/10 border border-indigo-100/30 dark:border-indigo-900/10 rounded-xl p-3 text-xs text-slate-600 dark:text-slate-400 space-y-1">
-                    <div class="font-bold text-slate-700 dark:text-slate-300">🏪 Shop Details:</div>
-                    <div class="shop-type hidden"><span class="font-semibold">Type:</span> <span
-                            class="shop-type-val"></span></div>
-                    <div class="shop-brand hidden"><span class="font-semibold">Brand:</span> <span
-                            class="shop-brand-val"></span></div>
-                    <div class="shop-hours hidden"><span class="font-semibold">Hours:</span> <span
-                            class="shop-hours-val"></span></div>
-                    <div class="shop-cuisine hidden"><span class="font-semibold">Cuisine:</span> <span
-                            class="shop-cuisine-val"></span></div>
-                    <div class="shop-web hidden"><span class="font-semibold">Web:</span> <a href="" target="_blank"
-                            class="shop-web-link text-indigo-600 dark:text-indigo-400 hover:underline break-all"></a>
-                    </div>
-                    <div class="shop-phone hidden"><span class="font-semibold">Phone:</span> <span
-                            class="shop-phone-val"></span></div>
+                    class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-[9px] text-slate-400 dark:text-slate-500 flex items-center flex-shrink-0 leading-none gap-1.5">
+                    <a href="https://nominatim.openstreetmap.org/" target="_blank"
+                        class="hover:text-indigo-500 transition-colors">Nominatim</a>
+                    <span class="wiki-credit hidden">·</span>
+                    <a href="" target="_blank"
+                        class="wiki-credit wiki-link hidden hover:text-indigo-500 transition-colors">Wikipedia</a>
                 </div>
             </div>
-            <button
-                class="btn-save w-full py-2.5 px-3 mt-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition-all">Save
-                to Places</button>
         </div>
     </template>
 
     <template id="template-place-details-saved">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">
-            <span
-                class="place-badge px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border font-display"></span>
-            <button type="button"
-                class="btn-close text-xs text-slate-400 hover:text-slate-655 dark:hover:text-slate-250 font-semibold transition-colors">✕
-                Close</button>
-        </div>
-        <div class="space-y-4 flex-1 overflow-y-auto custom-scrollbar pr-1 flex flex-col justify-between h-full">
-            <div class="space-y-3">
-                <h3 class="place-name font-display font-bold text-sm text-slate-900 dark:text-slate-100 leading-snug">
-                </h3>
-                <p class="place-coords font-mono text-[10px] text-slate-450 dark:text-slate-500 mt-1"></p>
+        <div class="flex flex-col h-full overflow-hidden">
+            <!-- Cover Header Image/Gradient Card -->
+            <div
+                class="wiki-image-container relative h-48 w-full overflow-hidden group flex-shrink-0 bg-gradient-to-br from-violet-600 via-indigo-700 to-slate-900 dark:from-violet-950 dark:via-indigo-950 dark:to-slate-950">
+                <img class="wiki-image hidden w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    src="" alt="Place Image">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
+
+                <!-- Glow shapes for default cover -->
                 <div
-                    class="place-desc-container bg-slate-50 dark:bg-slate-950 border border-slate-200/40 dark:border-slate-800/40 rounded-xl p-3 shadow-inner leading-relaxed">
-                    <p class="place-desc-text text-xs text-slate-650 dark:text-slate-350 italic"></p>
+                    class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-400/30 rounded-full blur-2xl pointer-events-none">
                 </div>
+                <div
+                    class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl pointer-events-none">
+                </div>
+
+                <!-- Absolute Overlay Contents -->
+                <div class="absolute bottom-4 left-4 right-4 text-white">
+                    <span
+                        class="place-badge inline-flex items-center gap-1 px-2.5 py-0.5 text-[9px] font-extrabold tracking-wider uppercase bg-white/20 dark:bg-white/10 text-white rounded-full mb-1.5 backdrop-blur-md border border-white/25 shadow-sm">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        SAVED LOCATION
+                    </span>
+                    <h3 class="place-name text-xl font-black tracking-tight drop-shadow-md leading-tight text-white">
+                    </h3>
+                </div>
+
+                <!-- Floating Close button -->
+                <button type="button"
+                    class="btn-close absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-200 active:scale-90 z-10 cursor-pointer">
+                    <span class="material-icons-outlined text-sm leading-none">close</span>
+                </button>
             </div>
-            <div class="flex items-center gap-2 pt-3 mt-4 border-t border-slate-100 dark:border-slate-800">
-                <button
-                    class="btn-edit flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-850 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors border border-slate-200/50 dark:border-slate-800/50">Edit
-                    Details</button>
-                <button
-                    class="btn-delete flex-1 py-2 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 font-semibold text-xs transition-colors border border-red-200/50 dark:border-red-900/20">Delete
-                    Pin</button>
+
+            <!-- Padded content area below image -->
+            <div class="flex flex-col flex-1 min-h-0 px-4 pb-4 pt-4">
+                <!-- Tabs Row -->
+                <div
+                    class="flex items-center bg-slate-100/90 dark:bg-slate-800/60 p-1 rounded-xl gap-1 mb-3.5 flex-shrink-0 border border-slate-200/50 dark:border-slate-700/40">
+                    <button type="button" data-tab="overview"
+                        class="tab-btn flex-1 py-1.5 text-[11px] font-bold bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-sm rounded-lg whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-icons-outlined text-xs leading-none">menu_book</span>
+                        <span>Overview</span>
+                    </button>
+                    <button type="button" data-tab="history"
+                        class="tab-btn flex-1 py-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-icons-outlined text-xs leading-none">history</span>
+                        <span>History</span>
+                    </button>
+                    <button type="button" data-tab="landmarks"
+                        class="tab-btn flex-1 py-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-icons-outlined text-xs leading-none">location_on</span>
+                        <span>Landmarks</span>
+                    </button>
+                </div>
+
+                <!-- Scrollable Tab Content Panes -->
+                <div class="flex-1 overflow-y-auto custom-scrollbar pr-0.5 space-y-3 min-h-0">
+                    <!-- TAB: OVERVIEW -->
+                    <div data-content="overview" class="tab-pane space-y-3">
+                        <div
+                            class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
+                            <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
+                            <span class="place-coords"></span>
+                        </div>
+                        <div
+                            class="place-desc-container bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                            <div
+                                class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500">
+                            </div>
+                            <p class="place-desc-text text-xs text-slate-700 dark:text-slate-300 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <!-- TAB: HISTORY -->
+                    <div data-content="history" class="tab-pane hidden space-y-4">
+                        <div class="space-y-2">
+                            <h4
+                                class="font-extrabold text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="material-icons-outlined text-xs">history</span>
+                                <span>Historical Background</span>
+                            </h4>
+                            <p
+                                class="history-text text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- TAB: LANDMARKS -->
+                    <div data-content="landmarks" class="tab-pane hidden space-y-3">
+                        <div>
+                            <h4
+                                class="font-extrabold text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="material-icons-outlined text-xs">location_on</span>
+                                <span>Iconic Landmarks</span>
+                            </h4>
+                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Tap a landmark to center
+                                the map at its position.</p>
+                        </div>
+                        <div class="landmarks-list space-y-2">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Details Action Bar -->
+                <div
+                    class="flex flex-col gap-2 pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex-shrink-0">
+                    <button
+                        class="btn-directions w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <span class="material-icons-outlined text-sm">directions</span>
+                        <span>Get Directions</span>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button
+                            class="btn-edit flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 font-semibold text-xs transition-colors border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span class="material-icons-outlined text-xs">edit</span>
+                            <span>Edit</span>
+                        </button>
+                        <button
+                            class="btn-delete flex-1 py-2 rounded-xl bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 font-semibold text-xs transition-colors border border-red-200/60 dark:border-red-900/40 flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span class="material-icons-outlined text-xs">delete</span>
+                            <span>Delete</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FOOTER CREDITS -->
+                <div
+                    class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-[9px] text-slate-400 dark:text-slate-500 flex items-center flex-shrink-0 leading-none gap-1.5">
+                    <a href="https://nominatim.openstreetmap.org/" target="_blank"
+                        class="hover:text-indigo-500 transition-colors">Nominatim</a>
+                    <span class="wiki-credit hidden">·</span>
+                    <a href="" target="_blank"
+                        class="wiki-credit wiki-link hidden hover:text-indigo-500 transition-colors">Wikipedia</a>
+                </div>
             </div>
         </div>
     </template>

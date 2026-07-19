@@ -49,7 +49,9 @@ export const MarkerController = {
         }
     },
 
-    openModal(lat, lng, id = null) {
+    currentTempDetails: null,
+
+    openModal(lat, lng, id = null, tempDetails = null) {
         const modalLat = document.getElementById('modal-lat');
         const modalLng = document.getElementById('modal-lng');
         const modalId = document.getElementById('modal-id');
@@ -58,6 +60,8 @@ export const MarkerController = {
         const modalDesc = document.getElementById('modal-desc');
         const modalTitle = document.getElementById('modal-title');
         const markerModal = document.getElementById('marker-modal');
+
+        this.currentTempDetails = tempDetails;
 
         modalLat.value = lat;
         modalLng.value = lng;
@@ -72,7 +76,7 @@ export const MarkerController = {
             }
         } else {
             modalId.value = '';
-            modalName.value = '';
+            modalName.value = tempDetails ? tempDetails.name : '';
             modalCategory.value = 'poi';
             modalDesc.value = '';
             modalTitle.innerText = "Save Location";
@@ -107,6 +111,21 @@ export const MarkerController = {
             desc: modalDesc.value.trim(),
             updatedAt: Date.now()
         };
+
+        if (!modalId.value && this.currentTempDetails) {
+            data.wikiImage = this.currentTempDetails.wikiImage || '';
+            data.wikiSummary = this.currentTempDetails.wikiSummary || '';
+            data.wikiUrl = this.currentTempDetails.wikiUrl || '';
+            data.country = this.currentTempDetails.country || '';
+        } else if (modalId.value) {
+            const existing = this.customMarkers.find(x => x.id === modalId.value);
+            if (existing) {
+                data.wikiImage = existing.wikiImage || '';
+                data.wikiSummary = existing.wikiSummary || '';
+                data.wikiUrl = existing.wikiUrl || '';
+                data.country = existing.country || '';
+            }
+        }
         
         try {
             await savePlace(id, data);
@@ -227,7 +246,11 @@ export const MarkerController = {
             await deletePlaceFromDB(id);
             this.customMarkers = await loadAllPlaces();
             this.renderAll();
-            HUDController.setState('places');
+            if (HUDController.currentState === 'saved-places') {
+                HUDController.setState('saved-places');
+            } else {
+                HUDController.setState('places');
+            }
         } catch (err) {
             console.error("Failed to delete place:", err);
         }

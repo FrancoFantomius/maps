@@ -48,5 +48,25 @@ export const ApiService = {
         const res = await fetch(url);
         if (!res.ok) throw new Error(`OSRM routing failed: ${res.statusText}`);
         return await res.json();
+    },
+
+    async fetchWikimediaImage(lat, lng, radius = 1000) {
+        const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=geosearch&ggsnamespace=6&ggsradius=${radius}&ggscoord=${lat}|${lng}&ggslimit=5&prop=imageinfo&iiprop=url|mime&iiurlwidth=800&format=json&origin=*`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Wikimedia Commons query failed: ${res.statusText}`);
+        const data = await res.json();
+        if (data.query && data.query.pages) {
+            const pages = Object.values(data.query.pages);
+            // Find first actual image (not SVG, not audio, etc.)
+            for (const page of pages) {
+                if (page.imageinfo && page.imageinfo.length > 0) {
+                    const info = page.imageinfo[0];
+                    if (info.mime && info.mime.startsWith('image/') && !info.mime.includes('svg')) {
+                        return info.thumburl || info.url;
+                    }
+                }
+            }
+        }
+        return null;
     }
 };

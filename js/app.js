@@ -38,15 +38,31 @@ window.addEventListener('load', () => {
     setupEventListeners();
 });
 
-async function loadPoiAndPathDetails(latlng) {
+function getRenderedLabelName(point) {
+    const renderedFeatures = MapService.queryRenderedFeatures(point) || [];
+    const labelFeature = renderedFeatures.find(feature => {
+        if (!feature || !feature.layer || feature.layer.type !== 'symbol' || !feature.properties) return false;
+        return feature.properties.name || feature.properties['name:en'] || feature.properties['name:latin'] || feature.properties['name_int'];
+    });
+
+    if (!labelFeature) return '';
+
+    const properties = labelFeature.properties;
+    return properties['name:en'] || properties.name || properties['name:latin'] || properties.name_int || '';
+}
+
+async function loadPoiAndPathDetails(latlng, labelName = '') {
     const lat = latlng.lat;
     const lng = latlng.lng;
 
     // Show loading HUD
     HUDController.setState('place-details', { isLoading: true });
 
-    let placeName = "Dropped Pin";
+    let placeName = labelName || "Dropped Pin";
     let wikiSummary = "";
+    let wikiImage = "";
+    let wikiUrl = "";
+    let countryName = "";
     let addressLine = "";
     let shopInfo = null;
     let streetName = "";
@@ -63,16 +79,36 @@ async function loadPoiAndPathDetails(latlng) {
         if (nomRes.status === 'fulfilled' && nomRes.value) {
             const val = nomRes.value;
             addressLine = val.display_name || "";
-            if (val.name) {
+            if (val.address && val.address.country) {
+                countryName = val.address.country;
+            } else if (val.display_name) {
+                const parts = val.display_name.split(',');
+                countryName = parts[parts.length - 1].trim();
+            }
+            if (!labelName && val.name) {
                 placeName = val.name;
-            } else if (val.address) {
+            } else if (!labelName && val.address) {
                 const addr = val.address;
                 placeName = addr.shop || addr.amenity || addr.building || addr.tourism || addr.historic || addr.road || "Dropped Pin";
             }
         }
 
-        // Process Wikipedia
-        if (wikiRes.status === 'fulfilled' && wikiRes.value && wikiRes.value.query && wikiRes.value.query.geosearch) {
+        // Process Wikipedia. Prefer the clicked label text, then fall back to nearby pages.
+        if (labelName) {
+            try {
+                const summaryData = await ApiService.fetchWikipediaSummary(labelName);
+                if (summaryData && summaryData.extract) {
+                    wikiSummary = summaryData.extract;
+                    wikiImage = summaryData.thumbnail?.source || summaryData.originalimage?.source || '';
+                    wikiUrl = summaryData.content_urls?.desktop?.page || '';
+                    placeName = summaryData.title || labelName;
+                }
+            } catch (e) {
+                console.warn("Could not fetch Wikipedia summary for label; trying nearby pages", e);
+            }
+        }
+
+        if (!wikiSummary && wikiRes.status === 'fulfilled' && wikiRes.value && wikiRes.value.query && wikiRes.value.query.geosearch) {
             const geosearch = wikiRes.value.query.geosearch;
             if (geosearch.length > 0) {
                 const nearestPage = geosearch[0];
@@ -80,6 +116,8 @@ async function loadPoiAndPathDetails(latlng) {
                     const summaryData = await ApiService.fetchWikipediaSummary(nearestPage.title);
                     if (summaryData && summaryData.extract) {
                         wikiSummary = summaryData.extract;
+                        wikiImage = summaryData.thumbnail?.source || summaryData.originalimage?.source || '';
+                        wikiUrl = summaryData.content_urls?.desktop?.page || '';
                         if (placeName === "Dropped Pin" || !placeName) {
                             placeName = nearestPage.title;
                         }
@@ -87,6 +125,18 @@ async function loadPoiAndPathDetails(latlng) {
                 } catch (e) {
                     console.error("Failed to fetch Wikipedia page summary", e);
                 }
+            }
+        }
+
+        // Wikimedia Commons fallback: fetch a nearby geotagged photo if Wikipedia didn't provide one
+        if (!wikiImage) {
+            try {
+                const commonsImage = await ApiService.fetchWikimediaImage(lat, lng);
+                if (commonsImage) {
+                    wikiImage = commonsImage;
+                }
+            } catch (e) {
+                console.warn("Wikimedia Commons image fallback failed", e);
             }
         }
 
@@ -165,6 +215,9 @@ async function loadPoiAndPathDetails(latlng) {
         lng: lng,
         name: placeName,
         wikiSummary: wikiSummary,
+        wikiImage: wikiImage,
+        wikiUrl: wikiUrl,
+        country: countryName,
         address: addressLine,
         shopInfo: shopInfo,
         streetName: streetName
@@ -189,7 +242,10 @@ function onMapClick(e) {
     
     MarkerController.setTempMarker(latlng.lat, latlng.lng);
     MapService.panTo([latlng.lng, latlng.lat]);
-    loadPoiAndPathDetails(latlng);
+
+    // Query rendered label under click point for high precision Wikipedia lookup
+    const labelName = getRenderedLabelName(e.point);
+    loadPoiAndPathDetails(latlng, labelName);
 }
 
 function setupEventListeners() {
@@ -311,6 +367,113 @@ function setupEventListeners() {
         HUDController.setState('places');
         MarkerController.removeTempMarker();
     });
+
+    // Toggle Saved Places (My Places) list
+    const btnTogglePlaces = document.getElementById('btn-toggle-places');
+    if (btnTogglePlaces) {
+        btnTogglePlaces.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (HUDController.currentState === 'saved-places') {
+                HUDController.setState('places');
+            } else {
+                HUDController.setState('saved-places');
+            }
+        });
+    }
+
+    // Close button inside Saved Places list
+    const btnClosePlaces = document.getElementById('btn-close-places');
+    if (btnClosePlaces) {
+        btnClosePlaces.addEventListener('click', (e) => {
+            e.stopPropagation();
+            HUDController.setState('places');
+        });
+    }
+
+    // Mobile drag handle expansion/collapse/swipe closing
+    const dragHandle = document.getElementById('hud-drag-handle');
+    const hudPanel = document.getElementById('hud-panel');
+    if (dragHandle && hudPanel) {
+        let touchStartY = 0;
+        let initialHudHeight = 0;
+        let isDragging = false;
+
+        // Support clicking to toggle default/expanded height
+        dragHandle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isDragging) return; // Ignore clicks if dragging was active
+
+            if (window.innerWidth < 768) {
+                if (HUDController.isExpanded) {
+                    HUDController.collapse();
+                } else {
+                    HUDController.expand();
+                }
+            }
+        });
+
+        dragHandle.addEventListener('touchstart', (e) => {
+            if (window.innerWidth >= 768) return;
+            touchStartY = e.touches[0].clientY;
+            initialHudHeight = hudPanel.offsetHeight;
+            isDragging = true;
+
+            // Temporarily disable transitions during drag for raw follow-finger response
+            hudPanel.style.transition = 'none';
+        }, { passive: true });
+
+        dragHandle.addEventListener('touchmove', (e) => {
+            if (!isDragging || window.innerWidth >= 768) return;
+            const touchCurrentY = e.touches[0].clientY;
+            const dy = touchStartY - touchCurrentY; // Positive = drag up, Negative = drag down
+            const newHeight = initialHudHeight + dy;
+
+            // Constrain between 0 and 90% of screen height
+            const constrainedHeight = Math.max(0, Math.min(newHeight, window.innerHeight * 0.88));
+            hudPanel.style.height = `${constrainedHeight}px`;
+        }, { passive: true });
+
+        dragHandle.addEventListener('touchend', (e) => {
+            if (!isDragging || window.innerWidth >= 768) return;
+            isDragging = false;
+
+            // Re-enable CSS transitions
+            hudPanel.style.transition = '';
+
+            const finalHeight = hudPanel.offsetHeight;
+            const hScreen = window.innerHeight;
+
+            // Determine closest state to snap to
+            if (finalHeight < hScreen * 0.22) {
+                // Closer to closed -> slide out
+                HUDController.setState('places');
+                // Clear inline style after transition to let CSS class take over
+                setTimeout(() => {
+                    if (HUDController.currentState === 'places') {
+                        hudPanel.style.height = '';
+                    }
+                }, 400);
+            } else if (finalHeight < hScreen * 0.62) {
+                // Closer to 3/7 medium height
+                HUDController.collapse();
+                // Clear inline style so responsive CSS (42.85vh) takes over
+                setTimeout(() => {
+                    if (HUDController.currentState !== 'places' && !HUDController.isExpanded) {
+                        hudPanel.style.height = '';
+                    }
+                }, 400);
+            } else {
+                // Closer to 6/7 expanded height
+                HUDController.expand();
+                // Clear inline style so responsive CSS (85.71vh) takes over
+                setTimeout(() => {
+                    if (HUDController.currentState !== 'places' && HUDController.isExpanded) {
+                        hudPanel.style.height = '';
+                    }
+                }, 400);
+            }
+        }, { passive: true });
+    }
 
     // Toolbar triggers toggling
     gpsBtn.addEventListener('click', () => {
@@ -489,4 +652,11 @@ function setupEventListeners() {
             MapService.setPitch(parseFloat(e.target.value));
         });
     }
+
+    // Responsive resize support for HUD layout updates
+    window.addEventListener('resize', () => {
+        if (HUDController.isOpen) {
+            HUDController.open(HUDController.isExpanded);
+        }
+    });
 }

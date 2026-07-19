@@ -1,0 +1,87 @@
+/* maps Multi-State HUD Stylesheet - css/HUD.css */
+
+#hud-panel {
+    position: fixed;
+    z-index: 15; /* Above map (0), but below settings panel (20) and modals (1000) */
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.12), 0 0 1px rgba(0, 0, 0, 0.08);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    will-change: transform, height, opacity;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.dark #hud-panel {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Desktop layout: slides in from the left */
+@media (min-width: 768px) {
+    #hud-panel {
+        left: 1.25rem;
+        top: 5rem; /* Below the search bar */
+        width: 25rem; /* 400px */
+        height: calc(100vh - 6.5rem);
+        border-radius: 1.75rem;
+    }
+    
+    #hud-panel.hud-closed {
+        transform: translateX(-27rem); /* Slide completely left offscreen */
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    #hud-panel.hud-open {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+/* Mobile layout: bottom sheet sliding from the bottom */
+@media (max-width: 767px) {
+    #hud-panel {
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        border-radius: 2rem 2rem 0 0;
+        border-bottom: none;
+    }
+    
+    #hud-panel.hud-closed {
+        transform: translateY(100%);
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    #hud-panel.hud-open-default {
+        transform: translateY(0);
+        height: 48vh;
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    #hud-panel.hud-open-expanded {
+        transform: translateY(0);
+        height: 88vh;
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Hide close buttons on mobile HUD since dragging down closes it */
+    #btn-close-places,
+    #btn-close-search,
+    #btn-exit-measure,
+    #btn-exit-nav,
+    .btn-close {
+        display: none !important;
+    }
+}
+

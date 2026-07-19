@@ -698,5 +698,9 @@ export const MapService = {
         } else {
             this.map.on(event, layerIdOrHandler);
         }
+    },
+
+    queryRenderedFeatures(point, options) {
+        return this.map ? this.map.queryRenderedFeatures(point, options) : [];
     }
 };
