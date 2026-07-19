@@ -687,6 +687,10 @@ export const MapService = {
         return new maplibregl.Popup(options);
     },
 
+    queryRenderedFeatures(point, options = {}) {
+        return this.map ? this.map.queryRenderedFeatures(point, options) : [];
+    },
+
     addControl(control, position) {
         if (this.map) this.map.addControl(control, position);
     },

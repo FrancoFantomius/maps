@@ -97,7 +97,13 @@ export const HUDController = {
             if (data.wikiSummary) {
                 const wikiContainer = clone.querySelector('.wiki-summary-container');
                 wikiContainer.classList.remove('hidden');
-                wikiContainer.textContent = data.wikiSummary;
+                const summaryText = wikiContainer.querySelector('.wiki-summary-text');
+                const summaryLink = wikiContainer.querySelector('.wiki-summary-link');
+                summaryText.textContent = data.wikiSummary;
+                if (data.wikiUrl) {
+                    summaryLink.href = data.wikiUrl;
+                    summaryLink.classList.remove('hidden');
+                }
             } else if (data.address) {
                 const addressEl = clone.querySelector('.place-address');
                 addressEl.classList.remove('hidden');

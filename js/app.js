@@ -38,15 +38,29 @@ window.addEventListener('load', () => {
     setupEventListeners();
 });
 
-async function loadPoiAndPathDetails(latlng) {
+function getRenderedLabelName(point) {
+    const renderedFeatures = MapService.queryRenderedFeatures(point) || [];
+    const labelFeature = renderedFeatures.find(feature => {
+        if (!feature || !feature.layer || feature.layer.type !== 'symbol' || !feature.properties) return false;
+        return feature.properties.name || feature.properties['name:en'] || feature.properties['name:latin'] || feature.properties['name_int'];
+    });
+
+    if (!labelFeature) return '';
+
+    const properties = labelFeature.properties;
+    return properties['name:en'] || properties.name || properties['name:latin'] || properties.name_int || '';
+}
+
+async function loadPoiAndPathDetails(latlng, labelName = '') {
     const lat = latlng.lat;
     const lng = latlng.lng;
 
     // Show loading HUD
     HUDController.setState('place-details', { isLoading: true });
 
-    let placeName = "Dropped Pin";
+    let placeName = labelName || "Dropped Pin";
     let wikiSummary = "";
+    let wikiUrl = "";
     let addressLine = "";
     let shopInfo = null;
     let streetName = "";
@@ -63,16 +77,29 @@ async function loadPoiAndPathDetails(latlng) {
         if (nomRes.status === 'fulfilled' && nomRes.value) {
             const val = nomRes.value;
             addressLine = val.display_name || "";
-            if (val.name) {
+            if (!labelName && val.name) {
                 placeName = val.name;
-            } else if (val.address) {
+            } else if (!labelName && val.address) {
                 const addr = val.address;
                 placeName = addr.shop || addr.amenity || addr.building || addr.tourism || addr.historic || addr.road || "Dropped Pin";
             }
         }
 
-        // Process Wikipedia
-        if (wikiRes.status === 'fulfilled' && wikiRes.value && wikiRes.value.query && wikiRes.value.query.geosearch) {
+        // Process Wikipedia. Prefer the clicked label text, then fall back to nearby pages.
+        if (labelName) {
+            try {
+                const summaryData = await ApiService.fetchWikipediaSummary(labelName);
+                if (summaryData && summaryData.extract) {
+                    wikiSummary = summaryData.extract;
+                    wikiUrl = summaryData.content_urls?.desktop?.page || '';
+                    placeName = summaryData.title || labelName;
+                }
+            } catch (e) {
+                console.warn("Could not fetch Wikipedia summary for label; trying nearby pages", e);
+            }
+        }
+
+        if (!wikiSummary && wikiRes.status === 'fulfilled' && wikiRes.value && wikiRes.value.query && wikiRes.value.query.geosearch) {
             const geosearch = wikiRes.value.query.geosearch;
             if (geosearch.length > 0) {
                 const nearestPage = geosearch[0];
@@ -80,6 +107,7 @@ async function loadPoiAndPathDetails(latlng) {
                     const summaryData = await ApiService.fetchWikipediaSummary(nearestPage.title);
                     if (summaryData && summaryData.extract) {
                         wikiSummary = summaryData.extract;
+                        wikiUrl = summaryData.content_urls?.desktop?.page || '';
                         if (placeName === "Dropped Pin" || !placeName) {
                             placeName = nearestPage.title;
                         }
@@ -165,6 +193,7 @@ async function loadPoiAndPathDetails(latlng) {
         lng: lng,
         name: placeName,
         wikiSummary: wikiSummary,
+        wikiUrl: wikiUrl,
         address: addressLine,
         shopInfo: shopInfo,
         streetName: streetName
@@ -173,6 +202,7 @@ async function loadPoiAndPathDetails(latlng) {
 
 function onMapClick(e) {
     const latlng = { lat: e.lngLat.lat, lng: e.lngLat.lng };
+    const labelName = getRenderedLabelName(e.point);
 
     if (RoutingController.isRouteMode) {
         RoutingController.handleClick(latlng);
@@ -189,7 +219,7 @@ function onMapClick(e) {
     
     MarkerController.setTempMarker(latlng.lat, latlng.lng);
     MapService.panTo([latlng.lng, latlng.lat]);
-    loadPoiAndPathDetails(latlng);
+    loadPoiAndPathDetails(latlng, labelName);
 }
 
 function setupEventListeners() {
