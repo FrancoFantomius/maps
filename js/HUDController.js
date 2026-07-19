@@ -127,6 +127,61 @@ export const HUDController = {
             return;
         }
 
+        // Tab switching and data loading helper
+        const setupTabs = (parentEl, placeName, baseCoords) => {
+            const tabs = parentEl.querySelectorAll('.tab-btn');
+            const contents = parentEl.querySelectorAll('.tab-pane');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const target = tab.getAttribute('data-tab');
+
+                    tabs.forEach(t => {
+                        t.classList.remove('bg-white', 'dark:bg-slate-700', 'text-indigo-600', 'dark:text-indigo-300', 'shadow-sm', 'font-bold');
+                        t.classList.add('text-slate-500', 'dark:text-slate-400', 'hover:text-slate-800', 'dark:hover:text-slate-200', 'font-medium');
+                    });
+                    tab.classList.remove('text-slate-500', 'dark:text-slate-400', 'hover:text-slate-800', 'dark:hover:text-slate-200', 'font-medium');
+                    tab.classList.add('bg-white', 'dark:bg-slate-700', 'text-indigo-600', 'dark:text-indigo-300', 'shadow-sm', 'font-bold');
+
+                    contents.forEach(content => {
+                        if (content.getAttribute('data-content') === target) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const landmarksList = parentEl.querySelector('.landmarks-list');
+            if (landmarksList) {
+                landmarksList.innerHTML = '';
+                activeLandmarks.forEach((landmark, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'p-3 bg-white hover:bg-indigo-50/30 dark:bg-slate-900/40 dark:hover:bg-slate-800/60 rounded-xl border border-slate-200/60 dark:border-slate-800/80 cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-700 transition-all shadow-xs group';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <h5 class="font-bold text-[11px] text-indigo-600 dark:text-indigo-400 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                                <span class="material-icons-outlined text-xs leading-none">location_on</span>
+                                <span>${landmark.name}</span>
+                            </h5>
+                            <span class="text-[9px] bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full font-mono text-slate-500 border border-slate-200/50 dark:border-slate-700/50">POI ${index + 1}</span>
+                        </div>
+                        <p class="text-[10px] text-slate-550 dark:text-slate-400 mt-1 leading-relaxed">${landmark.desc}</p>
+                    `;
+                    card.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        MapService.flyTo([landmark.lng, landmark.lat], 15);
+                        MapService.createPopup({ offset: [0, -10] })
+                            .setHTML(`<div class="p-1 font-bold text-xs"><p>${landmark.name}</p></div>`)
+                            .setLngLat([landmark.lng, landmark.lat])
+                            .addTo(MapService.map);
+                    });
+                    landmarksList.appendChild(card);
+                });
+            }
+        };
+
         if (data.isTemp) {
             const template = document.getElementById('template-place-details-temp');
             const clone = template.content.cloneNode(true);
@@ -219,7 +274,7 @@ export const HUDController = {
                 }
             }
 
-
+            setupTabs(clone, data.name || "Dropped Pin", { lat: data.lat, lng: data.lng });
 
             panelDetails.appendChild(clone);
         } else {
@@ -283,7 +338,7 @@ export const HUDController = {
                 });
             }
 
-
+            setupTabs(clone, data.name, { lat: data.lat, lng: data.lng });
 
             panelDetails.appendChild(clone);
         }

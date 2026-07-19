@@ -168,17 +168,14 @@
 
         <!-- Dynamic State 1: Saved Places (My Places) list -->
         <div id="panel-places" class="hidden flex flex-col h-full overflow-hidden p-4">
-            <div
-                class="flex items-center justify-between mb-3.5 flex-shrink-0 border-b border-slate-100 dark:border-slate-800/80 pb-3">
+            <div class="flex items-center justify-between mb-3.5 flex-shrink-0 border-b border-slate-100 dark:border-slate-800/80 pb-3">
                 <div>
-                    <h2
-                        class="font-display font-extrabold text-base text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <h2 class="font-display font-extrabold text-base text-slate-900 dark:text-slate-100 flex items-center gap-2">
                         <span>My Places</span>
                         <span id="markers-count"
                             class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-100 dark:border-indigo-900/30">0</span>
                     </h2>
-                    <p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Your personalized custom pins
-                    </p>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Your personalized custom pins</p>
                 </div>
                 <!-- Close button for Saved Places -->
                 <button type="button" id="btn-close-places"
@@ -220,8 +217,7 @@
             <div
                 class="flex items-center justify-between mb-3 flex-shrink-0 border-b border-slate-100 dark:border-slate-800/80 pb-2.5">
                 <h2 class="font-display font-bold text-sm text-teal-600 dark:text-teal-400 flex items-center gap-2">
-                    <span
-                        class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse shadow-[0_0_8px_rgba(20,184,166,0.6)]"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse shadow-[0_0_8px_rgba(20,184,166,0.6)]"></span>
                     Measuring Mode
                 </h2>
                 <button id="btn-exit-measure"
@@ -230,17 +226,14 @@
                 </button>
             </div>
             <div class="space-y-3">
-                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Click sequential points on the map
-                    to calculate linear distance path.</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Click sequential points on the map to calculate linear distance path.</p>
                 <div
                     class="bg-gradient-to-br from-teal-50/80 to-emerald-50/50 dark:from-teal-950/30 dark:to-emerald-950/20 border border-teal-200/60 dark:border-teal-900/40 rounded-2xl p-4 flex flex-col gap-1 shadow-sm relative overflow-hidden">
                     <div class="w-1 absolute left-0 top-0 bottom-0 bg-teal-500"></div>
                     <span
-                        class="text-[9px] uppercase font-extrabold tracking-wider text-teal-600 dark:text-teal-400">Linear
-                        Distance</span>
+                        class="text-[9px] uppercase font-extrabold tracking-wider text-teal-600 dark:text-teal-400">Linear Distance</span>
                     <span id="measure-output"
-                        class="font-display font-black text-lg text-slate-900 dark:text-slate-100 tracking-tight">Total
-                        Distance: 0.00 km</span>
+                        class="font-display font-black text-lg text-slate-900 dark:text-slate-100 tracking-tight">Total Distance: 0.00 km</span>
                 </div>
             </div>
         </div>
@@ -670,17 +663,12 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
 
                 <!-- Glow shapes for default cover -->
-                <div
-                    class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-400/30 rounded-full blur-2xl pointer-events-none">
-                </div>
-                <div
-                    class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl pointer-events-none">
-                </div>
+                <div class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-400/30 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl pointer-events-none"></div>
 
                 <!-- Absolute Overlay Contents -->
                 <div class="absolute bottom-4 left-4 right-4 text-white">
-                    <h3 class="place-name text-xl font-black tracking-tight drop-shadow-md leading-tight text-white">
-                        Dropped Pin
+                    <h3 class="place-name text-xl font-black tracking-tight drop-shadow-md leading-tight text-white">Dropped Pin
                     </h3>
                 </div>
 
@@ -718,8 +706,7 @@
                     <!-- TAB: OVERVIEW -->
                     <div data-content="overview" class="tab-pane space-y-3">
                         <!-- Coordinates Badge -->
-                        <div
-                            class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
+                        <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
                             <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
                             <span class="place-coords"></span>
                         </div>
@@ -734,52 +721,28 @@
 
                         <div
                             class="wiki-summary-container hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed shadow-sm relative overflow-hidden">
-                            <div
-                                class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500">
-                            </div>
+                            <div class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500"></div>
                         </div>
 
-                        <p
-                            class="place-address hidden text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50 leading-relaxed">
-                        </p>
+                        <p class="place-address hidden text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50 leading-relaxed"></p>
 
                         <div
                             class="place-default-prompt hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-500 dark:text-slate-400 leading-relaxed shadow-sm">
-                            To store this coordinate as a landmark, click the button below to assign a name, category,
-                            and description.
+                            To store this coordinate as a landmark, click the button below to assign a name, category, and description.
                         </div>
 
                         <div
                             class="shop-info-container hidden bg-slate-50/80 dark:bg-slate-900/70 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-3.5 text-xs text-slate-600 dark:text-slate-300 space-y-1.5 shadow-sm">
-                            <div
-                                class="font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 pb-1 border-b border-slate-200/50 dark:border-slate-800/50">
+                            <div class="font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 pb-1 border-b border-slate-200/50 dark:border-slate-800/50">
                                 <span class="material-icons-outlined text-sm text-indigo-500">storefront</span>
                                 <span>Shop Details</span>
                             </div>
-                            <div class="shop-type hidden flex justify-between py-0.5"><span
-                                    class="font-medium text-slate-400">Type:</span> <span
-                                    class="shop-type-val font-semibold text-slate-700 dark:text-slate-200 capitalize"></span>
-                            </div>
-                            <div class="shop-brand hidden flex justify-between py-0.5"><span
-                                    class="font-medium text-slate-400">Brand:</span> <span
-                                    class="shop-brand-val font-semibold text-slate-700 dark:text-slate-200"></span>
-                            </div>
-                            <div class="shop-hours hidden flex justify-between py-0.5"><span
-                                    class="font-medium text-slate-400">Hours:</span> <span
-                                    class="shop-hours-val font-semibold text-slate-700 dark:text-slate-200"></span>
-                            </div>
-                            <div class="shop-cuisine hidden flex justify-between py-0.5"><span
-                                    class="font-medium text-slate-400">Cuisine:</span> <span
-                                    class="shop-cuisine-val font-semibold text-slate-700 dark:text-slate-200"></span>
-                            </div>
-                            <div class="shop-web hidden flex justify-between py-0.5"><span
-                                    class="font-medium text-slate-400">Web:</span> <a href="" target="_blank"
-                                    class="shop-web-link text-indigo-600 dark:text-indigo-400 font-semibold hover:underline truncate max-w-[180px]"></a>
-                            </div>
-                            <div class="shop-phone hidden flex justify-between py-0.5"><span
-                                    class="font-medium text-slate-400">Phone:</span> <span
-                                    class="shop-phone-val font-semibold text-slate-700 dark:text-slate-200"></span>
-                            </div>
+                            <div class="shop-type hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Type:</span> <span class="shop-type-val font-semibold text-slate-700 dark:text-slate-200 capitalize"></span></div>
+                            <div class="shop-brand hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Brand:</span> <span class="shop-brand-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
+                            <div class="shop-hours hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Hours:</span> <span class="shop-hours-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
+                            <div class="shop-cuisine hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Cuisine:</span> <span class="shop-cuisine-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
+                            <div class="shop-web hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Web:</span> <a href="" target="_blank" class="shop-web-link text-indigo-600 dark:text-indigo-400 font-semibold hover:underline truncate max-w-[180px]"></a></div>
+                            <div class="shop-phone hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Phone:</span> <span class="shop-phone-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
                         </div>
                     </div>
 
@@ -791,8 +754,7 @@
                                 <span class="material-icons-outlined text-xs">history</span>
                                 <span>Historical Background</span>
                             </h4>
-                            <p
-                                class="history-text text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
+                            <p class="history-text text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
                             </p>
                         </div>
                     </div>
@@ -805,8 +767,7 @@
                                 <span class="material-icons-outlined text-xs">location_on</span>
                                 <span>Iconic Landmarks</span>
                             </h4>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Tap a landmark to center
-                                the map at its position.</p>
+                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Tap a landmark to center the map at its position.</p>
                         </div>
                         <div class="landmarks-list space-y-2">
                         </div>
@@ -831,11 +792,9 @@
                 <!-- FOOTER CREDITS -->
                 <div
                     class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-[9px] text-slate-400 dark:text-slate-500 flex items-center flex-shrink-0 leading-none gap-1.5">
-                    <a href="https://nominatim.openstreetmap.org/" target="_blank"
-                        class="hover:text-indigo-500 transition-colors">Nominatim</a>
+                    <a href="https://nominatim.openstreetmap.org/" target="_blank" class="hover:text-indigo-500 transition-colors">Nominatim</a>
                     <span class="wiki-credit hidden">·</span>
-                    <a href="" target="_blank"
-                        class="wiki-credit wiki-link hidden hover:text-indigo-500 transition-colors">Wikipedia</a>
+                    <a href="" target="_blank" class="wiki-credit wiki-link hidden hover:text-indigo-500 transition-colors">Wikipedia</a>
                 </div>
             </div>
         </div>
@@ -851,12 +810,8 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
 
                 <!-- Glow shapes for default cover -->
-                <div
-                    class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-400/30 rounded-full blur-2xl pointer-events-none">
-                </div>
-                <div
-                    class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl pointer-events-none">
-                </div>
+                <div class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-400/30 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl pointer-events-none"></div>
 
                 <!-- Absolute Overlay Contents -->
                 <div class="absolute bottom-4 left-4 right-4 text-white">
@@ -865,8 +820,7 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                         SAVED LOCATION
                     </span>
-                    <h3 class="place-name text-xl font-black tracking-tight drop-shadow-md leading-tight text-white">
-                    </h3>
+                    <h3 class="place-name text-xl font-black tracking-tight drop-shadow-md leading-tight text-white"></h3>
                 </div>
 
                 <!-- Floating Close button -->
@@ -902,16 +856,13 @@
                 <div class="flex-1 overflow-y-auto custom-scrollbar pr-0.5 space-y-3 min-h-0">
                     <!-- TAB: OVERVIEW -->
                     <div data-content="overview" class="tab-pane space-y-3">
-                        <div
-                            class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
+                        <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
                             <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
                             <span class="place-coords"></span>
                         </div>
                         <div
                             class="place-desc-container bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                            <div
-                                class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500">
-                            </div>
+                            <div class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500"></div>
                             <p class="place-desc-text text-xs text-slate-700 dark:text-slate-300 leading-relaxed"></p>
                         </div>
                     </div>
@@ -924,8 +875,7 @@
                                 <span class="material-icons-outlined text-xs">history</span>
                                 <span>Historical Background</span>
                             </h4>
-                            <p
-                                class="history-text text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
+                            <p class="history-text text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
                             </p>
                         </div>
                     </div>
@@ -938,8 +888,7 @@
                                 <span class="material-icons-outlined text-xs">location_on</span>
                                 <span>Iconic Landmarks</span>
                             </h4>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Tap a landmark to center
-                                the map at its position.</p>
+                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Tap a landmark to center the map at its position.</p>
                         </div>
                         <div class="landmarks-list space-y-2">
                         </div>
@@ -947,8 +896,7 @@
                 </div>
 
                 <!-- Details Action Bar -->
-                <div
-                    class="flex flex-col gap-2 pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex-shrink-0">
+                <div class="flex flex-col gap-2 pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex-shrink-0">
                     <button
                         class="btn-directions w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                         <span class="material-icons-outlined text-sm">directions</span>
@@ -971,11 +919,9 @@
                 <!-- FOOTER CREDITS -->
                 <div
                     class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-[9px] text-slate-400 dark:text-slate-500 flex items-center flex-shrink-0 leading-none gap-1.5">
-                    <a href="https://nominatim.openstreetmap.org/" target="_blank"
-                        class="hover:text-indigo-500 transition-colors">Nominatim</a>
+                    <a href="https://nominatim.openstreetmap.org/" target="_blank" class="hover:text-indigo-500 transition-colors">Nominatim</a>
                     <span class="wiki-credit hidden">·</span>
-                    <a href="" target="_blank"
-                        class="wiki-credit wiki-link hidden hover:text-indigo-500 transition-colors">Wikipedia</a>
+                    <a href="" target="_blank" class="wiki-credit wiki-link hidden hover:text-indigo-500 transition-colors">Wikipedia</a>
                 </div>
             </div>
         </div>
