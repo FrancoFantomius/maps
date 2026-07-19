@@ -143,7 +143,7 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
         // Process Overpass results for path highlighting and shop details
         if (ovRes.status === 'fulfilled' && ovRes.value && ovRes.value.elements) {
             const elements = ovRes.value.elements;
-            
+
             // Filter elements to find closest highway way
             const ways = elements.filter(el => el.type === 'way' && el.tags && el.tags.highway);
             let closestWay = null;
@@ -239,7 +239,7 @@ function onMapClick(e) {
 
     HUDController.clearHighlightedPath();
     MarkerController.removeTempMarker();
-    
+
     MarkerController.setTempMarker(latlng.lat, latlng.lng);
     MapService.panTo([latlng.lng, latlng.lat]);
 

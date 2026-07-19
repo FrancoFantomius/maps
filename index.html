@@ -681,96 +681,46 @@
 
             <!-- Padded content area below image -->
             <div class="flex flex-col flex-1 min-h-0 px-4 pb-4 pt-4">
-                <!-- Tabs Row -->
-                <div
-                    class="flex items-center bg-slate-100/90 dark:bg-slate-800/60 p-1 rounded-xl gap-1 mb-3.5 flex-shrink-0 border border-slate-200/50 dark:border-slate-700/40">
-                    <button type="button" data-tab="overview"
-                        class="tab-btn flex-1 py-1.5 text-[11px] font-bold bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-sm rounded-lg whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                        <span class="material-icons-outlined text-xs leading-none">menu_book</span>
-                        <span>Overview</span>
-                    </button>
-                    <button type="button" data-tab="history"
-                        class="tab-btn flex-1 py-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                        <span class="material-icons-outlined text-xs leading-none">history</span>
-                        <span>History</span>
-                    </button>
-                    <button type="button" data-tab="landmarks"
-                        class="tab-btn flex-1 py-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                        <span class="material-icons-outlined text-xs leading-none">location_on</span>
-                        <span>Landmarks</span>
-                    </button>
-                </div>
-
-                <!-- Scrollable Tab Content Panes -->
+                <!-- Scrollable Content -->
                 <div class="flex-1 overflow-y-auto custom-scrollbar pr-0.5 space-y-3 min-h-0">
-                    <!-- TAB: OVERVIEW -->
-                    <div data-content="overview" class="tab-pane space-y-3">
-                        <!-- Coordinates Badge -->
-                        <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
-                            <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
-                            <span class="place-coords"></span>
-                        </div>
+                    <!-- Coordinates Badge -->
+                    <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
+                        <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
+                        <span class="place-coords"></span>
+                    </div>
 
-                        <div class="street-highlight-container hidden">
-                            <div
-                                class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50/60 dark:bg-indigo-950/30 px-3 py-2 rounded-xl border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
-                                <span class="material-icons-outlined text-base">directions_bike</span>
-                                <span class="street-name"></span>
-                            </div>
-                        </div>
-
+                    <div class="street-highlight-container hidden">
                         <div
-                            class="wiki-summary-container hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed shadow-sm relative overflow-hidden">
-                            <div class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500"></div>
-                        </div>
-
-                        <p class="place-address hidden text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50 leading-relaxed"></p>
-
-                        <div
-                            class="place-default-prompt hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-500 dark:text-slate-400 leading-relaxed shadow-sm">
-                            To store this coordinate as a landmark, click the button below to assign a name, category, and description.
-                        </div>
-
-                        <div
-                            class="shop-info-container hidden bg-slate-50/80 dark:bg-slate-900/70 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-3.5 text-xs text-slate-600 dark:text-slate-300 space-y-1.5 shadow-sm">
-                            <div class="font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 pb-1 border-b border-slate-200/50 dark:border-slate-800/50">
-                                <span class="material-icons-outlined text-sm text-indigo-500">storefront</span>
-                                <span>Shop Details</span>
-                            </div>
-                            <div class="shop-type hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Type:</span> <span class="shop-type-val font-semibold text-slate-700 dark:text-slate-200 capitalize"></span></div>
-                            <div class="shop-brand hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Brand:</span> <span class="shop-brand-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
-                            <div class="shop-hours hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Hours:</span> <span class="shop-hours-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
-                            <div class="shop-cuisine hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Cuisine:</span> <span class="shop-cuisine-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
-                            <div class="shop-web hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Web:</span> <a href="" target="_blank" class="shop-web-link text-indigo-600 dark:text-indigo-400 font-semibold hover:underline truncate max-w-[180px]"></a></div>
-                            <div class="shop-phone hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Phone:</span> <span class="shop-phone-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
+                            class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50/60 dark:bg-indigo-950/30 px-3 py-2 rounded-xl border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
+                            <span class="material-icons-outlined text-base">directions_bike</span>
+                            <span class="street-name"></span>
                         </div>
                     </div>
 
-                    <!-- TAB: HISTORY -->
-                    <div data-content="history" class="tab-pane hidden space-y-4">
-                        <div class="space-y-2">
-                            <h4
-                                class="font-extrabold text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                                <span class="material-icons-outlined text-xs">history</span>
-                                <span>Historical Background</span>
-                            </h4>
-                            <p class="history-text text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
-                            </p>
-                        </div>
+                    <div
+                        class="wiki-summary-container hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed shadow-sm relative overflow-hidden">
+                        <div class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500"></div>
                     </div>
 
-                    <!-- TAB: LANDMARKS -->
-                    <div data-content="landmarks" class="tab-pane hidden space-y-3">
-                        <div>
-                            <h4
-                                class="font-extrabold text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                                <span class="material-icons-outlined text-xs">location_on</span>
-                                <span>Iconic Landmarks</span>
-                            </h4>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Tap a landmark to center the map at its position.</p>
+                    <p class="place-address hidden text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50 leading-relaxed"></p>
+
+                    <div
+                        class="place-default-prompt hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-500 dark:text-slate-400 leading-relaxed shadow-sm">
+                        To store this coordinate as a saved place, click the button below to assign a name, category, and description.
+                    </div>
+
+                    <div
+                        class="shop-info-container hidden bg-slate-50/80 dark:bg-slate-900/70 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-3.5 text-xs text-slate-600 dark:text-slate-300 space-y-1.5 shadow-sm">
+                        <div class="font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 pb-1 border-b border-slate-200/50 dark:border-slate-800/50">
+                            <span class="material-icons-outlined text-xs text-indigo-500">storefront</span>
+                            <span>Shop Details</span>
                         </div>
-                        <div class="landmarks-list space-y-2">
-                        </div>
+                        <div class="shop-type hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Type:</span> <span class="shop-type-val font-semibold text-slate-700 dark:text-slate-200 capitalize"></span></div>
+                        <div class="shop-brand hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Brand:</span> <span class="shop-brand-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
+                        <div class="shop-hours hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Hours:</span> <span class="shop-hours-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
+                        <div class="shop-cuisine hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Cuisine:</span> <span class="shop-cuisine-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
+                        <div class="shop-web hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Web:</span> <a href="" target="_blank" class="shop-web-link text-indigo-600 dark:text-indigo-400 font-semibold hover:underline truncate max-w-[180px]"></a></div>
+                        <div class="shop-phone hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Phone:</span> <span class="shop-phone-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
                     </div>
                 </div>
 
@@ -832,66 +782,16 @@
 
             <!-- Padded content area below image -->
             <div class="flex flex-col flex-1 min-h-0 px-4 pb-4 pt-4">
-                <!-- Tabs Row -->
-                <div
-                    class="flex items-center bg-slate-100/90 dark:bg-slate-800/60 p-1 rounded-xl gap-1 mb-3.5 flex-shrink-0 border border-slate-200/50 dark:border-slate-700/40">
-                    <button type="button" data-tab="overview"
-                        class="tab-btn flex-1 py-1.5 text-[11px] font-bold bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-sm rounded-lg whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                        <span class="material-icons-outlined text-xs leading-none">menu_book</span>
-                        <span>Overview</span>
-                    </button>
-                    <button type="button" data-tab="history"
-                        class="tab-btn flex-1 py-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                        <span class="material-icons-outlined text-xs leading-none">history</span>
-                        <span>History</span>
-                    </button>
-                    <button type="button" data-tab="landmarks"
-                        class="tab-btn flex-1 py-1.5 text-[11px] font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 whitespace-nowrap transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                        <span class="material-icons-outlined text-xs leading-none">location_on</span>
-                        <span>Landmarks</span>
-                    </button>
-                </div>
-
-                <!-- Scrollable Tab Content Panes -->
+                <!-- Scrollable Content -->
                 <div class="flex-1 overflow-y-auto custom-scrollbar pr-0.5 space-y-3 min-h-0">
-                    <!-- TAB: OVERVIEW -->
-                    <div data-content="overview" class="tab-pane space-y-3">
-                        <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
-                            <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
-                            <span class="place-coords"></span>
-                        </div>
-                        <div
-                            class="place-desc-container bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                            <div class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500"></div>
-                            <p class="place-desc-text text-xs text-slate-700 dark:text-slate-300 leading-relaxed"></p>
-                        </div>
+                    <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
+                        <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
+                        <span class="place-coords"></span>
                     </div>
-
-                    <!-- TAB: HISTORY -->
-                    <div data-content="history" class="tab-pane hidden space-y-4">
-                        <div class="space-y-2">
-                            <h4
-                                class="font-extrabold text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                                <span class="material-icons-outlined text-xs">history</span>
-                                <span>Historical Background</span>
-                            </h4>
-                            <p class="history-text text-xs text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50/50 dark:bg-slate-900/40 p-3 rounded-xl border border-slate-200/40 dark:border-slate-800/40">
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- TAB: LANDMARKS -->
-                    <div data-content="landmarks" class="tab-pane hidden space-y-3">
-                        <div>
-                            <h4
-                                class="font-extrabold text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-                                <span class="material-icons-outlined text-xs">location_on</span>
-                                <span>Iconic Landmarks</span>
-                            </h4>
-                            <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">Tap a landmark to center the map at its position.</p>
-                        </div>
-                        <div class="landmarks-list space-y-2">
-                        </div>
+                    <div
+                        class="place-desc-container bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+                        <div class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500"></div>
+                        <p class="place-desc-text text-xs text-slate-700 dark:text-slate-300 leading-relaxed"></p>
                     </div>
                 </div>
 
