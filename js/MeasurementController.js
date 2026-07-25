@@ -63,7 +63,19 @@ export const MeasurementController = {
             totalDist += this.getDistance(this.measurePoints[i - 1], this.measurePoints[i]);
         }
         if (measureOutput) {
-            measureOutput.innerText = `Total Distance: ${(totalDist / 1000).toFixed(2)} km`;
+            if (totalDist > 0) {
+                const walkSeconds = totalDist / (4.8 / 3.6);
+                const bikeSeconds = totalDist / (16.5 / 3.6);
+                const walkMin = Math.round(walkSeconds / 60);
+                const bikeMin = Math.round(bikeSeconds / 60);
+                
+                const walkStr = walkMin < 1 ? '< 1 min' : `${walkMin} min`;
+                const bikeStr = bikeMin < 1 ? '< 1 min' : `${bikeMin} min`;
+                
+                measureOutput.innerText = `Total Distance: ${(totalDist / 1000).toFixed(2)} km (🚶 ~${walkStr} • 🚴 ~${bikeStr})`;
+            } else {
+                measureOutput.innerText = 'Total Distance: 0.00 km';
+            }
         }
     },
 

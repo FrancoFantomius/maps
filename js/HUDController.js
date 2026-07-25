@@ -60,43 +60,42 @@ export const HUDController = {
             this.clearHighlightedPath();
         }
 
-        const panelPlaces = document.getElementById('panel-places');
-        const panelSearch = document.getElementById('panel-search');
-        const panelDetails = document.getElementById('panel-details');
-        const measurePanel = document.getElementById('measure-panel');
-        const navPanel = document.getElementById('nav-panel');
+        const panels = ['panel-places', 'panel-search', 'panel-details', 'measure-panel', 'nav-panel'];
+        panels.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+
+        const panelMap = {
+            'saved-places': 'panel-places',
+            'search-results': 'panel-search',
+            'measure': 'measure-panel',
+            'route': 'nav-panel',
+            'place-details': 'panel-details'
+        };
+
         const drawBtn = document.getElementById('btn-draw');
         const routeBtn = document.getElementById('btn-route');
-
-        if (panelPlaces) panelPlaces.classList.add('hidden');
-        if (panelSearch) panelSearch.classList.add('hidden');
-        if (measurePanel) measurePanel.classList.add('hidden');
-        if (navPanel) navPanel.classList.add('hidden');
-        if (panelDetails) panelDetails.classList.add('hidden');
 
         if (drawBtn) drawBtn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/30 transition-all duration-300 relative';
         if (routeBtn) routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all duration-300 relative';
 
         if (hudState === 'places') {
             this.close();
-        } else if (hudState === 'saved-places') {
+        } else {
             this.open();
-            if (panelPlaces) panelPlaces.classList.remove('hidden');
-        } else if (hudState === 'search-results') {
-            this.open();
-            if (panelSearch) panelSearch.classList.remove('hidden');
-        } else if (hudState === 'measure') {
-            this.open();
-            if (measurePanel) measurePanel.classList.remove('hidden');
-            if (drawBtn) drawBtn.className = 'group flex items-center justify-center w-12 h-12 bg-teal-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-teal-500 transition-all duration-300 relative border border-teal-500';
-        } else if (hudState === 'route') {
-            this.open();
-            if (navPanel) navPanel.classList.remove('hidden');
-            if (routeBtn) routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-blue-500 transition-all duration-300 relative border border-blue-500';
-        } else if (hudState === 'place-details') {
-            this.open();
-            if (panelDetails) panelDetails.classList.remove('hidden');
-            this.renderPlaceDetails(data);
+            const activeId = panelMap[hudState];
+            if (activeId) {
+                const activePanel = document.getElementById(activeId);
+                if (activePanel) activePanel.classList.remove('hidden');
+            }
+            if (hudState === 'measure' && drawBtn) {
+                drawBtn.className = 'group flex items-center justify-center w-12 h-12 bg-teal-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-teal-500 transition-all duration-300 relative border border-teal-500';
+            } else if (hudState === 'route' && routeBtn) {
+                routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-blue-500 transition-all duration-300 relative border border-blue-500';
+            } else if (hudState === 'place-details') {
+                this.renderPlaceDetails(data);
+            }
         }
     },
 
@@ -165,37 +164,36 @@ export const HUDController = {
                 const shopContainer = clone.querySelector('.shop-info-container');
                 shopContainer.classList.remove('hidden');
 
-                if (data.shopInfo.type) {
-                    const el = shopContainer.querySelector('.shop-type');
-                    el.classList.remove('hidden');
-                    el.querySelector('.shop-type-val').textContent = data.shopInfo.type.replace('_', ' ');
-                }
-                if (data.shopInfo.brand) {
-                    const el = shopContainer.querySelector('.shop-brand');
-                    el.classList.remove('hidden');
-                    el.querySelector('.shop-brand-val').textContent = data.shopInfo.brand;
-                }
-                if (data.shopInfo.openingHours) {
-                    const el = shopContainer.querySelector('.shop-hours');
-                    el.classList.remove('hidden');
-                    el.querySelector('.shop-hours-val').textContent = data.shopInfo.openingHours;
-                }
-                if (data.shopInfo.cuisine) {
-                    const el = shopContainer.querySelector('.shop-cuisine');
-                    el.classList.remove('hidden');
-                    el.querySelector('.shop-cuisine-val').textContent = data.shopInfo.cuisine;
-                }
+                const shopFields = [
+                    { key: 'type', selector: '.shop-type', valSelector: '.shop-type-val', format: v => v.replace('_', ' ') },
+                    { key: 'brand', selector: '.shop-brand', valSelector: '.shop-brand-val' },
+                    { key: 'openingHours', selector: '.shop-hours', valSelector: '.shop-hours-val' },
+                    { key: 'cuisine', selector: '.shop-cuisine', valSelector: '.shop-cuisine-val' },
+                    { key: 'phone', selector: '.shop-phone', valSelector: '.shop-phone-val' }
+                ];
+
+                shopFields.forEach(field => {
+                    const val = data.shopInfo[field.key];
+                    if (val) {
+                        const el = shopContainer.querySelector(field.selector);
+                        if (el) {
+                            el.classList.remove('hidden');
+                            const valEl = el.querySelector(field.valSelector);
+                            if (valEl) valEl.textContent = field.format ? field.format(val) : val;
+                        }
+                    }
+                });
+
                 if (data.shopInfo.website) {
                     const el = shopContainer.querySelector('.shop-web');
-                    el.classList.remove('hidden');
-                    const link = el.querySelector('.shop-web-link');
-                    link.href = data.shopInfo.website;
-                    link.textContent = data.shopInfo.website;
-                }
-                if (data.shopInfo.phone) {
-                    const el = shopContainer.querySelector('.shop-phone');
-                    el.classList.remove('hidden');
-                    el.querySelector('.shop-phone-val').textContent = data.shopInfo.phone;
+                    if (el) {
+                        el.classList.remove('hidden');
+                        const link = el.querySelector('.shop-web-link');
+                        if (link) {
+                            link.href = data.shopInfo.website;
+                            link.textContent = data.shopInfo.website;
+                        }
+                    }
                 }
             }
 
@@ -227,6 +225,7 @@ export const HUDController = {
             const config = colorPalette[data.category] || colorPalette.poi;
             const categoryLabels = {
                 poi: '🎯 Point of Interest',
+                home: '🏠 Home',
                 food: '🍕 Food & Drink',
                 lodging: '🏨 Lodging',
                 nature: '🌿 Nature / Scenic'

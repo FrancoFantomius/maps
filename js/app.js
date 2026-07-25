@@ -269,48 +269,45 @@ function setupEventListeners() {
     // Settings Bottom Sheet Toggles
     const btnSettingsClose = document.getElementById('btn-settings-close');
 
-    function openSettingsPanel() {
-        settingsPanel.classList.add('settings-open');
-        settingsPanel.classList.remove('translate-y-full');
-        btnSettingsToggle.querySelector('.material-icons-outlined').textContent = 'keyboard_double_arrow_down';
-        requestAnimationFrame(() => {
-            const panelHeight = settingsPanel.offsetHeight;
-            document.documentElement.style.setProperty('--settings-panel-height', panelHeight + 'px');
+    function setSettingsPanelOpen(isOpen) {
+        settingsPanel.classList.toggle('settings-open', isOpen);
+        settingsPanel.classList.toggle('translate-y-full', !isOpen);
+        const iconSpan = btnSettingsToggle.querySelector('.material-icons-outlined');
+        if (iconSpan) iconSpan.textContent = isOpen ? 'keyboard_double_arrow_down' : 'keyboard_double_arrow_up';
+
+        if (isOpen) {
+            requestAnimationFrame(() => {
+                const panelHeight = settingsPanel.offsetHeight;
+                document.documentElement.style.setProperty('--settings-panel-height', panelHeight + 'px');
+                document.querySelectorAll('.bottom-ui-element').forEach(el => {
+                    el.style.transform = `translateY(-${panelHeight}px)`;
+                });
+                const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
+                if (mapControls) mapControls.style.transform = `translateY(-${panelHeight}px)`;
+            });
+        } else {
             document.querySelectorAll('.bottom-ui-element').forEach(el => {
-                el.style.transform = `translateY(-${panelHeight}px)`;
+                el.style.transform = '';
             });
             const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
-            if (mapControls) mapControls.style.transform = `translateY(-${panelHeight}px)`;
-        });
-    }
-
-    function closeSettingsPanel() {
-        settingsPanel.classList.remove('settings-open');
-        settingsPanel.classList.add('translate-y-full');
-        btnSettingsToggle.querySelector('.material-icons-outlined').textContent = 'keyboard_double_arrow_up';
-        document.querySelectorAll('.bottom-ui-element').forEach(el => {
-            el.style.transform = '';
-        });
-        const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
-        if (mapControls) mapControls.style.transform = '';
+            if (mapControls) mapControls.style.transform = '';
+        }
     }
 
     btnSettingsToggle.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isOpen = settingsPanel.classList.contains('settings-open');
-        if (isOpen) closeSettingsPanel();
-        else openSettingsPanel();
+        setSettingsPanelOpen(!settingsPanel.classList.contains('settings-open'));
     });
 
     btnSettingsClose.addEventListener('click', (e) => {
         e.stopPropagation();
-        closeSettingsPanel();
+        setSettingsPanelOpen(false);
     });
 
     document.addEventListener('click', (e) => {
         if (!settingsPanel.contains(e.target) && !btnSettingsToggle.contains(e.target)) {
             if (settingsPanel.classList.contains('settings-open')) {
-                closeSettingsPanel();
+                setSettingsPanelOpen(false);
             }
         }
     });
@@ -569,32 +566,126 @@ function setupEventListeners() {
     });
 
     // Home Location Controls
-    const btnSetHome = document.getElementById('btn-set-home');
+    const homeAddressCard = document.getElementById('home-address-card');
+    const homeAddressText = document.getElementById('home-address-text');
+    const homeAddressInput = document.getElementById('home-address-input');
+    const homeAddressAutocomplete = document.getElementById('home-address-autocomplete');
+    const btnSaveHomeInput = document.getElementById('btn-save-home-input');
+    const btnFlyHome = document.getElementById('btn-fly-home');
     const btnClearHome = document.getElementById('btn-clear-home');
 
-    function updateHomeButtonsVisibility() {
-        const savedHome = localStorage.getItem('maps_home_coords');
-        if (savedHome) {
-            btnClearHome.classList.remove('hidden');
+    function updateHomeUI() {
+        const home = MapService.getHomeAddress();
+        if (home) {
+            if (homeAddressCard) homeAddressCard.classList.remove('hidden');
+            if (homeAddressText) homeAddressText.textContent = home.address;
+            if (homeAddressInput && document.activeElement !== homeAddressInput) {
+                homeAddressInput.value = home.address;
+            }
         } else {
-            btnClearHome.classList.add('hidden');
+            if (homeAddressCard) homeAddressCard.classList.add('hidden');
+            if (homeAddressText) homeAddressText.textContent = '';
+            if (homeAddressInput && document.activeElement !== homeAddressInput) {
+                homeAddressInput.value = '';
+            }
         }
+        MarkerController.renderHomeMarker();
     }
 
-    updateHomeButtonsVisibility();
+    updateHomeUI();
 
-    btnSetHome.addEventListener('click', () => {
-        if (!MapService.map) return;
-        const center = MapService.map.getCenter();
-        const homeCoords = { lat: center.lat, lng: center.lng };
-        localStorage.setItem('maps_home_coords', JSON.stringify(homeCoords));
-        updateHomeButtonsVisibility();
-    });
+    let homeAutocompleteTimeout = null;
+    if (homeAddressInput && homeAddressAutocomplete) {
+        homeAddressInput.addEventListener('input', () => {
+            clearTimeout(homeAutocompleteTimeout);
+            const query = homeAddressInput.value.trim();
+            if (query.length < 2) {
+                homeAddressAutocomplete.innerHTML = '';
+                homeAddressAutocomplete.classList.add('hidden');
+                return;
+            }
+            homeAutocompleteTimeout = setTimeout(async () => {
+                try {
+                    const results = await ApiService.searchGeocode(query, 5);
+                    homeAddressAutocomplete.innerHTML = '';
+                    if (!results || results.length === 0) {
+                        homeAddressAutocomplete.classList.add('hidden');
+                        return;
+                    }
+                    results.forEach(item => {
+                        const template = document.getElementById('template-autocomplete-item');
+                        if (!template) return;
+                        const clone = template.content.cloneNode(true);
+                        const shortName = item.display_name.split(',')[0];
+                        clone.querySelector('.item-name').textContent = shortName;
+                        clone.querySelector('.item-address').textContent = item.display_name;
 
-    btnClearHome.addEventListener('click', () => {
-        localStorage.removeItem('maps_home_coords');
-        updateHomeButtonsVisibility();
-    });
+                        clone.querySelector('.nav-autocomplete-item').addEventListener('click', () => {
+                            MapService.setHomeAddress({
+                                address: item.display_name,
+                                lat: parseFloat(item.lat),
+                                lng: parseFloat(item.lon)
+                            });
+                            updateHomeUI();
+                            homeAddressAutocomplete.innerHTML = '';
+                            homeAddressAutocomplete.classList.add('hidden');
+                        });
+                        homeAddressAutocomplete.appendChild(clone);
+                    });
+                    homeAddressAutocomplete.classList.remove('hidden');
+                } catch (err) {
+                    console.error("Home address geocoding search failed", err);
+                }
+            }, 350);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#home-address-input') && !e.target.closest('#home-address-autocomplete')) {
+                if (homeAddressAutocomplete) {
+                    homeAddressAutocomplete.innerHTML = '';
+                    homeAddressAutocomplete.classList.add('hidden');
+                }
+            }
+        });
+    }
+
+    if (btnSaveHomeInput) {
+        btnSaveHomeInput.addEventListener('click', async () => {
+            const query = homeAddressInput.value.trim();
+            if (!query) return;
+            try {
+                const results = await ApiService.searchGeocode(query, 1);
+                if (results && results.length > 0) {
+                    const item = results[0];
+                    MapService.setHomeAddress({
+                        address: item.display_name,
+                        lat: parseFloat(item.lat),
+                        lng: parseFloat(item.lon)
+                    });
+                    updateHomeUI();
+                    if (homeAddressAutocomplete) {
+                        homeAddressAutocomplete.innerHTML = '';
+                        homeAddressAutocomplete.classList.add('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to save home address from input", err);
+            }
+        });
+    }
+
+    if (btnFlyHome) {
+        btnFlyHome.addEventListener('click', () => {
+            MapService.flyToHome();
+        });
+    }
+
+    if (btnClearHome) {
+        btnClearHome.addEventListener('click', () => {
+            MapService.clearHomeAddress();
+            updateHomeUI();
+        });
+    }
 
     // Map Rotation Controls
     const btnCompass = document.getElementById('btn-compass');

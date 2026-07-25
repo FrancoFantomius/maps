@@ -1,78 +1,173 @@
-# maps — Interactive Map Platform
-A map application with support for bike trails and route planning built with MapLibre GL JS, Tailwind CSS, and vanilla ES modules.
+# Maps
+
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md#120)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+
+A modern, privacy-focused, local-first web mapping application powered by MapLibre GL JS, OpenStreetMap, and Tailwind CSS. Built as a Progressive Web App (PWA) with cloud synchronization capabilities.
+
+![Maps App Icon](img/icons/maps_x192.png)
 
 ---
 
 ## Features
 
-- **Multiple Map Modes**
-  - **Street Map:** Clean, high-performance vector-like layout powered by OpenStreetMap & CartoDB.
-  - **Satellite View:** High-resolution global satellite imagery powered by Esri.
-  - **Detailed Overlays:** Easily toggle Street Names and Bike Paths on top of your base map.
-
-- **Custom Markers (My Places)**
-  - Click anywhere on the map to place a pin.
-  - Save custom spots with a name, description, and custom categories (Point of Interest, Food & Drink, Lodging, Nature / Scenic).
-  - Saved locations are persistent across reloads via browser `localStorage`.
-
-- **Location Search & Geocoding**
-  - Full-text search for addresses, cities, landmarks, and coordinates powered by Nominatim OpenStreetMap API.
-  - Beautiful visual presentation of search results inside the dynamic HUD.
-
-- **OSRM Routing Engine**
-  - Compute routes between start and end waypoints clicked on the map.
-  - Multi-profile support: **Driving (Car)**, **Cycling (Bike)**, and **Walking (Foot)**.
-  - Displays real-time estimated distance and travel duration.
-
-- **Distance Measurement Tool**
-  - Place sequential markers on the map to measure linear distances.
-  - Dynamically calculates and displays cumulative distance path in kilometers.
-
-- **Real-Time POI & Path Details**
-  - Click any point to fetch live address geocoding, nearby Wikipedia articles, and neighborhood shop details via Overpass API.
-  - Automatic trail/street path highlight glows when clicking near roads or hiking paths.
-
-- **Modern Dark Mode & Themes**
-  - Integrated theme switcher supporting **Light**, **Dark**, and **System** themes.
-  - Fully animated, modern floating Glassmorphism HUD styling.
-
-- **GPS & Home Location**
-  - One-click geo-location centering using the browser's Geolocation API.
-  - Configure a custom "Home View" coordinates center, saved securely in your browser settings.
+- **Interactive Vector & Raster Maps**: Smooth rendering powered by MapLibre GL JS with custom style support (streets, outdoors, bike trails, satellite, hillshading).
+- **Search & Geocoding**: Instant search for places, addresses, and points of interest.
+- **Routing & Directions**:
+  - Route planning for Driving, Cycling, and Walking modes.
+  - Custom ETA calculations tailored to personalized walking and biking speeds.
+  - Step-by-step turn directions.
+- **Heads-Up Display (HUD) / Navigation Mode**: Real-time speed monitor, compass heading, and live location tracking.
+- **Smart Initial Location Chain**: Automatic location resolution sequence: GPS position → last saved position → home address → IP-based fallback.
+- **Custom Markers & Collections**: Save favorite locations, home address, and custom pins organized with PouchDB for local-first reliability.
+- **Cloud Sync**: Optional zero-knowledge / end-to-end cloud synchronization via **Filen** integration (`@filen/sdk`).
+- **Distance & Area Measurement**: On-map interactive tools to measure lines and multi-point paths.
+- **Offline & PWA Ready**: Installable on desktop and mobile devices with offline asset caching.
+- **Self-Hosted Typography & Styling**: Uses Fontsource for fonts (`Inter`, `Outfit`, `Material Icons Outlined`) with automatic light, dark, and system theme adaptation.
 
 ---
 
-## File Architecture & Component Documentation
+## Project Structure
 
-The application is modularly structured into ES modules, separating concerns between user interface controls, map services, APIs, and functional utilities:
-
-### Core Files
-- **[`index.html`](file:///c:/Users/franc/OneDrive/Programmazione/maps/index.html)**: The single-page application entry point. Houses the map container, imports UI scripts and styles, and declares HTML/Tailwind templates used dynamically for autocomplete lists, search items, place details, and navigation step listings.
-- **[`css/style.css`](./css/style.css)**: Custom stylesheets detailing variables, glassmorphism layouts, custom SVG map pin scaling/placements, custom marker popups, and the GPS pulse animation.
-- **[`js/app.js`](./js/app.js)**: The core JavaScript orchestrator. Boots components, binds DOM events, and coordinates parallel queries for Nominatim address lookup, Overpass API local features, and Wikipedia article details.
-
-### Service Modules
-- **[`js/MapService.js`](./js/MapService.js)**: The primary facade wrapper for MapLibre GL JS. Sets up vector layer styles (Liberty/Dark via OpenFreeMap), Esri Satellite base raster tiles, cycling path overlays, 3D building extrusions, and 3D terrain integration.
-- **[`js/ApiService.js`](./js/ApiService.js)**: Aggregates external API queries, including geocoding (Nominatim), Wikipedia query summaries, Overpass API queries, and routing (OSRM).
-
-### Controller Modules
-- **[`js/HUDController.js`](./js/HUDController.js)**: Manages visibility and dynamic DOM rendering of the main Head-Up Display panel views (Saved Places, Search Results, Distance Measurements, OSRM Navigation, and Place details templates).
-- **[`js/MarkerController.js`](./js/MarkerController.js)**: Coordinates custom-created map markers ("My Places"). Supports custom categories (POI, Food, Lodging, Nature), manages `localStorage` persistence, and binds details page actions (save, edit, delete).
-- **[`js/RoutingController.js`](./js/RoutingController.js)**: Integrates OSRM-based navigation. Handles profile selection (driving, cycling, walking), geocoded waypoint search autocomplete, waypoint swapping, dragging of endpoints, alternative routes, and turn-by-turn directions.
-- **[`js/MeasurementController.js`](./js/MeasurementController.js)**: Operates the linear path distance tool. Draws path lines between interactive, draggable nodes and computes geodesic distance totals.
-- **[`js/SearchController.js`](./js/SearchController.js)**: Performs query geocoding searches and manages mapping of selected search items into active temporary pins.
-- **[`js/ThemeController.js`](./js/ThemeController.js)**: Updates class preferences (Light, Dark, and System Default) and triggers corresponding tile style updates (Liberty/Dark vector tiles).
-- **[`js/GPSController.js`](./js/GPSController.js)**: Connects to the browser's Geolocation API to pan map location, draw accuracy circles, and place custom animated user markers.
+```text
+maps/
+├── css/
+│   ├── HUD.css            # Navigation and HUD overlay styles
+│   ├── account.css        # Settings, account, and cloud sync modal styles
+│   └── style.css          # Core design system and Tailwind imports
+├── js/
+│   ├── AccountController.js    # User settings and Filen cloud sync integration
+│   ├── ApiService.js           # External API calls (geocoding, routing)
+│   ├── GPSController.js        # Geolocation tracking and heading updates
+│   ├── HUDController.js        # Navigation HUD state and speed calculations
+│   ├── MapService.js           # MapLibre initialization, layer control, and camera management
+│   ├── MarkerController.js     # Saved places, custom pins, and marker interactions
+│   ├── MeasurementController.js# Distance measurement tools
+│   ├── RoutingController.js    # Route calculation, profiles, and path display
+│   ├── SearchController.js     # Geocoding UI and search result handling
+│   ├── ThemeController.js      # Dark/light theme switcher
+│   ├── app.js                  # Main application orchestrator & initialization
+│   └── db.js                   # Local database storage wrapper (PouchDB)
+├── img/                        # App icons and static images
+├── index.html                  # Main application HTML entry point
+├── privacy.html                # Privacy policy page
+├── terms.html                  # Terms of service page
+├── package.json                # Project dependencies and npm scripts
+└── vite.config.js              # Vite configuration & PWA setup
+```
 
 ---
 
-## License & Attributions
+## How to Self Host
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for the full text.
+### Prerequisites
 
-### Third-Party Software & Data Attributions
-- **MapLibre GL JS:** BSD 3-Clause License © MapLibre contributors
-- **Map Data:** © OpenStreetMap contributors (ODbL)
-- **Map Styles:** CartoDB (Carto Light/Dark) & Esri World Imagery
-- **Routing Services:** Project OSRM API
-- **Data APIs:** Overpass API (OSM Data queries) & Wikimedia/Wikipedia API
+- **Node.js** (v18 or higher recommended)
+- **npm** (comes bundled with Node.js)
+
+### 1. Clone & Install Dependencies
+
+Clone the repository to your server or local machine:
+
+```bash
+git clone https://github.com/your-username/maps.git
+cd maps
+npm install
+```
+
+### 2. Development Server
+
+To run the application locally in development mode with live reload:
+
+```bash
+npm run dev
+```
+
+The application will be accessible at `http://localhost:5173`.
+
+### 3. Build for Production
+
+To create a static production build:
+
+```bash
+npm run build
+```
+
+This compiles optimized assets into the `dist/` directory.
+
+To test the production build locally:
+
+```bash
+npm run preview
+```
+
+### 4. Deploying Static Files
+
+Since **Maps** is a client-side application, you can host the generated `dist/` folder using any static web server:
+
+#### **Nginx**
+
+Example server block:
+
+```nginx
+server {
+    listen 80;
+    server_name maps.example.com;
+
+    root /var/www/maps/dist;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2)$ {
+        expires 1y;
+        add_header Cache-Control "public, no-transform";
+    }
+}
+```
+
+#### **Caddy**
+
+Simple Caddyfile setup:
+
+```caddy
+maps.example.com {
+    root * /var/www/maps/dist
+    file_server
+    try_files {path} /index.html
+}
+```
+
+#### **Docker (Static Nginx Server)**
+
+You can also host using Docker. Create a `Dockerfile`:
+
+```dockerfile
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+Build and run the container:
+
+```bash
+docker build -t maps-app .
+docker run -d -p 8080:80 --name maps-app maps-app
+```
+
+---
+
+## License
+
+This project is licensed under the terms specified in the [LICENSE](LICENSE) file.

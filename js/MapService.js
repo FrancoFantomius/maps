@@ -5,6 +5,7 @@ import { MarkerController } from './MarkerController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { RoutingController } from './RoutingController.js';
 import { GPSController } from './GPSController.js';
+import { ApiService } from './ApiService.js';
 
 const STORAGE_KEY_LAYER = 'maps_active_layer';
 const STORAGE_KEY_LABELS = 'maps_labels_enabled';
@@ -18,21 +19,24 @@ export const MapService = {
     init() {
         let initialLat = 45.4064; // DEFAULT_LAT
         let initialLng = 11.8768; // DEFAULT_LNG
+        let initialZoom = 13;
         const DEFAULT_ZOOM = 13;
         const MIN_ZOOM = 3;
         const MAX_ZOOM = 18;
 
-        const savedHome = localStorage.getItem('maps_home_coords');
-        if (savedHome) {
-            try {
-                const parsed = JSON.parse(savedHome);
-                if (parsed && typeof parsed.lat === 'number' && typeof parsed.lng === 'number') {
-                    initialLat = parsed.lat;
-                    initialLng = parsed.lng;
-                }
-            } catch (e) {
-                console.error("Failed to parse saved home location", e);
+        // Synchronously check Step 2 (last position) and Step 3 (home address) for initial map creation
+        const lastPos = this.getLastPosition();
+        const savedHome = this.getHomeAddress();
+
+        if (lastPos) {
+            initialLat = lastPos.lat;
+            initialLng = lastPos.lng;
+            if (typeof lastPos.zoom === 'number') {
+                initialZoom = lastPos.zoom;
             }
+        } else if (savedHome) {
+            initialLat = savedHome.lat;
+            initialLng = savedHome.lng;
         }
 
         const savedLayer = localStorage.getItem(STORAGE_KEY_LAYER);
@@ -53,7 +57,7 @@ export const MapService = {
             container: 'map',
             style: initialStyle,
             center: [initialLng, initialLat],
-            zoom: DEFAULT_ZOOM,
+            zoom: initialZoom,
             minZoom: MIN_ZOOM,
             maxZoom: MAX_ZOOM,
             pitch: initialPitch,
@@ -114,21 +118,170 @@ export const MapService = {
             }
         });
 
-        this.map.on('moveend', () => this.updateLayerSwitcherPreview());
+        this.map.on('moveend', () => {
+            this.updateLayerSwitcherPreview();
+            this.saveLastPosition();
+        });
 
-        if (!savedHome && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    this.flyTo([position.coords.longitude, position.coords.latitude], DEFAULT_ZOOM);
-                },
-                (error) => {
-                    console.warn("Geolocation on startup failed or denied. Using default center.", error);
-                },
-                { timeout: 5000 }
-            );
-        }
+        // Determine main startup view using priority chain:
+        // 1. Current position -> 2. Previous last position -> 3. Home address -> 4. IP position
+        this.determineStartupView(lastPos, savedHome, DEFAULT_ZOOM);
 
         this.syncLayerSwitcherUI();
+    },
+
+    getLastPosition() {
+        try {
+            const saved = localStorage.getItem('maps_last_position');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed && typeof parsed.lat === 'number' && typeof parsed.lng === 'number') {
+                    return parsed;
+                }
+            }
+        } catch (e) {
+            console.warn("Failed to parse last position from localStorage", e);
+        }
+        return null;
+    },
+
+    saveLastPosition() {
+        if (!this.map) return;
+        try {
+            const center = this.map.getCenter();
+            const zoom = this.map.getZoom();
+            const pos = {
+                lat: center.lat,
+                lng: center.lng,
+                zoom: zoom
+            };
+            localStorage.setItem('maps_last_position', JSON.stringify(pos));
+        } catch (e) {
+            console.warn("Failed to save last position to localStorage", e);
+        }
+    },
+
+    getLocalCountryLocation() {
+        const timeZone = (typeof Intl !== 'undefined' && Intl.DateTimeFormat) ? Intl.DateTimeFormat().resolvedOptions().timeZone : '';
+        const lang = (navigator.language || (navigator.languages && navigator.languages[0]) || '').toLowerCase();
+
+        const tzMap = {
+            'Europe/Rome': { lat: 41.8719, lng: 12.5674, zoom: 6, country: 'Italy' },
+            'Europe/San_Marino': { lat: 43.9424, lng: 12.4578, zoom: 10, country: 'San Marino' },
+            'Europe/Vatican': { lat: 41.9029, lng: 12.4534, zoom: 12, country: 'Vatican City' },
+            'Europe/Paris': { lat: 46.2276, lng: 2.2137, zoom: 6, country: 'France' },
+            'Europe/Berlin': { lat: 51.1657, lng: 10.4515, zoom: 6, country: 'Germany' },
+            'Europe/London': { lat: 55.3781, lng: -3.4360, zoom: 6, country: 'United Kingdom' },
+            'Europe/Madrid': { lat: 40.4637, lng: -3.7492, zoom: 6, country: 'Spain' },
+            'Europe/Vienna': { lat: 47.5162, lng: 14.5501, zoom: 7, country: 'Austria' },
+            'Europe/Zurich': { lat: 46.8182, lng: 8.2275, zoom: 8, country: 'Switzerland' },
+            'Europe/Amsterdam': { lat: 52.1326, lng: 5.2913, zoom: 7, country: 'Netherlands' },
+            'Europe/Brussels': { lat: 50.5039, lng: 4.4699, zoom: 8, country: 'Belgium' },
+            'Europe/Lisbon': { lat: 39.3999, lng: -8.2245, zoom: 7, country: 'Portugal' },
+            'Europe/Athens': { lat: 39.0742, lng: 21.8243, zoom: 6, country: 'Greece' },
+            'Europe/Warsaw': { lat: 51.9194, lng: 19.1451, zoom: 6, country: 'Poland' },
+            'Europe/Prague': { lat: 49.8175, lng: 15.4730, zoom: 7, country: 'Czech Republic' },
+            'Europe/Budapest': { lat: 47.1625, lng: 19.5033, zoom: 7, country: 'Hungary' },
+            'Europe/Stockholm': { lat: 60.1282, lng: 18.6435, zoom: 5, country: 'Sweden' },
+            'Europe/Oslo': { lat: 60.4720, lng: 8.4689, zoom: 5, country: 'Norway' },
+            'Europe/Copenhagen': { lat: 56.2639, lng: 9.5018, zoom: 7, country: 'Denmark' },
+            'Europe/Helsinki': { lat: 61.9241, lng: 25.7482, zoom: 5, country: 'Finland' },
+            'Europe/Dublin': { lat: 53.4129, lng: -8.2439, zoom: 7, country: 'Ireland' },
+            'Europe/Bucharest': { lat: 45.9432, lng: 24.9668, zoom: 6, country: 'Romania' },
+            'Europe/Sofia': { lat: 42.7339, lng: 25.4858, zoom: 7, country: 'Bulgaria' },
+            'Europe/Zagreb': { lat: 45.1000, lng: 15.2000, zoom: 7, country: 'Croatia' },
+            'Europe/Ljubljana': { lat: 46.1512, lng: 14.9955, zoom: 8, country: 'Slovenia' },
+            'Europe/Bratislava': { lat: 48.6690, lng: 19.6990, zoom: 8, country: 'Slovakia' },
+            'America/New_York': { lat: 40.7128, lng: -74.0060, zoom: 5, country: 'United States' },
+            'America/Chicago': { lat: 41.8781, lng: -87.6298, zoom: 5, country: 'United States' },
+            'America/Denver': { lat: 39.7392, lng: -104.9903, zoom: 5, country: 'United States' },
+            'America/Los_Angeles': { lat: 34.0522, lng: -118.2437, zoom: 5, country: 'United States' },
+            'America/Toronto': { lat: 43.6532, lng: -79.3832, zoom: 5, country: 'Canada' },
+            'America/Vancouver': { lat: 49.2827, lng: -123.1207, zoom: 5, country: 'Canada' },
+            'America/Mexico_City': { lat: 19.4326, lng: -99.1332, zoom: 5, country: 'Mexico' },
+            'America/Sao_Paulo': { lat: -23.5505, lng: -46.6333, zoom: 5, country: 'Brazil' },
+            'America/Buenos_Aires': { lat: -34.6037, lng: -58.3816, zoom: 5, country: 'Argentina' },
+            'Asia/Tokyo': { lat: 36.2048, lng: 138.2529, zoom: 5, country: 'Japan' },
+            'Asia/Seoul': { lat: 35.9078, lng: 127.7669, zoom: 7, country: 'South Korea' },
+            'Asia/Shanghai': { lat: 35.8617, lng: 104.1954, zoom: 4, country: 'China' },
+            'Asia/Singapore': { lat: 1.3521, lng: 103.8198, zoom: 11, country: 'Singapore' },
+            'Asia/Kolkata': { lat: 20.5937, lng: 78.9629, zoom: 4, country: 'India' },
+            'Asia/Dubai': { lat: 23.4241, lng: 53.8478, zoom: 7, country: 'United Arab Emirates' },
+            'Australia/Sydney': { lat: -25.2744, lng: 133.7751, zoom: 4, country: 'Australia' }
+        };
+
+        if (timeZone && tzMap[timeZone]) {
+            return tzMap[timeZone];
+        }
+
+        if (timeZone.startsWith('Europe/')) return { lat: 54.5260, lng: 15.2551, zoom: 4, country: 'Europe' };
+        if (timeZone.startsWith('America/')) return { lat: 37.0902, lng: -95.7129, zoom: 4, country: 'North America' };
+        if (timeZone.startsWith('Asia/')) return { lat: 34.0479, lng: 100.6197, zoom: 3, country: 'Asia' };
+
+        if (lang.startsWith('it')) return { lat: 41.8719, lng: 12.5674, zoom: 6, country: 'Italy' };
+        if (lang.startsWith('fr')) return { lat: 46.2276, lng: 2.2137, zoom: 6, country: 'France' };
+        if (lang.startsWith('de')) return { lat: 51.1657, lng: 10.4515, zoom: 6, country: 'Germany' };
+        if (lang.startsWith('es')) return { lat: 40.4637, lng: -3.7492, zoom: 6, country: 'Spain' };
+
+        return { lat: 45.4064, lng: 11.8768, zoom: 6, country: 'Default Region' };
+    },
+
+    async determineStartupView(lastPos, savedHome, defaultZoom = 13) {
+        // Step 1: Current position
+        if (navigator.geolocation) {
+            try {
+                const currentPos = await new Promise((resolve) => {
+                    let done = false;
+                    const timer = setTimeout(() => {
+                        if (!done) {
+                            done = true;
+                            resolve(null);
+                        }
+                    }, 4000);
+
+                    navigator.geolocation.getCurrentPosition(
+                        (p) => {
+                            if (!done) {
+                                done = true;
+                                clearTimeout(timer);
+                                resolve({ lat: p.coords.latitude, lng: p.coords.longitude });
+                            }
+                        },
+                        (err) => {
+                            if (!done) {
+                                done = true;
+                                clearTimeout(timer);
+                                resolve(null);
+                            }
+                        },
+                        { timeout: 4000, enableHighAccuracy: false }
+                    );
+                });
+
+                if (currentPos) {
+                    this.flyTo([currentPos.lng, currentPos.lat], defaultZoom);
+                    return;
+                }
+            } catch (e) {
+                console.warn("Geolocation startup check failed", e);
+            }
+        }
+
+        // Step 2: Previous last position (already initialized if present)
+        if (lastPos) {
+            return;
+        }
+
+        // Step 3: Home address (already initialized if present)
+        if (savedHome) {
+            return;
+        }
+
+        // Step 4: Position determined by country/locale without calling external services
+        const countryLoc = this.getLocalCountryLocation();
+        if (countryLoc) {
+            this.flyTo([countryLoc.lng, countryLoc.lat], countryLoc.zoom || 6);
+        }
     },
 
     setupMapLayersAndSources() {
@@ -687,10 +840,6 @@ export const MapService = {
         return new maplibregl.Popup(options);
     },
 
-    addControl(control, position) {
-        if (this.map) this.map.addControl(control, position);
-    },
-
     on(event, layerIdOrHandler, handler) {
         if (!this.map) return;
         if (typeof layerIdOrHandler === 'string') {
@@ -702,5 +851,43 @@ export const MapService = {
 
     queryRenderedFeatures(point, options) {
         return this.map ? this.map.queryRenderedFeatures(point, options) : [];
+    },
+
+    getHomeAddress() {
+        const savedHomeAddress = localStorage.getItem('maps_home_address');
+        if (savedHomeAddress) {
+            try {
+                const parsed = JSON.parse(savedHomeAddress);
+                if (parsed && typeof parsed.lat === 'number' && typeof parsed.lng === 'number') {
+                    return parsed;
+                }
+            } catch (e) {
+                console.error("Failed to parse saved home address", e);
+            }
+        }
+        return null;
+    },
+
+    setHomeAddress(data) {
+        if (!data || typeof data.lat !== 'number' || typeof data.lng !== 'number') return null;
+        const homeObj = {
+            address: data.address || data.fullName || data.name || `${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}`,
+            lat: data.lat,
+            lng: data.lng,
+            updatedAt: Date.now()
+        };
+        localStorage.setItem('maps_home_address', JSON.stringify(homeObj));
+        return homeObj;
+    },
+
+    clearHomeAddress() {
+        localStorage.removeItem('maps_home_address');
+    },
+
+    flyToHome() {
+        const home = this.getHomeAddress();
+        if (home) {
+            this.flyTo([home.lng, home.lat], 15);
+        }
     }
 };

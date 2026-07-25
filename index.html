@@ -40,12 +40,7 @@
     <link rel="icon" type="image/png" sizes="48x48" href="/img/icons/maps_x48.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/img/icons/maps_x192.png">
     <link rel="apple-touch-icon" href="/img/icons/maps_x192.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
     <script>
         const theme = localStorage.getItem('theme_preference') || 'system';
         const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -185,13 +180,7 @@
             </div>
 
             <!-- Custom Places List Scrollable area -->
-            <div id="saved-markers-list" class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-2 text-xs">
-                <div class="text-center py-8 px-4 text-slate-400 dark:text-slate-500 space-y-2">
-                    <span class="material-icons-outlined text-3xl block opacity-30">push_pin</span>
-                    <p class="text-xs font-medium">No custom places saved yet.</p>
-                    <p class="text-[10px] opacity-70">Click anywhere on the map to drop a pin.</p>
-                </div>
-            </div>
+            <div id="saved-markers-list" class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-2 text-xs"></div>
         </div>
 
         <!-- Dynamic State 2: Search Results -->
@@ -422,15 +411,39 @@
                         <span
                             class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Home
                             Location</span>
-                        <div class="flex flex-col gap-1.5">
-                            <button id="btn-set-home"
-                                class="w-full py-1.5 px-3 rounded-lg bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 font-semibold text-[11px] transition-colors border border-indigo-200/50 dark:border-indigo-900/20">
-                                Set Current View as Home
-                            </button>
-                            <button id="btn-clear-home"
-                                class="w-full py-1.5 px-3 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 font-semibold text-[11px] transition-colors border border-red-200/50 dark:border-red-900/20 hidden">
-                                Clear Home Location
-                            </button>
+                        <div id="home-address-card" class="hidden p-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-900/40 flex flex-col gap-1.5 shadow-sm">
+                            <div class="flex items-start justify-between gap-1.5">
+                                <div class="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold text-xs">
+                                    <span class="material-icons-outlined text-base">home</span>
+                                    <span>Home Address</span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <button id="btn-fly-home" type="button" title="Fly to Home" class="p-1 rounded text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors">
+                                        <span class="material-icons-outlined text-sm">my_location</span>
+                                    </button>
+                                    <button id="btn-clear-home" type="button" title="Clear Home Address" class="p-1 rounded text-red-500 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors">
+                                        <span class="material-icons-outlined text-sm">delete_outline</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="home-address-text" class="text-[11px] font-medium text-slate-700 dark:text-slate-200 leading-snug line-clamp-2">
+                            </div>
+                        </div>
+
+                        <!-- Address Search Input & Autocomplete -->
+                        <div class="relative">
+                            <div class="relative flex items-center">
+                                <input type="text" id="home-address-input" placeholder="Search home address..."
+                                    autocomplete="off"
+                                    class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800/80 rounded-lg px-2.5 py-1.5 text-[11px] font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 pr-7">
+                                <button type="button" id="btn-save-home-input" title="Save address"
+                                    class="absolute right-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 p-1 flex items-center justify-center">
+                                    <span class="material-icons-outlined text-base">check</span>
+                                </button>
+                            </div>
+                            <div id="home-address-autocomplete"
+                                class="hidden absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-40 overflow-y-auto custom-scrollbar">
+                            </div>
                         </div>
                     </div>
                     <div class="space-y-2 border-t border-slate-100 dark:border-slate-800 pt-3 mt-3">
@@ -607,6 +620,7 @@
                     <select id="modal-category"
                         class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-250 dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 focus:outline-none transition-all">
                         <option value="poi">🎯 Point of Interest</option>
+                        <option value="home">🏠 Home</option>
                         <option value="food">🍕 Food & Drink</option>
                         <option value="lodging">🏨 Lodging</option>
                         <option value="nature">🌿 Nature / Scenic</option>

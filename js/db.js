@@ -36,30 +36,15 @@ const db = new PouchDB('maps_db');
 
 // State variables for Filen Sync
 let filenClient = null;
-let onChangeCallback = null;
 let syncPromise = Promise.resolve();
 let syncInterval = null;
 let currentSyncStatus = 'offline'; // 'offline', 'syncing', 'online', 'error'
-
-/**
- * Register callbacks for external event changes
- */
-export function registerCallbacks(onChange) {
-  onChangeCallback = onChange;
-}
 
 // Watch local database changes for live updates (sync, edits)
 db.changes({
   since: 'now',
   live: true,
   include_docs: true
-}).on('change', (change) => {
-  if (change.id.startsWith('_local/')) {
-    return;
-  }
-  if (onChangeCallback) {
-    onChangeCallback(change);
-  }
 });
 
 /**
@@ -70,7 +55,7 @@ export async function getSyncSettings() {
     return await db.get('_local/sync_settings');
   } catch (err) {
     if (err.status === 404) {
-      return { email: '', password: '', username: '', avatarURL: '', enabled: false };
+      return { email: '', password: '', username: '', avatarURL: '', enabled: false, homeAddress: null };
     }
     throw err;
   }
@@ -139,13 +124,6 @@ export async function savePlace(id, placeObj) {
     console.error("Failed to save place:", err);
     throw err;
   }
-}
-
-/**
- * Get a single place by ID.
- */
-export async function getPlace(id) {
-  return await db.get(id);
 }
 
 /**

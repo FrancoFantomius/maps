@@ -5,12 +5,11 @@ import { HUDController } from './HUDController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { ApiService } from './ApiService.js';
 
-const ROUTE_COLOR = '#4285F4';
-const ROUTE_OUTLINE_COLOR = '#1a5cc8';
-const ALT_ROUTE_COLOR = '#9AA0A6';
-const ROUTE_WEIGHT = 6;
-const ROUTE_OUTLINE_WEIGHT = 9;
 const AUTOCOMPLETE_DEBOUNCE_MS = 350;
+const PROFILE_SPEEDS = {
+    foot: { speedMps: 4.8 / 3.6, overheadSec: 5 },
+    cycling: { speedMps: 16.5 / 3.6, overheadSec: 8 }
+};
 
 export const RoutingController = {
     isRouteMode: false,
@@ -21,11 +20,8 @@ export const RoutingController = {
     routeEndName: '',
     routeStartMarker: null,
     routeEndMarker: null,
-    routeLineInstance: null,
-    routeOutlineInstance: null,
     routeAlternatives: [],
     routeSteps: [],
-    activeRouteIndex: 0,
     navAutocompleteTimeout: null,
     navFocusedInput: null,
     lastRoutingData: null,
@@ -83,32 +79,66 @@ export const RoutingController = {
 
     renderAutocomplete(results, dropdownEl, onSelect) {
         dropdownEl.innerHTML = '';
-        if (!results || results.length === 0) {
-            dropdownEl.classList.add('hidden');
-            return;
-        }
-        results.forEach(item => {
+        let hasItems = false;
+
+        const home = MapService.getHomeAddress();
+        if (home) {
             const template = document.getElementById('template-autocomplete-item');
-            const clone = template.content.cloneNode(true);
-            const shortName = item.display_name.split(',')[0];
-            
-            clone.querySelector('.item-name').textContent = shortName;
-            clone.querySelector('.item-address').textContent = item.display_name;
+            if (template) {
+                const clone = template.content.cloneNode(true);
+                clone.querySelector('.item-name').textContent = 'Home';
+                clone.querySelector('.item-address').textContent = home.address;
+                const iconSpan = clone.querySelector('.material-icons-outlined');
+                if (iconSpan) iconSpan.textContent = 'home';
 
-            clone.querySelector('.nav-autocomplete-item').addEventListener('click', () => {
-                onSelect({
-                    lat: parseFloat(item.lat),
-                    lng: parseFloat(item.lon),
-                    name: shortName,
-                    fullName: item.display_name
+                const itemDiv = clone.querySelector('.nav-autocomplete-item');
+                if (itemDiv) itemDiv.classList.add('bg-indigo-50/40', 'dark:bg-indigo-950/30');
+
+                itemDiv.addEventListener('click', () => {
+                    onSelect({
+                        lat: home.lat,
+                        lng: home.lng,
+                        name: 'Home',
+                        fullName: home.address
+                    });
+                    dropdownEl.innerHTML = '';
+                    dropdownEl.classList.add('hidden');
                 });
-                dropdownEl.innerHTML = '';
-                dropdownEl.classList.add('hidden');
-            });
+                dropdownEl.appendChild(clone);
+                hasItems = true;
+            }
+        }
 
-            dropdownEl.appendChild(clone);
-        });
-        dropdownEl.classList.remove('hidden');
+        if (results && results.length > 0) {
+            results.forEach(item => {
+                const template = document.getElementById('template-autocomplete-item');
+                const clone = template.content.cloneNode(true);
+                const shortName = item.display_name.split(',')[0];
+                
+                clone.querySelector('.item-name').textContent = shortName;
+                clone.querySelector('.item-address').textContent = item.display_name;
+
+                clone.querySelector('.nav-autocomplete-item').addEventListener('click', () => {
+                    onSelect({
+                        lat: parseFloat(item.lat),
+                        lng: parseFloat(item.lon),
+                        name: shortName,
+                        fullName: item.display_name
+                    });
+                    dropdownEl.innerHTML = '';
+                    dropdownEl.classList.add('hidden');
+                });
+
+                dropdownEl.appendChild(clone);
+                hasItems = true;
+            });
+        }
+
+        if (hasItems) {
+            dropdownEl.classList.remove('hidden');
+        } else {
+            dropdownEl.classList.add('hidden');
+        }
     },
 
     setupAutocomplete(inputEl, dropdownEl, type) {
@@ -116,8 +146,21 @@ export const RoutingController = {
             clearTimeout(this.navAutocompleteTimeout);
             const query = inputEl.value.trim();
             if (query.length < 2) {
-                dropdownEl.innerHTML = '';
-                dropdownEl.classList.add('hidden');
+                const home = MapService.getHomeAddress();
+                if (home) {
+                    this.renderAutocomplete([], dropdownEl, (place) => {
+                        inputEl.value = place.name;
+                        const latlng = { lat: place.lat, lng: place.lng };
+                        if (type === 'origin') {
+                            this.setOrigin(latlng, place.name);
+                        } else {
+                            this.setDestination(latlng, place.name);
+                        }
+                    });
+                } else {
+                    dropdownEl.innerHTML = '';
+                    dropdownEl.classList.add('hidden');
+                }
                 return;
             }
             this.navAutocompleteTimeout = setTimeout(async () => {
@@ -140,6 +183,20 @@ export const RoutingController = {
 
         inputEl.addEventListener('focus', () => {
             this.navFocusedInput = type;
+            if (!inputEl.value.trim()) {
+                const home = MapService.getHomeAddress();
+                if (home) {
+                    this.renderAutocomplete([], dropdownEl, (place) => {
+                        inputEl.value = place.name;
+                        const latlng = { lat: place.lat, lng: place.lng };
+                        if (type === 'origin') {
+                            this.setOrigin(latlng, place.name);
+                        } else {
+                            this.setDestination(latlng, place.name);
+                        }
+                    });
+                }
+            }
         });
 
         inputEl.addEventListener('blur', () => {
@@ -332,11 +389,8 @@ export const RoutingController = {
         MapService.updateSourceData('route-source', { type: 'FeatureCollection', features: [] });
         MapService.updateSourceData('alternative-routes-source', { type: 'FeatureCollection', features: [] });
 
-        this.routeLineInstance = null;
-        this.routeOutlineInstance = null;
         this.routeAlternatives = [];
         this.routeSteps = [];
-        this.activeRouteIndex = 0;
 
         const summary = document.getElementById('nav-route-summary');
         const stepsList = document.getElementById('nav-steps-list');
@@ -448,7 +502,7 @@ export const RoutingController = {
         try {
             const data = await ApiService.calculateRoute(this.routeStart, this.routeEnd, this.routingProfile);
 
-            if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) {
+            if (!data || data.code !== 'Ok' || !data.routes || data.routes.length === 0) {
                 if (stepsList) {
                     stepsList.innerHTML = `
                         <div class="text-center py-8 text-red-400 dark:text-red-500 text-xs">
@@ -468,7 +522,6 @@ export const RoutingController = {
 
             // Draw main route
             this.drawMainRoute(data.routes[0]);
-            this.activeRouteIndex = 0;
 
             // Fit bounds
             this.fitRouteBounds(data.routes[0].geometry);
@@ -496,7 +549,6 @@ export const RoutingController = {
             geometry: route.geometry
         };
         MapService.updateSourceData('route-source', this.currentRouteGeoJSON);
-        this.routeLineInstance = true;
     },
 
     drawAlternativeRoutes(routes) {
@@ -522,11 +574,32 @@ export const RoutingController = {
 
         this.drawMainRoute(routesCopy[0]);
         this.drawAlternativeRoutes(routesCopy);
-        this.activeRouteIndex = newIndex;
         this.lastRoutingData = { ...data, routes: routesCopy };
 
         this.renderRouteSummary(routesCopy[0]);
         this.renderRouteSteps(routesCopy[0]);
+    },
+
+    calculateRealisticDuration(route, profile) {
+        if (!route) return 0;
+        const distanceMeters = route.distance || 0;
+        const speedConfig = PROFILE_SPEEDS[profile];
+        if (speedConfig) {
+            const steps = (route.legs && route.legs[0] && route.legs[0].steps) ? route.legs[0].steps : [];
+            const numManeuvers = steps.length || 1;
+            return (distanceMeters / speedConfig.speedMps) + (numManeuvers * speedConfig.overheadSec);
+        }
+        return route.duration || 0;
+    },
+
+    calculateStepDuration(step, profile) {
+        if (!step) return 0;
+        const distanceMeters = step.distance || 0;
+        const speedConfig = PROFILE_SPEEDS[profile];
+        if (speedConfig) {
+            return (distanceMeters / speedConfig.speedMps) + speedConfig.overheadSec;
+        }
+        return step.duration || 0;
     },
 
     renderRouteSummary(route) {
@@ -537,8 +610,7 @@ export const RoutingController = {
 
         if (!summary) return;
 
-        let seconds = route.duration;
-        if (this.routingProfile === 'foot') seconds *= 1.2;
+        const seconds = this.calculateRealisticDuration(route, this.routingProfile);
 
         if (timeEl) timeEl.innerText = this.formatDuration(seconds);
         if (distEl) distEl.innerText = this.formatDistance(route.distance);
@@ -551,8 +623,17 @@ export const RoutingController = {
                 steps.forEach(s => {
                     if (s.distance > longestStep.distance) longestStep = s;
                 });
-                if (longestStep.name && longestStep.name.trim()) {
-                    viaRoad = `via ${longestStep.name}`;
+                if (longestStep && longestStep.name && longestStep.name.trim()) {
+                    if (this.routingProfile === 'foot') {
+                        viaRoad = `via ${longestStep.name} (4.8 km/h)`;
+                    } else if (this.routingProfile === 'cycling') {
+                        viaRoad = `via ${longestStep.name} (16.5 km/h)`;
+                    } else {
+                        viaRoad = `via ${longestStep.name}`;
+                    }
+                } else {
+                    if (this.routingProfile === 'foot') viaRoad = 'Walking at 4.8 km/h';
+                    if (this.routingProfile === 'cycling') viaRoad = 'Cycling at 16.5 km/h';
                 }
             }
             viaEl.innerText = viaRoad;
@@ -575,7 +656,9 @@ export const RoutingController = {
         steps.forEach((step, idx) => {
             const icon = this.getManeuverIcon(step.maneuver.type, step.maneuver.modifier);
             const instruction = step.name ? step.name : (step.maneuver.type === 'depart' ? 'Start' : step.maneuver.type === 'arrive' ? 'Arrive at destination' : 'Continue');
-            const dist = this.formatStepDistance(step.distance);
+            const distStr = this.formatStepDistance(step.distance);
+            const stepSeconds = this.calculateStepDuration(step, this.routingProfile);
+            const stepTimeStr = this.formatDuration(stepSeconds);
             const isFirst = idx === 0;
             const isLast = idx === steps.length - 1;
 
@@ -604,7 +687,7 @@ export const RoutingController = {
 
             const distEl = clone.querySelector('.step-distance');
             if (!isLast) {
-                distEl.textContent = dist;
+                distEl.textContent = `${distStr} • ${stepTimeStr}`;
             } else {
                 distEl.remove();
             }
