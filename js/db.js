@@ -70,7 +70,7 @@ export async function getSyncSettings() {
     return await db.get('_local/sync_settings');
   } catch (err) {
     if (err.status === 404) {
-      return { email: '', password: '', username: '', avatarURL: '', enabled: false };
+      return { email: '', password: '', username: '', avatarURL: '', enabled: false, homeAddress: null };
     }
     throw err;
   }

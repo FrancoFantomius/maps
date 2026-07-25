@@ -22,17 +22,10 @@ export const MapService = {
         const MIN_ZOOM = 3;
         const MAX_ZOOM = 18;
 
-        const savedHome = localStorage.getItem('maps_home_coords');
+        const savedHome = this.getHomeAddress();
         if (savedHome) {
-            try {
-                const parsed = JSON.parse(savedHome);
-                if (parsed && typeof parsed.lat === 'number' && typeof parsed.lng === 'number') {
-                    initialLat = parsed.lat;
-                    initialLng = parsed.lng;
-                }
-            } catch (e) {
-                console.error("Failed to parse saved home location", e);
-            }
+            initialLat = savedHome.lat;
+            initialLng = savedHome.lng;
         }
 
         const savedLayer = localStorage.getItem(STORAGE_KEY_LAYER);
@@ -702,5 +695,60 @@ export const MapService = {
 
     queryRenderedFeatures(point, options) {
         return this.map ? this.map.queryRenderedFeatures(point, options) : [];
+    },
+
+    getHomeAddress() {
+        const savedHomeAddress = localStorage.getItem('maps_home_address');
+        if (savedHomeAddress) {
+            try {
+                const parsed = JSON.parse(savedHomeAddress);
+                if (parsed && typeof parsed.lat === 'number' && typeof parsed.lng === 'number') {
+                    return parsed;
+                }
+            } catch (e) {
+                console.error("Failed to parse saved home address", e);
+            }
+        }
+        const savedHomeCoords = localStorage.getItem('maps_home_coords');
+        if (savedHomeCoords) {
+            try {
+                const parsed = JSON.parse(savedHomeCoords);
+                if (parsed && typeof parsed.lat === 'number' && typeof parsed.lng === 'number') {
+                    return {
+                        address: parsed.address || `${parsed.lat.toFixed(4)}, ${parsed.lng.toFixed(4)}`,
+                        lat: parsed.lat,
+                        lng: parsed.lng
+                    };
+                }
+            } catch (e) {
+                console.error("Failed to parse saved home coords", e);
+            }
+        }
+        return null;
+    },
+
+    setHomeAddress(data) {
+        if (!data || typeof data.lat !== 'number' || typeof data.lng !== 'number') return null;
+        const homeObj = {
+            address: data.address || data.fullName || data.name || `${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}`,
+            lat: data.lat,
+            lng: data.lng,
+            updatedAt: Date.now()
+        };
+        localStorage.setItem('maps_home_address', JSON.stringify(homeObj));
+        localStorage.setItem('maps_home_coords', JSON.stringify({ lat: data.lat, lng: data.lng, address: homeObj.address }));
+        return homeObj;
+    },
+
+    clearHomeAddress() {
+        localStorage.removeItem('maps_home_address');
+        localStorage.removeItem('maps_home_coords');
+    },
+
+    flyToHome() {
+        const home = this.getHomeAddress();
+        if (home) {
+            this.flyTo([home.lng, home.lat], 15);
+        }
     }
 };

@@ -227,6 +227,7 @@ export const HUDController = {
             const config = colorPalette[data.category] || colorPalette.poi;
             const categoryLabels = {
                 poi: '🎯 Point of Interest',
+                home: '🏠 Home',
                 food: '🍕 Food & Drink',
                 lodging: '🏨 Lodging',
                 nature: '🌿 Nature / Scenic'

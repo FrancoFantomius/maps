@@ -83,32 +83,66 @@ export const RoutingController = {
 
     renderAutocomplete(results, dropdownEl, onSelect) {
         dropdownEl.innerHTML = '';
-        if (!results || results.length === 0) {
-            dropdownEl.classList.add('hidden');
-            return;
-        }
-        results.forEach(item => {
+        let hasItems = false;
+
+        const home = MapService.getHomeAddress();
+        if (home) {
             const template = document.getElementById('template-autocomplete-item');
-            const clone = template.content.cloneNode(true);
-            const shortName = item.display_name.split(',')[0];
-            
-            clone.querySelector('.item-name').textContent = shortName;
-            clone.querySelector('.item-address').textContent = item.display_name;
+            if (template) {
+                const clone = template.content.cloneNode(true);
+                clone.querySelector('.item-name').textContent = 'Home';
+                clone.querySelector('.item-address').textContent = home.address;
+                const iconSpan = clone.querySelector('.material-icons-outlined');
+                if (iconSpan) iconSpan.textContent = 'home';
 
-            clone.querySelector('.nav-autocomplete-item').addEventListener('click', () => {
-                onSelect({
-                    lat: parseFloat(item.lat),
-                    lng: parseFloat(item.lon),
-                    name: shortName,
-                    fullName: item.display_name
+                const itemDiv = clone.querySelector('.nav-autocomplete-item');
+                if (itemDiv) itemDiv.classList.add('bg-indigo-50/40', 'dark:bg-indigo-950/30');
+
+                itemDiv.addEventListener('click', () => {
+                    onSelect({
+                        lat: home.lat,
+                        lng: home.lng,
+                        name: 'Home',
+                        fullName: home.address
+                    });
+                    dropdownEl.innerHTML = '';
+                    dropdownEl.classList.add('hidden');
                 });
-                dropdownEl.innerHTML = '';
-                dropdownEl.classList.add('hidden');
-            });
+                dropdownEl.appendChild(clone);
+                hasItems = true;
+            }
+        }
 
-            dropdownEl.appendChild(clone);
-        });
-        dropdownEl.classList.remove('hidden');
+        if (results && results.length > 0) {
+            results.forEach(item => {
+                const template = document.getElementById('template-autocomplete-item');
+                const clone = template.content.cloneNode(true);
+                const shortName = item.display_name.split(',')[0];
+                
+                clone.querySelector('.item-name').textContent = shortName;
+                clone.querySelector('.item-address').textContent = item.display_name;
+
+                clone.querySelector('.nav-autocomplete-item').addEventListener('click', () => {
+                    onSelect({
+                        lat: parseFloat(item.lat),
+                        lng: parseFloat(item.lon),
+                        name: shortName,
+                        fullName: item.display_name
+                    });
+                    dropdownEl.innerHTML = '';
+                    dropdownEl.classList.add('hidden');
+                });
+
+                dropdownEl.appendChild(clone);
+                hasItems = true;
+            });
+        }
+
+        if (hasItems) {
+            dropdownEl.classList.remove('hidden');
+        } else {
+            dropdownEl.classList.add('hidden');
+        }
     },
 
     setupAutocomplete(inputEl, dropdownEl, type) {
@@ -116,8 +150,21 @@ export const RoutingController = {
             clearTimeout(this.navAutocompleteTimeout);
             const query = inputEl.value.trim();
             if (query.length < 2) {
-                dropdownEl.innerHTML = '';
-                dropdownEl.classList.add('hidden');
+                const home = MapService.getHomeAddress();
+                if (home) {
+                    this.renderAutocomplete([], dropdownEl, (place) => {
+                        inputEl.value = place.name;
+                        const latlng = { lat: place.lat, lng: place.lng };
+                        if (type === 'origin') {
+                            this.setOrigin(latlng, place.name);
+                        } else {
+                            this.setDestination(latlng, place.name);
+                        }
+                    });
+                } else {
+                    dropdownEl.innerHTML = '';
+                    dropdownEl.classList.add('hidden');
+                }
                 return;
             }
             this.navAutocompleteTimeout = setTimeout(async () => {
@@ -140,6 +187,20 @@ export const RoutingController = {
 
         inputEl.addEventListener('focus', () => {
             this.navFocusedInput = type;
+            if (!inputEl.value.trim()) {
+                const home = MapService.getHomeAddress();
+                if (home) {
+                    this.renderAutocomplete([], dropdownEl, (place) => {
+                        inputEl.value = place.name;
+                        const latlng = { lat: place.lat, lng: place.lng };
+                        if (type === 'origin') {
+                            this.setOrigin(latlng, place.name);
+                        } else {
+                            this.setDestination(latlng, place.name);
+                        }
+                    });
+                }
+            }
         });
 
         inputEl.addEventListener('blur', () => {
