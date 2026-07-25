@@ -13,6 +13,11 @@ export default defineConfig({
       'fs-extra': path.resolve(__dirname, 'js/mocks/fs-extra.js'),
     },
   },
+  test: {
+    environment: 'jsdom',
+    setupFiles: './tests/setup.js',
+    globals: true,
+  },
   server: {
     watch: {
       usePolling: true,

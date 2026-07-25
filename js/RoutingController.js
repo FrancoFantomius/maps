@@ -5,12 +5,11 @@ import { HUDController } from './HUDController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { ApiService } from './ApiService.js';
 
-const ROUTE_COLOR = '#4285F4';
-const ROUTE_OUTLINE_COLOR = '#1a5cc8';
-const ALT_ROUTE_COLOR = '#9AA0A6';
-const ROUTE_WEIGHT = 6;
-const ROUTE_OUTLINE_WEIGHT = 9;
 const AUTOCOMPLETE_DEBOUNCE_MS = 350;
+const PROFILE_SPEEDS = {
+    foot: { speedMps: 4.8 / 3.6, overheadSec: 5 },
+    cycling: { speedMps: 16.5 / 3.6, overheadSec: 8 }
+};
 
 export const RoutingController = {
     isRouteMode: false,
@@ -21,11 +20,8 @@ export const RoutingController = {
     routeEndName: '',
     routeStartMarker: null,
     routeEndMarker: null,
-    routeLineInstance: null,
-    routeOutlineInstance: null,
     routeAlternatives: [],
     routeSteps: [],
-    activeRouteIndex: 0,
     navAutocompleteTimeout: null,
     navFocusedInput: null,
     lastRoutingData: null,
@@ -393,11 +389,8 @@ export const RoutingController = {
         MapService.updateSourceData('route-source', { type: 'FeatureCollection', features: [] });
         MapService.updateSourceData('alternative-routes-source', { type: 'FeatureCollection', features: [] });
 
-        this.routeLineInstance = null;
-        this.routeOutlineInstance = null;
         this.routeAlternatives = [];
         this.routeSteps = [];
-        this.activeRouteIndex = 0;
 
         const summary = document.getElementById('nav-route-summary');
         const stepsList = document.getElementById('nav-steps-list');
@@ -509,7 +502,7 @@ export const RoutingController = {
         try {
             const data = await ApiService.calculateRoute(this.routeStart, this.routeEnd, this.routingProfile);
 
-            if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) {
+            if (!data || data.code !== 'Ok' || !data.routes || data.routes.length === 0) {
                 if (stepsList) {
                     stepsList.innerHTML = `
                         <div class="text-center py-8 text-red-400 dark:text-red-500 text-xs">
@@ -529,7 +522,6 @@ export const RoutingController = {
 
             // Draw main route
             this.drawMainRoute(data.routes[0]);
-            this.activeRouteIndex = 0;
 
             // Fit bounds
             this.fitRouteBounds(data.routes[0].geometry);
@@ -557,7 +549,6 @@ export const RoutingController = {
             geometry: route.geometry
         };
         MapService.updateSourceData('route-source', this.currentRouteGeoJSON);
-        this.routeLineInstance = true;
     },
 
     drawAlternativeRoutes(routes) {
@@ -583,7 +574,6 @@ export const RoutingController = {
 
         this.drawMainRoute(routesCopy[0]);
         this.drawAlternativeRoutes(routesCopy);
-        this.activeRouteIndex = newIndex;
         this.lastRoutingData = { ...data, routes: routesCopy };
 
         this.renderRouteSummary(routesCopy[0]);
@@ -593,36 +583,21 @@ export const RoutingController = {
     calculateRealisticDuration(route, profile) {
         if (!route) return 0;
         const distanceMeters = route.distance || 0;
-        const steps = (route.legs && route.legs[0] && route.legs[0].steps) ? route.legs[0].steps : [];
-        const numManeuvers = steps.length || 1;
-
-        if (profile === 'foot') {
-            const walkingSpeedMps = 4.8 / 3.6; // Standard walking speed: 4.8 km/h (1.333 m/s)
-            const travelSeconds = distanceMeters / walkingSpeedMps;
-            const overheadSeconds = numManeuvers * 5; // 5s per intersection/maneuver
-            return travelSeconds + overheadSeconds;
+        const speedConfig = PROFILE_SPEEDS[profile];
+        if (speedConfig) {
+            const steps = (route.legs && route.legs[0] && route.legs[0].steps) ? route.legs[0].steps : [];
+            const numManeuvers = steps.length || 1;
+            return (distanceMeters / speedConfig.speedMps) + (numManeuvers * speedConfig.overheadSec);
         }
-
-        if (profile === 'cycling') {
-            const cyclingSpeedMps = 16.5 / 3.6; // Standard cycling speed: 16.5 km/h (4.583 m/s)
-            const travelSeconds = distanceMeters / cyclingSpeedMps;
-            const overheadSeconds = numManeuvers * 8; // 8s per intersection/maneuver
-            return travelSeconds + overheadSeconds;
-        }
-
         return route.duration || 0;
     },
 
     calculateStepDuration(step, profile) {
         if (!step) return 0;
         const distanceMeters = step.distance || 0;
-        if (profile === 'foot') {
-            const walkingSpeedMps = 4.8 / 3.6;
-            return (distanceMeters / walkingSpeedMps) + 5;
-        }
-        if (profile === 'cycling') {
-            const cyclingSpeedMps = 16.5 / 3.6;
-            return (distanceMeters / cyclingSpeedMps) + 8;
+        const speedConfig = PROFILE_SPEEDS[profile];
+        if (speedConfig) {
+            return (distanceMeters / speedConfig.speedMps) + speedConfig.overheadSec;
         }
         return step.duration || 0;
     },

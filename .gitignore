@@ -52,6 +52,8 @@ Thumbs.db
 .vite/
 dist/
 public/
+maps_db/
+coverage/
 
 # Local env files
 .env

@@ -269,48 +269,45 @@ function setupEventListeners() {
     // Settings Bottom Sheet Toggles
     const btnSettingsClose = document.getElementById('btn-settings-close');
 
-    function openSettingsPanel() {
-        settingsPanel.classList.add('settings-open');
-        settingsPanel.classList.remove('translate-y-full');
-        btnSettingsToggle.querySelector('.material-icons-outlined').textContent = 'keyboard_double_arrow_down';
-        requestAnimationFrame(() => {
-            const panelHeight = settingsPanel.offsetHeight;
-            document.documentElement.style.setProperty('--settings-panel-height', panelHeight + 'px');
+    function setSettingsPanelOpen(isOpen) {
+        settingsPanel.classList.toggle('settings-open', isOpen);
+        settingsPanel.classList.toggle('translate-y-full', !isOpen);
+        const iconSpan = btnSettingsToggle.querySelector('.material-icons-outlined');
+        if (iconSpan) iconSpan.textContent = isOpen ? 'keyboard_double_arrow_down' : 'keyboard_double_arrow_up';
+
+        if (isOpen) {
+            requestAnimationFrame(() => {
+                const panelHeight = settingsPanel.offsetHeight;
+                document.documentElement.style.setProperty('--settings-panel-height', panelHeight + 'px');
+                document.querySelectorAll('.bottom-ui-element').forEach(el => {
+                    el.style.transform = `translateY(-${panelHeight}px)`;
+                });
+                const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
+                if (mapControls) mapControls.style.transform = `translateY(-${panelHeight}px)`;
+            });
+        } else {
             document.querySelectorAll('.bottom-ui-element').forEach(el => {
-                el.style.transform = `translateY(-${panelHeight}px)`;
+                el.style.transform = '';
             });
             const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
-            if (mapControls) mapControls.style.transform = `translateY(-${panelHeight}px)`;
-        });
-    }
-
-    function closeSettingsPanel() {
-        settingsPanel.classList.remove('settings-open');
-        settingsPanel.classList.add('translate-y-full');
-        btnSettingsToggle.querySelector('.material-icons-outlined').textContent = 'keyboard_double_arrow_up';
-        document.querySelectorAll('.bottom-ui-element').forEach(el => {
-            el.style.transform = '';
-        });
-        const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
-        if (mapControls) mapControls.style.transform = '';
+            if (mapControls) mapControls.style.transform = '';
+        }
     }
 
     btnSettingsToggle.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isOpen = settingsPanel.classList.contains('settings-open');
-        if (isOpen) closeSettingsPanel();
-        else openSettingsPanel();
+        setSettingsPanelOpen(!settingsPanel.classList.contains('settings-open'));
     });
 
     btnSettingsClose.addEventListener('click', (e) => {
         e.stopPropagation();
-        closeSettingsPanel();
+        setSettingsPanelOpen(false);
     });
 
     document.addEventListener('click', (e) => {
         if (!settingsPanel.contains(e.target) && !btnSettingsToggle.contains(e.target)) {
             if (settingsPanel.classList.contains('settings-open')) {
-                closeSettingsPanel();
+                setSettingsPanelOpen(false);
             }
         }
     });

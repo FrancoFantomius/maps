@@ -840,10 +840,6 @@ export const MapService = {
         return new maplibregl.Popup(options);
     },
 
-    addControl(control, position) {
-        if (this.map) this.map.addControl(control, position);
-    },
-
     on(event, layerIdOrHandler, handler) {
         if (!this.map) return;
         if (typeof layerIdOrHandler === 'string') {
@@ -869,21 +865,6 @@ export const MapService = {
                 console.error("Failed to parse saved home address", e);
             }
         }
-        const savedHomeCoords = localStorage.getItem('maps_home_coords');
-        if (savedHomeCoords) {
-            try {
-                const parsed = JSON.parse(savedHomeCoords);
-                if (parsed && typeof parsed.lat === 'number' && typeof parsed.lng === 'number') {
-                    return {
-                        address: parsed.address || `${parsed.lat.toFixed(4)}, ${parsed.lng.toFixed(4)}`,
-                        lat: parsed.lat,
-                        lng: parsed.lng
-                    };
-                }
-            } catch (e) {
-                console.error("Failed to parse saved home coords", e);
-            }
-        }
         return null;
     },
 
@@ -896,13 +877,11 @@ export const MapService = {
             updatedAt: Date.now()
         };
         localStorage.setItem('maps_home_address', JSON.stringify(homeObj));
-        localStorage.setItem('maps_home_coords', JSON.stringify({ lat: data.lat, lng: data.lng, address: homeObj.address }));
         return homeObj;
     },
 
     clearHomeAddress() {
         localStorage.removeItem('maps_home_address');
-        localStorage.removeItem('maps_home_coords');
     },
 
     flyToHome() {

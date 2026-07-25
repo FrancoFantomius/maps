@@ -162,10 +162,6 @@ export const MarkerController = {
         }
     },
 
-    saveToStorage() {
-        // No-op since we write directly via PouchDB
-    },
-
     renderHomeMarker() {
         if (this.homeMarkerInstance) {
             this.homeMarkerInstance.remove();
@@ -231,93 +227,67 @@ export const MarkerController = {
         this.customMarkers.forEach((m, idx) => {
             const isHomeMarker = (m.category === 'home') || (home && Math.abs(m.lat - home.lat) < 0.0001 && Math.abs(m.lng - home.lng) < 0.0001);
 
-            if (isHomeMarker) {
-                // Pin is already rendered on map by renderHomeMarker().
-                // Only render item in "My Places" sidebar list.
-                const template = document.getElementById('template-marker-list-item');
-                if (template) {
-                    const clone = template.content.cloneNode(true);
-                    const dot = clone.querySelector('.marker-color-dot');
-                    const config = this.colorPalette[m.category] || this.colorPalette.poi;
-                    dot.style.backgroundColor = config.main;
+            if (!isHomeMarker) {
+                const el = this.createPin(m.category);
+                
+                const popup = MapService.createPopup({
+                    offset: [0, -35],
+                    closeButton: false,
+                    closeOnClick: false,
+                    className: 'custom-marker-popup'
+                }).setHTML(`<div class="font-semibold text-xs text-slate-800 dark:text-slate-100">${m.name}</div>`);
 
-                    const nameEl = clone.querySelector('.marker-name');
-                    nameEl.textContent = m.name;
+                const pin = MapService.createMarker(el, false, 'bottom')
+                    .setLngLat([m.lng, m.lat])
+                    .setPopup(popup)
+                    .addTo(MapService.map);
+                
+                el.addEventListener('mouseenter', () => popup.addTo(MapService.map));
+                el.addEventListener('mouseleave', () => popup.remove());
 
-                    clone.querySelector('.marker-focus').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        MapService.flyTo([m.lng, m.lat], 15);
-                        HUDController.setState('place-details', m);
-                    });
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (MeasurementController.isMeasureMode || RoutingController.isRouteMode) {
+                        return;
+                    }
+                    HUDController.setState('place-details', m);
+                    MapService.flyTo([m.lng, m.lat], 15);
+                });
 
-                    clone.querySelector('.btn-delete-marker').addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this.delete(m.id);
-                    });
-
-                    clone.querySelector('.marker-item').addEventListener('click', () => {
-                        HUDController.setState('place-details', m);
-                    });
-
-                    savedMarkersList.appendChild(clone);
-                }
-                return;
+                this.markerInstances.push(pin);
             }
 
-            const el = this.createPin(m.category);
-            
-            const popup = MapService.createPopup({
-                offset: [0, -35],
-                closeButton: false,
-                closeOnClick: false,
-                className: 'custom-marker-popup'
-            }).setHTML(`<div class="font-semibold text-xs text-slate-800 dark:text-slate-100">${m.name}</div>`);
-
-            const pin = MapService.createMarker(el, false, 'bottom')
-                .setLngLat([m.lng, m.lat])
-                .setPopup(popup)
-                .addTo(MapService.map);
-            
-            el.addEventListener('mouseenter', () => popup.addTo(MapService.map));
-            el.addEventListener('mouseleave', () => popup.remove());
-
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (MeasurementController.isMeasureMode || RoutingController.isRouteMode) {
-                    return;
-                }
-                HUDController.setState('place-details', m);
-                MapService.flyTo([m.lng, m.lat], 15);
-            });
-
-            this.markerInstances.push(pin);
-
-            const template = document.getElementById('template-marker-list-item');
-            const clone = template.content.cloneNode(true);
-            
-            const dot = clone.querySelector('.marker-color-dot');
-            const config = this.colorPalette[m.category] || this.colorPalette.poi;
-            dot.style.backgroundColor = config.main;
-
-            const nameEl = clone.querySelector('.marker-name');
-            nameEl.textContent = m.name;
-
-            clone.querySelector('.marker-focus').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.focus(m.lat, m.lng, idx);
-            });
-
-            clone.querySelector('.btn-delete-marker').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.delete(m.id);
-            });
-
-            clone.querySelector('.marker-item').addEventListener('click', () => {
-                HUDController.setState('place-details', m);
-            });
-
-            savedMarkersList.appendChild(clone);
+            this.renderListItem(m, savedMarkersList);
         });
+    },
+
+    renderListItem(m, container) {
+        const template = document.getElementById('template-marker-list-item');
+        if (!template) return;
+        const clone = template.content.cloneNode(true);
+        const dot = clone.querySelector('.marker-color-dot');
+        const config = this.colorPalette[m.category] || this.colorPalette.poi;
+        dot.style.backgroundColor = config.main;
+
+        const nameEl = clone.querySelector('.marker-name');
+        nameEl.textContent = m.name;
+
+        clone.querySelector('.marker-focus').addEventListener('click', (e) => {
+            e.stopPropagation();
+            MapService.flyTo([m.lng, m.lat], 15);
+            HUDController.setState('place-details', m);
+        });
+
+        clone.querySelector('.btn-delete-marker').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.delete(m.id);
+        });
+
+        clone.querySelector('.marker-item').addEventListener('click', () => {
+            HUDController.setState('place-details', m);
+        });
+
+        container.appendChild(clone);
     },
 
     focus(lat, lng, idx) {
@@ -364,4 +334,4 @@ window.addEventListener('maps-places-updated', async () => {
     } catch (e) {
         console.error("[Sync UI] Error re-rendering markers:", e);
     }
-});;
+});
