@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@filen/sdk": "^0.3.12",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/material-icons-outlined": "^5.3.0",
+    "@fontsource/outfit": "^5.3.0",
     "maplibre-gl": "^4.3.0",
     "pouchdb": "^9.0.0"
   },
