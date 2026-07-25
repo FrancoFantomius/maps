@@ -574,8 +574,6 @@ function setupEventListeners() {
     const homeAddressInput = document.getElementById('home-address-input');
     const homeAddressAutocomplete = document.getElementById('home-address-autocomplete');
     const btnSaveHomeInput = document.getElementById('btn-save-home-input');
-    const btnSetHome = document.getElementById('btn-set-home');
-    const btnSetHomeLabel = document.getElementById('btn-set-home-label');
     const btnFlyHome = document.getElementById('btn-fly-home');
     const btnClearHome = document.getElementById('btn-clear-home');
 
@@ -675,36 +673,6 @@ function setupEventListeners() {
                 }
             } catch (err) {
                 console.error("Failed to save home address from input", err);
-            }
-        });
-    }
-
-    if (btnSetHome) {
-        btnSetHome.addEventListener('click', async () => {
-            if (!MapService.map) return;
-            const center = MapService.map.getCenter();
-            const originalText = btnSetHomeLabel ? btnSetHomeLabel.textContent : '';
-            if (btnSetHomeLabel) btnSetHomeLabel.textContent = 'Finding address...';
-
-            try {
-                const geoData = await ApiService.reverseGeocode(center.lat, center.lng);
-                const address = (geoData && geoData.display_name) ? geoData.display_name : `${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`;
-                MapService.setHomeAddress({
-                    address: address,
-                    lat: center.lat,
-                    lng: center.lng
-                });
-                updateHomeUI();
-            } catch (err) {
-                console.warn("Reverse geocode failed, saving coordinates as home address", err);
-                MapService.setHomeAddress({
-                    address: `${center.lat.toFixed(4)}, ${center.lng.toFixed(4)}`,
-                    lat: center.lat,
-                    lng: center.lng
-                });
-                updateHomeUI();
-            } finally {
-                if (btnSetHomeLabel) btnSetHomeLabel.textContent = originalText || 'Set Current View as Home';
             }
         });
     }
