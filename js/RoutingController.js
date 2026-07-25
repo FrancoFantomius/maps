@@ -590,6 +590,43 @@ export const RoutingController = {
         this.renderRouteSteps(routesCopy[0]);
     },
 
+    calculateRealisticDuration(route, profile) {
+        if (!route) return 0;
+        const distanceMeters = route.distance || 0;
+        const steps = (route.legs && route.legs[0] && route.legs[0].steps) ? route.legs[0].steps : [];
+        const numManeuvers = steps.length || 1;
+
+        if (profile === 'foot') {
+            const walkingSpeedMps = 4.8 / 3.6; // Standard walking speed: 4.8 km/h (1.333 m/s)
+            const travelSeconds = distanceMeters / walkingSpeedMps;
+            const overheadSeconds = numManeuvers * 5; // 5s per intersection/maneuver
+            return travelSeconds + overheadSeconds;
+        }
+
+        if (profile === 'cycling') {
+            const cyclingSpeedMps = 16.5 / 3.6; // Standard cycling speed: 16.5 km/h (4.583 m/s)
+            const travelSeconds = distanceMeters / cyclingSpeedMps;
+            const overheadSeconds = numManeuvers * 8; // 8s per intersection/maneuver
+            return travelSeconds + overheadSeconds;
+        }
+
+        return route.duration || 0;
+    },
+
+    calculateStepDuration(step, profile) {
+        if (!step) return 0;
+        const distanceMeters = step.distance || 0;
+        if (profile === 'foot') {
+            const walkingSpeedMps = 4.8 / 3.6;
+            return (distanceMeters / walkingSpeedMps) + 5;
+        }
+        if (profile === 'cycling') {
+            const cyclingSpeedMps = 16.5 / 3.6;
+            return (distanceMeters / cyclingSpeedMps) + 8;
+        }
+        return step.duration || 0;
+    },
+
     renderRouteSummary(route) {
         const summary = document.getElementById('nav-route-summary');
         const timeEl = document.getElementById('nav-route-time');
@@ -598,8 +635,7 @@ export const RoutingController = {
 
         if (!summary) return;
 
-        let seconds = route.duration;
-        if (this.routingProfile === 'foot') seconds *= 1.2;
+        const seconds = this.calculateRealisticDuration(route, this.routingProfile);
 
         if (timeEl) timeEl.innerText = this.formatDuration(seconds);
         if (distEl) distEl.innerText = this.formatDistance(route.distance);
@@ -612,8 +648,17 @@ export const RoutingController = {
                 steps.forEach(s => {
                     if (s.distance > longestStep.distance) longestStep = s;
                 });
-                if (longestStep.name && longestStep.name.trim()) {
-                    viaRoad = `via ${longestStep.name}`;
+                if (longestStep && longestStep.name && longestStep.name.trim()) {
+                    if (this.routingProfile === 'foot') {
+                        viaRoad = `via ${longestStep.name} (4.8 km/h)`;
+                    } else if (this.routingProfile === 'cycling') {
+                        viaRoad = `via ${longestStep.name} (16.5 km/h)`;
+                    } else {
+                        viaRoad = `via ${longestStep.name}`;
+                    }
+                } else {
+                    if (this.routingProfile === 'foot') viaRoad = 'Walking at 4.8 km/h';
+                    if (this.routingProfile === 'cycling') viaRoad = 'Cycling at 16.5 km/h';
                 }
             }
             viaEl.innerText = viaRoad;
@@ -636,7 +681,9 @@ export const RoutingController = {
         steps.forEach((step, idx) => {
             const icon = this.getManeuverIcon(step.maneuver.type, step.maneuver.modifier);
             const instruction = step.name ? step.name : (step.maneuver.type === 'depart' ? 'Start' : step.maneuver.type === 'arrive' ? 'Arrive at destination' : 'Continue');
-            const dist = this.formatStepDistance(step.distance);
+            const distStr = this.formatStepDistance(step.distance);
+            const stepSeconds = this.calculateStepDuration(step, this.routingProfile);
+            const stepTimeStr = this.formatDuration(stepSeconds);
             const isFirst = idx === 0;
             const isLast = idx === steps.length - 1;
 
@@ -665,7 +712,7 @@ export const RoutingController = {
 
             const distEl = clone.querySelector('.step-distance');
             if (!isLast) {
-                distEl.textContent = dist;
+                distEl.textContent = `${distStr} • ${stepTimeStr}`;
             } else {
                 distEl.remove();
             }
