@@ -1,6 +1,6 @@
 # Maps
 
-![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md#120)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 A modern, privacy-focused, local-first web mapping application powered by MapLibre GL JS, OpenStreetMap, and Tailwind CSS. Built as a Progressive Web App (PWA) with cloud synchronization capabilities.
