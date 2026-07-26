@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - 2026-07-26
 
 ### Added
+- **Comprehensive Multi-Language & i18n Support**: Added full internationalization (i18n) support across the UI with localization coverage for 60+ languages (including RTL language support).
+- **Dynamic Translation Controller (`TranslationController.js`)**: Implemented a standalone translation manager supporting system language detection, fallback chains (English base fallback), and dynamic language switching without requiring page reloads.
+- **Offline Translation Caching**: Integrated dynamic translation file fetching and caching in Cache API (`maps-translations-v1`) for complete offline availability.
+- **Language Preference UI**: Added a language selection dropdown to the settings panel allowing users to choose between system default and explicit language selection.
+- **Translation Unit Test Suite**: Added [TranslationController.test.js](file:///c:/Users/franc/Programmazione/maps/tests/TranslationController.test.js) to test language resolution, fallback handling, DOM translation application, and preference persistence.
 - **Full Progressive Web App (PWA) Support**: Integrated `vite-plugin-pwa` with service worker auto-updates, standalone display mode, and web app manifest synchronization.
 - **Offline Map Tile Caching**: Implemented Workbox runtime caching strategies for vector tiles (OpenFreeMap), raster tiles (OpenStreetMap), cycle path overlays (WaymarkedTrails), and 3D Terrain DEM elevation data.
 - **PWA Icons & Assets**: Added comprehensive app icon sets (`48x48` through `512x512` and maskable variants) for PWA installation on desktop and mobile devices.
