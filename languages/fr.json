@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "Cartes",
+    "subtitle": "Explorez et personnalisez des cartes en toute confidentialité."
+  },
+  "nav": {
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions d'Utilisation",
+    "close": "Fermer",
+    "back": "Retour"
+  },
+  "settings": {
+    "title": "Paramètres de la Carte",
+    "subtitle": "Configurez les calques, superpositions et l'apparence",
+    "language": "Langue",
+    "language_system": "Système (Auto)",
+    "show_details": "Afficher les Détails",
+    "street_names": "Noms de Rues",
+    "bike_paths": "Pistes Cyclables",
+    "buildings": "Bâtiments 3D",
+    "home_location": "Lieu de Domicile",
+    "home_address": "Adresse du Domicile",
+    "search_home_placeholder": "Rechercher l'adresse du domicile...",
+    "fly_to_home": "Aller au Domicile",
+    "clear_home": "Effacer l'Adresse du Domicile",
+    "map_rotation": "Rotation de la Carte",
+    "rotate_ccw": "Rotation Anti-horaire",
+    "rotate_cw": "Rotation Horaire",
+    "bearing_angle": "Angle d'Orientation",
+    "tilt_pitch": "Inclinaison / Pitch",
+    "appearance_theme": "Thème d'Apparence",
+    "theme_light": "Clair",
+    "theme_system": "Système",
+    "theme_dark": "Sombre"
+  },
+  "hud": {
+    "search_placeholder": "Rechercher",
+    "route": "Itinéraire",
+    "measure": "Mesurer",
+    "layers": "Calques",
+    "markers": "Repères",
+    "login": "Connexion",
+    "account": "Compte",
+    "offline_notice": "Mode Hors-ligne Actif"
+  },
+  "search": {
+    "no_results": "Aucun résultat trouvé",
+    "searching": "Recherche en cours..."
+  },
+  "routing": {
+    "title": "Calculateur d'Itinéraire",
+    "origin": "Lieu de départ",
+    "destination": "Lieu d'arrivée",
+    "profile_driving": "Voiture",
+    "profile_cycling": "Vélo",
+    "profile_walking": "À pied",
+    "calculate": "Calculer l'Itinéraire",
+    "clear": "Effacer l'Itinéraire",
+    "distance": "Distance",
+    "duration": "Durée"
+  },
+  "measurement": {
+    "title": "Mesure de Distance",
+    "click_to_start": "Cliquez sur la carte pour commencer la mesure",
+    "total_distance": "Distance Totale",
+    "clear": "Effacer la Mesure"
+  },
+  "markers": {
+    "title": "Repères Enregistrés",
+    "add_marker": "Ajouter un Repère",
+    "edit_marker": "Modifier le Repère",
+    "delete_marker": "Supprimer le Repère",
+    "name": "Nom du Repère",
+    "category": "Catégorie",
+    "description": "Description",
+    "save": "Enregistrer le Repère",
+    "cancel": "Annuler",
+    "no_markers": "Aucun repère enregistré."
+  },
+  "login": {
+    "title": "Synchronisation Cloud Filen",
+    "subtitle": "Connectez-vous pour synchroniser vos lieux chiffrés de bout en bout",
+    "email": "Adresse E-mail",
+    "password": "Mot de Passe",
+    "two_factor": "Code 2FA (si activé)",
+    "sign_in": "Se Connecter",
+    "signing_in": "Connexion...",
+    "sign_out": "Se Déconnecter",
+    "status_logged_in": "Connecté en tant que",
+    "status_logged_out": "Non connecté"
+  },
+  "layers": {
+    "title": "Calques de Carte",
+    "liberty": "Liberty (Par défaut)",
+    "dark": "Carte Mode Sombre",
+    "satellite": "Imagerie Satellite",
+    "osm": "OpenStreetMap Standard",
+    "bike": "Pistes Cyclables"
+  },
+  "controls": {
+    "zoom_in": "Zoom Avant",
+    "zoom_out": "Zoom Arrière",
+    "my_location": "Ma Position",
+    "reset_north": "Réinitialiser Nord"
+  },
+  "privacy": {
+    "page_title": "Politique de Confidentialité - Cartes",
+    "title": "Politique de Confidentialité",
+    "last_updated": "Juillet 2026",
+    "intro": "La confidentialité est notre valeur fondamentale.",
+    "section1_title": "1. Stockage Local",
+    "section1_text": "Vos repères sont stockés localement sur votre appareil.",
+    "section2_title": "2. Synchronisation Chiffrée",
+    "section2_text1": "Synchronisation via Filen.",
+    "section2_text2": "Chiffrement AES-256-GCM côté client.",
+    "section3_title": "3. Pas de Collecte de Données",
+    "section3_text": "Aucune télémétrie ni suivi.",
+    "section4_title": "4. Transparence Open Source",
+    "section4_text": "Licence libre AGPL-3.0."
+  },
+  "terms": {
+    "page_title": "Conditions d'Utilisation - Cartes",
+    "title": "Conditions d'Utilisation",
+    "last_updated": "Juillet 2026",
+    "intro": "Bienvenue sur Cartes.",
+    "section1_title": "1. Utilisation Acceptable",
+    "section1_text": "Gratuit pour un usage personnel.",
+    "section2_title": "2. Données et Services",
+    "section2_text": "Basé sur des données ouvertes.",
+    "section3_title": "3. Licence",
+    "section3_text": "Licence GNU AGPL-3.0."
+  }
+}

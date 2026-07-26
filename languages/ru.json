@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "Карты",
+    "subtitle": "Исследуйте и настраивайте карты с соблюдением конфиденциальности."
+  },
+  "nav": {
+    "privacy": "Политика конфиденциальности",
+    "terms": "Условия использования",
+    "close": "Закрыть",
+    "back": "Назад"
+  },
+  "settings": {
+    "title": "Настройки карты",
+    "subtitle": "Настройте слои, наложения и внешний вид",
+    "language": "Язык",
+    "language_system": "Системный (Авто)",
+    "show_details": "Показать детали",
+    "street_names": "Названия улиц",
+    "bike_paths": "Велодорожки",
+    "buildings": "3D-Здания",
+    "home_location": "Домашний адрес",
+    "home_address": "Адрес дома",
+    "search_home_placeholder": "Поиск домашнего адреса...",
+    "fly_to_home": "Перейти к дому",
+    "clear_home": "Очистить адрес",
+    "map_rotation": "Вращение карты",
+    "rotate_ccw": "Против часовой",
+    "rotate_cw": "По часовой",
+    "bearing_angle": "Угол ориентации",
+    "tilt_pitch": "Наклон / Pitch",
+    "appearance_theme": "Тема оформления",
+    "theme_light": "Светлая",
+    "theme_system": "Системная",
+    "theme_dark": "Тёмная"
+  },
+  "hud": {
+    "search_placeholder": "Поиск",
+    "route": "Маршрут",
+    "measure": "Замер",
+    "layers": "Слои",
+    "markers": "Метки",
+    "login": "Войти",
+    "account": "Аккаунт",
+    "offline_notice": "Активен автономный режим"
+  },
+  "search": {
+    "no_results": "Ничего не найдено",
+    "searching": "Поиск..."
+  },
+  "routing": {
+    "title": "Планировщик маршрута",
+    "origin": "Начальная точка",
+    "destination": "Пункт назначения",
+    "profile_driving": "На авто",
+    "profile_cycling": "На велосипеде",
+    "profile_walking": "Пешком",
+    "calculate": "Рассчитать маршрут",
+    "clear": "Очистить маршрут",
+    "distance": "Расстояние",
+    "duration": "Время"
+  },
+  "measurement": {
+    "title": "Измерение расстояния",
+    "click_to_start": "Кликните на карте для начала измерений",
+    "total_distance": "Общая дистанция",
+    "clear": "Очистить измерения"
+  },
+  "markers": {
+    "title": "Сохранённые метки",
+    "add_marker": "Добавить метку",
+    "edit_marker": "Изменить метку",
+    "delete_marker": "Удалить метку",
+    "name": "Название метки",
+    "category": "Категория",
+    "description": "Описание",
+    "save": "Сохранить метку",
+    "cancel": "Отмена",
+    "no_markers": "Пока нет сохранённых меток."
+  },
+  "login": {
+    "title": "Облачная синхронизация Filen",
+    "subtitle": "Войдите для сквозного шифрования ваших мест",
+    "email": "Электронная почта",
+    "password": "Пароль",
+    "two_factor": "Код 2FA (если включен)",
+    "sign_in": "Войти",
+    "signing_in": "Вход...",
+    "sign_out": "Выйти",
+    "status_logged_in": "Вы вошли как",
+    "status_logged_out": "Вы не вошли"
+  },
+  "layers": {
+    "title": "Слои карты",
+    "liberty": "Liberty (По умолчанию)",
+    "dark": "Тёмная карта",
+    "satellite": "Спутниковые снимки",
+    "osm": "OpenStreetMap Стандарт",
+    "bike": "Велодорожки"
+  },
+  "controls": {
+    "zoom_in": "Увеличить",
+    "zoom_out": "Уменьшить",
+    "my_location": "Моё местоположение",
+    "reset_north": "Сбросить на север"
+  },
+  "privacy": {
+    "page_title": "Политика конфиденциальности - Карты",
+    "title": "Политика конфиденциальности",
+    "last_updated": "Июль 2026",
+    "intro": "Конфиденциальность — наша главная ценность.",
+    "section1_title": "1. Локальное хранение",
+    "section1_text": "Все данные хранятся локально на вашем устройстве.",
+    "section2_title": "2. Зашифрованная синхронизация",
+    "section2_text1": "Синхронизация через Filen.",
+    "section2_text2": "Шифрование AES-256-GCM на устройстве.",
+    "section3_title": "3. Без сбора данных",
+    "section3_text": "Мы не собираем аналитику.",
+    "section4_title": "4. Открытый исходный код",
+    "section4_text": "Лицензия AGPL-3.0."
+  },
+  "terms": {
+    "page_title": "Условия использования - Карты",
+    "title": "Условия использования",
+    "last_updated": "Июль 2026",
+    "intro": "Добро пожаловать в Карты.",
+    "section1_title": "1. Допустимое использование",
+    "section1_text": "Бесплатно для личного использования.",
+    "section2_title": "2. Данные и сервисы",
+    "section2_text": "На основе открытых геоданных.",
+    "section3_title": "3. Лицензия",
+    "section3_text": "Лицензия GNU AGPL-3.0."
+  }
+}

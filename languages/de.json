@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "Karten",
+    "subtitle": "Karten erkunden und anpassen mit Datenschutz."
+  },
+  "nav": {
+    "privacy": "Datenschutz-Bestimmungen",
+    "terms": "Nutzungsbedingungen",
+    "close": "Schließen",
+    "back": "Zurück"
+  },
+  "settings": {
+    "title": "Karteneinstellungen",
+    "subtitle": "Karten-Ebenen, Overlays und Aussehen konfigurieren",
+    "language": "Sprache",
+    "language_system": "System (Auto)",
+    "show_details": "Details anzeigen",
+    "street_names": "Straßennamen",
+    "bike_paths": "Radwege",
+    "buildings": "3D-Gebäude",
+    "home_location": "Heimatort",
+    "home_address": "Heimatadresse",
+    "search_home_placeholder": "Heimatadresse suchen...",
+    "fly_to_home": "Zum Heimatort fliegen",
+    "clear_home": "Heimatadresse löschen",
+    "map_rotation": "Kartenrotation",
+    "rotate_ccw": "Gegen Uhrzeigersinn",
+    "rotate_cw": "Im Uhrzeigersinn",
+    "bearing_angle": "Orientierungswinkel",
+    "tilt_pitch": "Neigung / Pitch",
+    "appearance_theme": "Erscheinungsbild-Design",
+    "theme_light": "Hell",
+    "theme_system": "System",
+    "theme_dark": "Dunkel"
+  },
+  "hud": {
+    "search_placeholder": "Suchen",
+    "route": "Route",
+    "measure": "Messen",
+    "layers": "Ebenen",
+    "markers": "Marker",
+    "login": "Anmelden",
+    "account": "Konto",
+    "offline_notice": "Offline-Modus aktiv"
+  },
+  "search": {
+    "no_results": "Keine Ergebnisse gefunden",
+    "searching": "Suche läuft..."
+  },
+  "routing": {
+    "title": "Routenplaner",
+    "origin": "Startpunkt",
+    "destination": "Zielort",
+    "profile_driving": "Auto",
+    "profile_cycling": "Fahrrad",
+    "profile_walking": "Zu Fuß",
+    "calculate": "Route berechnen",
+    "clear": "Route löschen",
+    "distance": "Entfernung",
+    "duration": "Dauer"
+  },
+  "measurement": {
+    "title": "Entfernungsmessung",
+    "click_to_start": "Auf Karte klicken um Messung zu starten",
+    "total_distance": "Gesamtentfernung",
+    "clear": "Messung löschen"
+  },
+  "markers": {
+    "title": "Gespeicherte Marker",
+    "add_marker": "Marker hinzufügen",
+    "edit_marker": "Marker bearbeiten",
+    "delete_marker": "Marker löschen",
+    "name": "Marker-Name",
+    "category": "Kategorie",
+    "description": "Beschreibung",
+    "save": "Marker speichern",
+    "cancel": "Abbrechen",
+    "no_markers": "Noch keine Marker gespeichert."
+  },
+  "login": {
+    "title": "Filen Cloud-Synchro",
+    "subtitle": "Anmelden um Orte Ende-zu-Ende verschlüsselt zu synchronisieren",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "two_factor": "2FA-Code (falls aktiv)",
+    "sign_in": "Anmelden",
+    "signing_in": "Anmeldung läuft...",
+    "sign_out": "Abmelden",
+    "status_logged_in": "Angemeldet als",
+    "status_logged_out": "Nicht angemeldet"
+  },
+  "layers": {
+    "title": "Kartenebenen",
+    "liberty": "Liberty (Standard)",
+    "dark": "Dunkle Karte",
+    "satellite": "Satellitenbilder",
+    "osm": "OpenStreetMap Standard",
+    "bike": "Radwege"
+  },
+  "controls": {
+    "zoom_in": "Vergrößern",
+    "zoom_out": "Verkleinern",
+    "my_location": "Mein Standort",
+    "reset_north": "Nord ausrichten"
+  },
+  "privacy": {
+    "page_title": "Datenschutz-Bestimmungen - Karten",
+    "title": "Datenschutz-Bestimmungen",
+    "last_updated": "Juli 2026",
+    "intro": "Datenschutz ist unser Kernwert.",
+    "section1_title": "1. Lokale Speicherung",
+    "section1_text": "Alle Marker werden lokal auf Ihrem Gerät gespeichert.",
+    "section2_title": "2. Verschlüsselte Synchro",
+    "section2_text1": "Synchronisierung über Filen Cloud-APIs.",
+    "section2_text2": "AES-256-GCM Verschlüsselung auf Ihrem Gerät.",
+    "section3_title": "3. Keine Datenerfassung",
+    "section3_text": "Keine Telemetrie oder Benutzer-Tracking.",
+    "section4_title": "4. Open-Source Transparenz",
+    "section4_text": "Lizenzierung unter GNU AGPL-3.0."
+  },
+  "terms": {
+    "page_title": "Nutzungsbedingungen - Karten",
+    "title": "Nutzungsbedingungen",
+    "last_updated": "Juli 2026",
+    "intro": "Willkommen bei Karten.",
+    "section1_title": "1. Zulässige Nutzung",
+    "section1_text": "Kostenlos für persönliche Nutzung.",
+    "section2_title": "2. Haftungsausschluss",
+    "section2_text": "Basiert auf offenen Kartendaten.",
+    "section3_title": "3. Lizenz",
+    "section3_text": "GNU AGPL-3.0 Lizenz."
+  }
+}

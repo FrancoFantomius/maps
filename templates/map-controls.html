@@ -1,0 +1,72 @@
+<!-- Floating Action Button Stack (Bottom-Right area, z-10) -->
+<div id="map-controls-stack"
+    class="fixed bottom-12 right-16 z-10 pointer-events-auto flex flex-col gap-2.5 bottom-ui-element">
+    <!-- Distance Measure Button -->
+    <button id="btn-draw"
+        class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/30 transition-all duration-300 relative">
+        <span class="material-icons-outlined text-lg leading-none">straighten</span>
+        <span data-i18n="hud.measure"
+            class="absolute right-14 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 pointer-events-none transition-all duration-200 bg-slate-900/90 dark:bg-slate-950/95 text-white text-[10.5px] font-bold px-2.5 py-1.5 rounded-lg shadow-md whitespace-nowrap">Measure
+            Distance</span>
+    </button>
+
+    <!-- Routes Toggle Button -->
+    <button id="btn-route"
+        class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all duration-300 relative">
+        <span class="material-icons-outlined text-lg leading-none">directions</span>
+        <span data-i18n="hud.route"
+            class="absolute right-14 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 pointer-events-none transition-all duration-200 bg-slate-900/90 dark:bg-slate-950/95 text-white text-[10.5px] font-bold px-2.5 py-1.5 rounded-lg shadow-md whitespace-nowrap">Directions</span>
+    </button>
+
+    <!-- Perspective Toggle Button -->
+    <button id="btn-perspective"
+        class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all duration-300 relative">
+        <span class="material-icons-outlined text-lg leading-none">3d_rotation</span>
+        <span data-i18n="settings.buildings"
+            class="absolute right-14 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 pointer-events-none transition-all duration-200 bg-slate-900/90 dark:bg-slate-950/95 text-white text-[10.5px] font-bold px-2.5 py-1.5 rounded-lg shadow-md whitespace-nowrap">Perspective</span>
+    </button>
+
+    <!-- Compass & Flanking Rotate Buttons -->
+    <div class="relative w-12 h-12 flex items-center justify-center">
+        <!-- Rotate Left Button -->
+        <button id="btn-rotate-left"
+            class="absolute right-14 flex items-center justify-center w-9 h-9 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-md hover:shadow-lg text-slate-700 dark:text-slate-350 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all duration-300 active:scale-95"
+            title="Rotate Left" data-i18n-title="settings.rotate_ccw">
+            <span class="material-icons-outlined text-base">rotate_right</span>
+        </button>
+
+        <!-- Compass Rotate Button -->
+        <button id="btn-compass"
+            class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-slate-700 dark:text-slate-350 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all duration-300 relative">
+            <div id="compass-needle" class="w-7 h-7 transition-transform duration-200 ease-out"
+                style="transform: rotate(0deg);">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"
+                        class="opacity-40" />
+                    <path d="M12 3L15.5 11.5H8.5L12 3Z" fill="#ef4444" />
+                    <path d="M12 21L8.5 12.5H15.5L12 21Z" fill="currentColor" class="opacity-60 dark:opacity-80" />
+                    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                </svg>
+            </div>
+            <span data-i18n="controls.reset_north"
+                class="absolute right-14 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 pointer-events-none transition-all duration-200 bg-slate-900/90 dark:bg-slate-950/95 text-white text-[10.5px] font-bold px-2.5 py-1.5 rounded-lg shadow-md whitespace-nowrap">Reset
+                North</span>
+        </button>
+
+        <!-- Rotate Right Button -->
+        <button id="btn-rotate-right"
+            class="absolute left-14 flex items-center justify-center w-9 h-9 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-md hover:shadow-lg text-slate-700 dark:text-slate-350 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all duration-300 active:scale-95"
+            title="Rotate Right" data-i18n-title="settings.rotate_cw">
+            <span class="material-icons-outlined text-base">rotate_left</span>
+        </button>
+    </div>
+
+    <!-- GPS Geolocation Button -->
+    <button id="btn-gps"
+        class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300 relative">
+        <span class="material-icons-outlined text-lg leading-none">my_location</span>
+        <span data-i18n="controls.my_location"
+            class="absolute right-14 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 pointer-events-none transition-all duration-200 bg-slate-900/90 dark:bg-slate-950/95 text-white text-[10.5px] font-bold px-2.5 py-1.5 rounded-lg shadow-md whitespace-nowrap">GPS
+            Locate</span>
+    </button>
+</div>

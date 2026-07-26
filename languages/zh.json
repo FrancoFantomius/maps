@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "地图",
+    "subtitle": "保护隐私地探索和自定义地图。"
+  },
+  "nav": {
+    "privacy": "隐私政策",
+    "terms": "服务条款",
+    "close": "关闭",
+    "back": "返回"
+  },
+  "settings": {
+    "title": "地图设置",
+    "subtitle": "配置地图图层、图层叠加和外观主题",
+    "language": "语言",
+    "language_system": "系统（自动）",
+    "show_details": "显示细节",
+    "street_names": "街道名称",
+    "bike_paths": "自行车道",
+    "buildings": "3D 建筑",
+    "home_location": "家庭位置",
+    "home_address": "家庭地址",
+    "search_home_placeholder": "搜索家庭地址...",
+    "fly_to_home": "飞往家庭位置",
+    "clear_home": "清除家庭地址",
+    "map_rotation": "地图旋转",
+    "rotate_ccw": "逆时针旋转",
+    "rotate_cw": "顺时针旋转",
+    "bearing_angle": "方向角",
+    "tilt_pitch": "倾斜度 / Pitch",
+    "appearance_theme": "外观主题",
+    "theme_light": "浅色",
+    "theme_system": "系统",
+    "theme_dark": "深色"
+  },
+  "hud": {
+    "search_placeholder": "搜索",
+    "route": "路线",
+    "measure": "测量",
+    "layers": "图层",
+    "markers": "标记",
+    "login": "登录",
+    "account": "账户",
+    "offline_notice": "离线模式生效中"
+  },
+  "search": {
+    "no_results": "未找到结果",
+    "searching": "搜索中..."
+  },
+  "routing": {
+    "title": "路线规划",
+    "origin": "起点位置",
+    "destination": "终点位置",
+    "profile_driving": "驾车",
+    "profile_cycling": "骑行",
+    "profile_walking": "步行",
+    "calculate": "计算路线",
+    "clear": "清除路线",
+    "distance": "距离",
+    "duration": "预计时间"
+  },
+  "measurement": {
+    "title": "距离测量",
+    "click_to_start": "点击地图开始测量",
+    "total_distance": "总距离",
+    "clear": "清除测量"
+  },
+  "markers": {
+    "title": "已保存标记",
+    "add_marker": "添加标记",
+    "edit_marker": "编辑标记",
+    "delete_marker": "删除标记",
+    "name": "标记名称",
+    "category": "类别",
+    "description": "描述",
+    "save": "保存标记",
+    "cancel": "取消",
+    "no_markers": "暂无保存的标记。"
+  },
+  "login": {
+    "title": "Filen 云同步",
+    "subtitle": "登录以端到端加密同步您的地点",
+    "email": "电子邮箱",
+    "password": "密码",
+    "two_factor": "两步验证码（若启用）",
+    "sign_in": "登录",
+    "signing_in": "登录中...",
+    "sign_out": "退出登录",
+    "status_logged_in": "登录身份",
+    "status_logged_out": "未登录"
+  },
+  "layers": {
+    "title": "地图图层",
+    "liberty": "Liberty (默认)",
+    "dark": "深色地图",
+    "satellite": "卫星图像",
+    "osm": "OpenStreetMap 标准",
+    "bike": "自行车道"
+  },
+  "controls": {
+    "zoom_in": "放大",
+    "zoom_out": "缩小",
+    "my_location": "我的位置",
+    "reset_north": "重置正北"
+  },
+  "privacy": {
+    "page_title": "隐私政策 - 地图",
+    "title": "隐私政策",
+    "last_updated": "2026年7月",
+    "intro": "在“地图”中，您的隐私是我们的核心价值。",
+    "section1_title": "1. 本地存储",
+    "section1_text": "所有标记和地点均本地存储在您的设备上。",
+    "section2_title": "2. 端到端加密同步",
+    "section2_text1": "通过 Filen 云 API 进行加密同步。",
+    "section2_text2": "在离开您的设备前使用 AES-256-GCM 算法加密。",
+    "section3_title": "3. 无数据收集",
+    "section3_text": "我们不收集任何分析或跟踪数据。",
+    "section4_title": "4. 开源透明",
+    "section4_text": "采用 AGPL-3.0 许可证。"
+  },
+  "terms": {
+    "page_title": "服务条款 - 地图",
+    "title": "服务条款",
+    "last_updated": "2026年7月",
+    "intro": "欢迎使用“地图”。",
+    "section1_title": "1. 合理使用",
+    "section1_text": "免费供个人使用。",
+    "section2_title": "2. 数据免责声明",
+    "section2_text": "基于开放地理数据。",
+    "section3_title": "3. 许可证",
+    "section3_text": "GNU AGPL-3.0 许可证。"
+  }
+}

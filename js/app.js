@@ -12,6 +12,8 @@ import { SearchController } from './SearchController.js';
 import { GPSController } from './GPSController.js';
 import { ThemeController } from './ThemeController.js';
 import { AccountController } from './AccountController.js';
+import { TranslationController } from './TranslationController.js';
+import { initPWA } from './pwa.js';
 
 // DOM Elements
 const searchForm = document.getElementById('search-form');
@@ -29,7 +31,9 @@ const toggleOverlayPerspective = document.getElementById('toggle-overlay-perspec
 const btnPerspective = document.getElementById('btn-perspective');
 
 // Initialize Application
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
+    initPWA();
+    await TranslationController.init();
     MapService.init();
     MapService.initOverlays();
     ThemeController.init();
@@ -741,6 +745,13 @@ function setupEventListeners() {
     if (pitchSlider) {
         pitchSlider.addEventListener('input', (e) => {
             MapService.setPitch(parseFloat(e.target.value));
+        });
+    }
+
+    const settingLanguage = document.getElementById('setting-language');
+    if (settingLanguage) {
+        settingLanguage.addEventListener('change', (e) => {
+            TranslationController.setLanguage(e.target.value);
         });
     }
 

@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "Mapas",
+    "subtitle": "Explore e personalize mapas com privacidade."
+  },
+  "nav": {
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Serviço",
+    "close": "Fechar",
+    "back": "Voltar"
+  },
+  "settings": {
+    "title": "Configurações do Mapa",
+    "subtitle": "Configure camadas de mapa, sobreposições e aparência",
+    "language": "Idioma",
+    "language_system": "Sistema (Auto)",
+    "show_details": "Mostrar Detalhes",
+    "street_names": "Nomes das Ruas",
+    "bike_paths": "Ciclovias",
+    "buildings": "Edifícios 3D",
+    "home_location": "Localização de Casa",
+    "home_address": "Endereço de Casa",
+    "search_home_placeholder": "Pesquisar endereço de casa...",
+    "fly_to_home": "Ir para Casa",
+    "clear_home": "Remover Endereço de Casa",
+    "map_rotation": "Rotação do Mapa",
+    "rotate_ccw": "Girar Anti-horário",
+    "rotate_cw": "Girar Horário",
+    "bearing_angle": "Ângulo de Orientação",
+    "tilt_pitch": "Inclinação / Pitch",
+    "appearance_theme": "Tema de Aparência",
+    "theme_light": "Claro",
+    "theme_system": "Sistema",
+    "theme_dark": "Escuro"
+  },
+  "hud": {
+    "search_placeholder": "Pesquisar",
+    "route": "Rota",
+    "measure": "Medir",
+    "layers": "Camadas",
+    "markers": "Marcadores",
+    "login": "Entrar",
+    "account": "Conta",
+    "offline_notice": "Modo Offline Ativo"
+  },
+  "search": {
+    "no_results": "Nenhum resultado encontrado",
+    "searching": "Pesquisando..."
+  },
+  "routing": {
+    "title": "Planejador de Rotas",
+    "origin": "Local de partida",
+    "destination": "Local de destino",
+    "profile_driving": "De carro",
+    "profile_cycling": "De bicicleta",
+    "profile_walking": "A pé",
+    "calculate": "Calcular Rota",
+    "clear": "Limpar Rota",
+    "distance": "Distância",
+    "duration": "Duração"
+  },
+  "measurement": {
+    "title": "Medição de Distância",
+    "click_to_start": "Clique no mapa para iniciar a medição",
+    "total_distance": "Distância Total",
+    "clear": "Limpar Medição"
+  },
+  "markers": {
+    "title": "Marcadores Salvos",
+    "add_marker": "Adicionar Marcador",
+    "edit_marker": "Editar Marcador",
+    "delete_marker": "Excluir Marcador",
+    "name": "Nome do Marcador",
+    "category": "Categoria",
+    "description": "Descrição",
+    "save": "Salvar Marcador",
+    "cancel": "Cancelar",
+    "no_markers": "Nenhum marcador salvo."
+  },
+  "login": {
+    "title": "Sincronização Cloud Filen",
+    "subtitle": "Faça login para sincronizar seus locais com criptografia de ponta a ponta",
+    "email": "Endereço de E-mail",
+    "password": "Senha",
+    "two_factor": "Código 2FA (se ativado)",
+    "sign_in": "Entrar",
+    "signing_in": "Entrando...",
+    "sign_out": "Sair",
+    "status_logged_in": "Conectado como",
+    "status_logged_out": "Não conectado"
+  },
+  "layers": {
+    "title": "Camadas do Mapa",
+    "liberty": "Liberty (Padrão)",
+    "dark": "Mapa Escuro",
+    "satellite": "Imagens de Satélite",
+    "osm": "OpenStreetMap Padrão",
+    "bike": "Ciclovias"
+  },
+  "controls": {
+    "zoom_in": "Aumentar Zoom",
+    "zoom_out": "Diminuir Zoom",
+    "my_location": "Minha Localização",
+    "reset_north": "Redefinir Norte"
+  },
+  "privacy": {
+    "page_title": "Política de Privacidade - Mapas",
+    "title": "Política de Privacidade",
+    "last_updated": "Julho 2026",
+    "intro": "Sua privacidade é nossa prioridade.",
+    "section1_title": "1. Armazenamento Local",
+    "section1_text": "Todos os seus dados são salvos localmente.",
+    "section2_title": "2. Sincronização Criptografada",
+    "section2_text1": "Sincronização via Filen.",
+    "section2_text2": "Criptografia AES-256-GCM no dispositivo.",
+    "section3_title": "3. Sem Coleta de Dados",
+    "section3_text": "Não coletamos telemetria.",
+    "section4_title": "4. Transparência Código Aberto",
+    "section4_text": "Licença AGPL-3.0."
+  },
+  "terms": {
+    "page_title": "Termos de Serviço - Mapas",
+    "title": "Termos de Serviço",
+    "last_updated": "Julho 2026",
+    "intro": "Bem-vindo ao Mapas.",
+    "section1_title": "1. Uso Aceitável",
+    "section1_text": "Gratuito para uso pessoal.",
+    "section2_title": "2. Isenção de Responsabilidade",
+    "section2_text": "Baseado em dados abertos.",
+    "section3_title": "3. Licença",
+    "section3_text": "Licença GNU AGPL-3.0."
+  }
+}
