@@ -6,14 +6,14 @@
         <!-- Bookmarks / My Places Toggle Button -->
         <button type="button" id="btn-toggle-places"
             class="w-7 h-7 flex items-center justify-center flex-shrink-0 text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors cursor-pointer"
-            title="My Places">
+            title="My Places" data-i18n-title="hud.markers">
             <span class="material-icons-outlined text-xl select-none">bookmarks</span>
         </button>
 
         <div class="flex-1 min-w-0">
             <!-- Search input form -->
             <form id="search-form" class="relative flex items-center">
-                <input type="text" id="search-input" placeholder="Search"
+                <input type="text" id="search-input" placeholder="Search" data-i18n-placeholder="hud.search_placeholder"
                     class="w-full bg-transparent pl-1 pr-7 py-1 text-sm font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
                 <button type="button" id="btn-clear-search"
                     class="hidden absolute right-7 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center">
@@ -32,13 +32,13 @@
         <!-- Floating Account Controls (z-10) -->
         <div class="relative flex-shrink-0 flex items-center">
             <!-- Sign In Button (shown when logged out) -->
-            <button id="btn-sync-login"
+            <button id="btn-sync-login" data-i18n="hud.login"
                 class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-750 dark:hover:bg-indigo-650 text-white text-xs font-bold rounded-full shadow-md transition-all cursor-pointer whitespace-nowrap">
                 Sign in
             </button>
 
             <!-- Profile Avatar/Icon Button (shown when logged in) -->
-            <button id="btn-sync-profile" class="profile-btn shadow-md" title="Profile" style="display: none;">
+            <button id="btn-sync-profile" class="profile-btn shadow-md" title="Profile" data-i18n-title="hud.account" style="display: none;">
                 <img id="header-profile-avatar" src="" alt="Avatar" style="display: none;">
                 <div id="header-profile-letter" class="profile-avatar-letter" style="display: none;"></div>
                 <span id="header-profile-icon"
@@ -61,7 +61,7 @@
                 <div class="dropdown-actions">
                     <button id="btn-dropdown-signout" class="dropdown-btn dropdown-btn-secondary">
                         <span class="material-icons-outlined text-base">logout</span>
-                        <span>Sign out</span>
+                        <span data-i18n="login.sign_out">Sign out</span>
                     </button>
                     <button id="btn-dropdown-purge" class="dropdown-btn dropdown-btn-danger">
                         <span class="material-icons-outlined text-base">delete_forever</span>
@@ -70,9 +70,9 @@
                 </div>
 
                 <div class="dropdown-footer flex justify-center gap-2">
-                    <a href="privacy.html" target="_blank" class="hover:underline">Privacy Policy</a>
+                    <a href="privacy.html" target="_blank" class="hover:underline" data-i18n="nav.privacy">Privacy Policy</a>
                     <span>•</span>
-                    <a href="terms.html" target="_blank" class="hover:underline">Terms of Service</a>
+                    <a href="terms.html" target="_blank" class="hover:underline" data-i18n="nav.terms">Terms of Service</a>
                 </div>
             </div>
         </div>

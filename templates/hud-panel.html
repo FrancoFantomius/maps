@@ -14,11 +14,11 @@
         <div class="flex items-center justify-between mb-3.5 flex-shrink-0 border-b border-slate-100 dark:border-slate-800/80 pb-3">
             <div>
                 <h2 class="font-display font-extrabold text-base text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <span>My Places</span>
+                    <span data-i18n="markers.title">My Places</span>
                     <span id="markers-count"
                         class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-extrabold border border-indigo-100 dark:border-indigo-900/30">0</span>
                 </h2>
-                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">Your personalized custom pins</p>
+                <p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium" data-i18n="app.subtitle">Your personalized custom pins</p>
             </div>
             <!-- Close button for Saved Places -->
             <button type="button" id="btn-close-places"
@@ -36,12 +36,12 @@
         <div
             class="flex items-center justify-between mb-3 flex-shrink-0 border-b border-slate-100 dark:border-slate-800/80 pb-2.5">
             <div>
-                <h2 class="font-display font-bold text-sm text-slate-900 dark:text-slate-100">Search Results</h2>
+                <h2 class="font-display font-bold text-sm text-slate-900 dark:text-slate-100" data-i18n="search.searching">Search Results</h2>
                 <p class="text-[10px] text-slate-400 dark:text-slate-500">Matching locations found</p>
             </div>
             <button type="button" id="btn-close-search"
                 class="px-2.5 py-1 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 transition-colors">
-                ✕ Clear
+                ✕ <span data-i18n="routing.clear">Clear</span>
             </button>
         </div>
         <div id="search-results" class="flex-1 overflow-y-auto custom-scrollbar pr-1 space-y-1.5">
@@ -55,20 +55,20 @@
             class="flex items-center justify-between mb-3 flex-shrink-0 border-b border-slate-100 dark:border-slate-800/80 pb-2.5">
             <h2 class="font-display font-bold text-sm text-teal-600 dark:text-teal-400 flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse shadow-[0_0_8px_rgba(20,184,166,0.6)]"></span>
-                Measuring Mode
+                <span data-i18n="measurement.title">Measuring Mode</span>
             </h2>
             <button id="btn-exit-measure"
                 class="px-2.5 py-1 text-xs text-slate-400 hover:text-red-500 dark:hover:text-red-400 font-semibold rounded-lg bg-slate-100 dark:bg-slate-800 transition-colors">
-                ✕ Exit
+                ✕ <span data-i18n="nav.close">Exit</span>
             </button>
         </div>
         <div class="space-y-3">
-            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Click sequential points on the map to calculate linear distance path.</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed" data-i18n="measurement.click_to_start">Click sequential points on the map to calculate linear distance path.</p>
             <div
                 class="bg-gradient-to-br from-teal-50/80 to-emerald-50/50 dark:from-teal-950/30 dark:to-emerald-950/20 border border-teal-200/60 dark:border-teal-900/40 rounded-2xl p-4 flex flex-col gap-1 shadow-sm relative overflow-hidden">
                 <div class="w-1 absolute left-0 top-0 bottom-0 bg-teal-500"></div>
                 <span
-                    class="text-[9px] uppercase font-extrabold tracking-wider text-teal-600 dark:text-teal-400">Linear Distance</span>
+                    class="text-[9px] uppercase font-extrabold tracking-wider text-teal-600 dark:text-teal-400" data-i18n="measurement.total_distance">Linear Distance</span>
                 <span id="measure-output"
                     class="font-display font-black text-lg text-slate-900 dark:text-slate-100 tracking-tight">Total Distance: 0.00 km</span>
             </div>
@@ -84,17 +84,17 @@
                 <button id="nav-mode-driving" data-nav-mode="driving"
                     class="nav-mode-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-bold rounded-lg transition-all bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm">
                     <span class="material-icons-outlined text-sm">directions_car</span>
-                    <span class="hidden sm:inline">Drive</span>
+                    <span class="hidden sm:inline" data-i18n="routing.profile_driving">Drive</span>
                 </button>
                 <button id="nav-mode-cycling" data-nav-mode="cycling"
                     class="nav-mode-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-medium rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all">
                     <span class="material-icons-outlined text-sm">directions_bike</span>
-                    <span class="hidden sm:inline">Bike</span>
+                    <span class="hidden sm:inline" data-i18n="routing.profile_cycling">Bike</span>
                 </button>
                 <button id="nav-mode-foot" data-nav-mode="foot"
                     class="nav-mode-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-medium rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all">
                     <span class="material-icons-outlined text-sm">directions_walk</span>
-                    <span class="hidden sm:inline">Walk</span>
+                    <span class="hidden sm:inline" data-i18n="routing.profile_walking">Walk</span>
                 </button>
             </div>
             <button id="btn-exit-nav"
@@ -117,10 +117,10 @@
             <!-- Input fields column -->
             <div class="flex-1 flex flex-col gap-2 min-w-0">
                 <div class="relative">
-                    <input type="text" id="nav-origin-input" placeholder="Choose starting point, or click map"
+                    <input type="text" id="nav-origin-input" placeholder="Choose starting point, or click map" data-i18n-placeholder="routing.origin"
                         autocomplete="off"
                         class="w-full bg-white/70 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all pr-8">
-                    <button type="button" id="nav-use-location" title="Use my location"
+                    <button type="button" id="nav-use-location" title="Use my location" data-i18n-title="controls.my_location"
                         class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-blue-500 transition-colors rounded">
                         <span class="material-icons-outlined text-sm">my_location</span>
                     </button>
@@ -129,7 +129,7 @@
                     </div>
                 </div>
                 <div class="relative">
-                    <input type="text" id="nav-dest-input" placeholder="Choose destination" autocomplete="off"
+                    <input type="text" id="nav-dest-input" placeholder="Choose destination" data-i18n-placeholder="routing.destination" autocomplete="off"
                         class="w-full bg-white/70 dark:bg-slate-950/70 border border-slate-200/80 dark:border-slate-800/80 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all">
                     <div id="nav-dest-autocomplete"
                         class="nav-autocomplete hidden absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl max-h-48 overflow-y-auto custom-scrollbar">

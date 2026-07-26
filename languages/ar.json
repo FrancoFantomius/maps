@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "خرائط",
+    "subtitle": "استكشف وخصص الخرائط مع الخصوصية الكاملة."
+  },
+  "nav": {
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الخدمة",
+    "close": "إغلاق",
+    "back": "رجوع"
+  },
+  "settings": {
+    "title": "إعدادات الخريطة",
+    "subtitle": "تكوين طبقات الخريطة والمنظر الخارجي",
+    "language": "اللغة",
+    "language_system": "النظام (تلقائي)",
+    "show_details": "إظهار التفاصيل",
+    "street_names": "أسماء الشوارع",
+    "bike_paths": "مسارات الدراجات",
+    "buildings": "مباني ثلاثية الأبعاد",
+    "home_location": "موقع المنزل",
+    "home_address": "عنوان المنزل",
+    "search_home_placeholder": "البحث عن عنوان المنزل...",
+    "fly_to_home": "الانتقال إلى المنزل",
+    "clear_home": "مسح عنوان المنزل",
+    "map_rotation": "تدوير الخريطة",
+    "rotate_ccw": "تدوير عكس عقارب الساعة",
+    "rotate_cw": "تدوير مع عقارب الساعة",
+    "bearing_angle": "زاوية الاتجاه",
+    "tilt_pitch": "الميل / Pitch",
+    "appearance_theme": "مظهر الواجهة",
+    "theme_light": "فاتح",
+    "theme_system": "النظام",
+    "theme_dark": "داكن"
+  },
+  "hud": {
+    "search_placeholder": "بحث",
+    "route": "مسار",
+    "measure": "قياس",
+    "layers": "طبقات",
+    "markers": "علامات",
+    "login": "تسجيل الدخول",
+    "account": "الحساب",
+    "offline_notice": "وضع عدم الاتصال نشط"
+  },
+  "search": {
+    "no_results": "لم يتم العثور على نتائج",
+    "searching": "جاري البحث..."
+  },
+  "routing": {
+    "title": "مخطط المسار",
+    "origin": "نقطة البداية",
+    "destination": "الوجهة",
+    "profile_driving": "قيادة",
+    "profile_cycling": "دراجة",
+    "profile_walking": "مشياً",
+    "calculate": "حساب المسار",
+    "clear": "مسح المسار",
+    "distance": "المسافة",
+    "duration": "المدة"
+  },
+  "measurement": {
+    "title": "قياس المسافة",
+    "click_to_start": "انقر على الخريطة لبدء القياس",
+    "total_distance": "المسافة الإجمالية",
+    "clear": "مسح القياس"
+  },
+  "markers": {
+    "title": "العلامات المحفوظة",
+    "add_marker": "إضافة علامة",
+    "edit_marker": "تعديل العلامة",
+    "delete_marker": "حذف العلامة",
+    "name": "اسم العلامة",
+    "category": "الفئة",
+    "description": "الوصف",
+    "save": "حفظ العلامة",
+    "cancel": "إلغاء",
+    "no_markers": "لا توجد علامات محفوظة حتى الآن."
+  },
+  "login": {
+    "title": "مزامنة سحابية عبر Filen",
+    "subtitle": "سجل الدخول للمزامنة المشفرة بين الأطراف",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "two_factor": "رمز المصادقة الثنائية",
+    "sign_in": "تسجيل الدخول",
+    "signing_in": "جاري تسجيل الدخول...",
+    "sign_out": "تسجيل الخروج",
+    "status_logged_in": "مسجل الدخول كـ",
+    "status_logged_out": "غير مسجل الدخول"
+  },
+  "layers": {
+    "title": "طبقات الخريطة",
+    "liberty": "Liberty (افتراضي)",
+    "dark": "خريطة داكنة",
+    "satellite": "صور الأقمار الصناعية",
+    "osm": "OpenStreetMap القياسية",
+    "bike": "مسارات الدراجات"
+  },
+  "controls": {
+    "zoom_in": "تكبير",
+    "zoom_out": "تصغير",
+    "my_location": "موقعي",
+    "reset_north": "إعادة الضبط للشمال"
+  },
+  "privacy": {
+    "page_title": "سياسة الخصوصية - خرائط",
+    "title": "سياسة الخصوصية",
+    "last_updated": "يوليو 2026",
+    "intro": "في خرائط، خصوصيتك هي قيمتنا الأساسية.",
+    "section1_title": "1. التخزين المحلي",
+    "section1_text": "يتم حفظ جميع بياناتك محلياً على جهازك.",
+    "section2_title": "2. مزامنة مشفرة",
+    "section2_text1": "مزامنة مشفرة عبر Filen.",
+    "section2_text2": "تشفير AES-256-GCM على جهازك.",
+    "section3_title": "3. لا جمع للبيانات",
+    "section3_text": "نحن لا نجمع أي تحليلات.",
+    "section4_title": "4. شفافية المصدر المفتوح",
+    "section4_text": "مرخص بموجب GNU AGPL-3.0."
+  },
+  "terms": {
+    "page_title": "شروط الخدمة - خرائط",
+    "title": "شروط الخدمة",
+    "last_updated": "يوليو 2026",
+    "intro": "مرحباً بك في خرائط.",
+    "section1_title": "1. الاستخدام المقبول",
+    "section1_text": "مجاني للاستخدام الشخصي.",
+    "section2_title": "2. إخلاء المسؤولية",
+    "section2_text": "يعتمد على بيانات الجغرافية المفتوحة.",
+    "section3_title": "3. الترخيص",
+    "section3_text": "ترخيص GNU AGPL-3.0."
+  }
+}

@@ -11,6 +11,38 @@ import handlebars from 'vite-plugin-handlebars';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf-8'));
 
+const languagesPlugin = () => ({
+  name: 'serve-and-bundle-languages',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      if (req.url && req.url.startsWith('/languages/')) {
+        const relativePath = req.url.replace('/languages/', '').split('?')[0];
+        const filePath = path.join(__dirname, 'languages', relativePath);
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+          res.setHeader('Content-Type', 'application/json');
+          return fs.createReadStream(filePath).pipe(res);
+        }
+      }
+      next();
+    });
+  },
+  generateBundle() {
+    const langDir = path.resolve(__dirname, 'languages');
+    if (fs.existsSync(langDir)) {
+      const files = fs.readdirSync(langDir);
+      for (const file of files) {
+        if (file.endsWith('.json')) {
+          this.emitFile({
+            type: 'asset',
+            fileName: `languages/${file}`,
+            source: fs.readFileSync(path.join(langDir, file))
+          });
+        }
+      }
+    }
+  }
+});
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -29,6 +61,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    languagesPlugin(),
     handlebars({
       partialDirectory: path.resolve(__dirname, 'templates'),
     }),
