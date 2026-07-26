@@ -3,9 +3,13 @@ import tailwindcss from '@tailwindcss/vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
+import handlebars from 'vite-plugin-handlebars';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf-8'));
 
 export default defineConfig({
   resolve: {
@@ -25,6 +29,9 @@ export default defineConfig({
     },
   },
   plugins: [
+    handlebars({
+      partialDirectory: path.resolve(__dirname, 'templates'),
+    }),
     tailwindcss(),
     nodePolyfills({
       globals: {
@@ -38,13 +45,84 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'inline',
       workbox: {
-        globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
-        maximumFileSizeToCacheInBytes: 3000000, // accommodate larger files if needed
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
+        globPatterns: ['**/*.{js,css,html,png,svg,woff,woff2,json,ico}'],
+        maximumFileSizeToCacheInBytes: 5000000,
+        runtimeCaching: [
+          {
+            // Satellite imagery MUST NEVER be cached
+            urlPattern: /^https:\/\/server\.arcgisonline\.com\/.*$/i,
+            handler: 'NetworkOnly',
+          },
+          {
+            // OpenFreeMap Vector tiles & style specs
+            urlPattern: /^https:\/\/tiles\.openfreemap\.org\/.*$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'openfreemap-tiles',
+              expiration: {
+                maxEntries: 1000,
+                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            // OpenStreetMap raster tiles
+            urlPattern: /^https:\/\/[a-c]\.tile\.openstreetmap\.org\/.*$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'osm-tiles',
+              expiration: {
+                maxEntries: 1000,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            // WaymarkedTrails bike path tiles
+            urlPattern: /^https:\/\/tile\.waymarkedtrails\.org\/.*$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'bike-tiles',
+              expiration: {
+                maxEntries: 500,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            // 3D Terrain DEM elevation tiles
+            urlPattern: /^https:\/\/s3\.amazonaws\.com\/elevation-tiles-prod\/.*$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'terrain-dem-tiles',
+              expiration: {
+                maxEntries: 500,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
       },
       manifest: {
         name: 'Maps',
         short_name: 'Maps',
         description: 'Explore and customize maps with privacy. Have acces to bike trails, routes and other points of interest.',
+        version: pkg.version,
         theme_color: '#F8F4F0',
         background_color: '#F8F4F0',
         display: 'standalone',

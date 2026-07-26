@@ -12,6 +12,7 @@ import { SearchController } from './SearchController.js';
 import { GPSController } from './GPSController.js';
 import { ThemeController } from './ThemeController.js';
 import { AccountController } from './AccountController.js';
+import { initPWA } from './pwa.js';
 
 // DOM Elements
 const searchForm = document.getElementById('search-form');
@@ -30,6 +31,7 @@ const btnPerspective = document.getElementById('btn-perspective');
 
 // Initialize Application
 window.addEventListener('load', () => {
+    initPWA();
     MapService.init();
     MapService.initOverlays();
     ThemeController.init();

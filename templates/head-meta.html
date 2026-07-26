@@ -1,0 +1,62 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{#if page_title}}{{page_title}}{{else}}Maps{{/if}}</title>
+
+<!-- Search Engine & SEO Metadata -->
+<meta name="description"
+    content="Explore and customize maps with privacy. Have acces to bike trails, routes and other points of interest.">
+<meta name="keywords"
+    content="maps, maplibre, GIS, custom pins, navigation, routing, PWA, private maps, OpenStreetMap, travel organizer">
+<meta name="robots" content="index, follow">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{#if page_title}}{{page_title}}{{else}}Maps{{/if}}">
+<meta property="og:description"
+    content="Explore and customize maps with privacy. Have acces to bike trails, routes and other points of interest.">
+<meta property="og:image" content="/img/icons/maps.png">
+<meta property="og:url" content="https://maps.francofantomius.com">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="{{#if page_title}}{{page_title}}{{else}}Maps{{/if}}">
+<meta property="twitter:description"
+    content="Explore and customize maps with privacy. Have acces to bike trails, routes and other points of interest.">
+<meta property="twitter:image" content="/img/icons/maps.png">
+
+<!-- Theme & Mobile App Config -->
+<meta name="theme-color" content="#F8F4F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Maps">
+
+<!-- Favicons -->
+<link rel="icon" type="image/png" sizes="48x48" href="/img/icons/maps_x48.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/img/icons/maps_x192.png">
+<link rel="apple-touch-icon" href="/img/icons/maps_x192.png">
+
+<script>
+    const theme = localStorage.getItem('theme_preference') || 'system';
+    const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    if (isDark) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+</script>
+{{#if include_app_js}}
+<script type="module" src="/js/app.js"></script>
+{{else}}
+<link rel="stylesheet" href="/css/style.css">
+{{/if}}
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .font-display {
+        font-family: 'Outfit', sans-serif;
+    }
+</style>
