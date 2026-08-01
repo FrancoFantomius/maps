@@ -537,6 +537,7 @@ export const MapService = {
         this.setLabelsVisibility(this.activeOverlays.labels);
         this.updateStyleLayersVisibility();
         this.restoreActiveLayerData();
+        MarkerController.renderAll();
     },
 
     restoreActiveLayerData() {
@@ -881,20 +882,26 @@ export const MapService = {
         return null;
     },
 
-    setHomeAddress(data) {
+    setHomeAddress(data, skipSync = false) {
         if (!data || typeof data.lat !== 'number' || typeof data.lng !== 'number') return null;
         const homeObj = {
             address: data.address || data.fullName || data.name || `${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}`,
             lat: data.lat,
             lng: data.lng,
-            updatedAt: Date.now()
+            updatedAt: data.updatedAt || Date.now()
         };
         localStorage.setItem('maps_home_address', JSON.stringify(homeObj));
+        if (!skipSync) {
+            window.dispatchEvent(new CustomEvent('maps-home-updated', { detail: homeObj }));
+        }
         return homeObj;
     },
 
-    clearHomeAddress() {
+    clearHomeAddress(skipSync = false) {
         localStorage.removeItem('maps_home_address');
+        if (!skipSync) {
+            window.dispatchEvent(new CustomEvent('maps-home-updated', { detail: null }));
+        }
     },
 
     flyToHome() {

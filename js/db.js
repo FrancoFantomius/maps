@@ -6,6 +6,7 @@ import PouchDB from 'pouchdb';
 import { FilenSDK } from "@filen/sdk";
 import { Buffer } from "buffer";
 import { Readable } from "stream";
+import { MapService } from './MapService.js';
 
 // Polyfill Readable.from in the browser stream polyfill
 if (Readable) {
@@ -432,6 +433,11 @@ async function runSync() {
       if (p.updatedAt > localMaxUpdated) localMaxUpdated = p.updatedAt;
     });
 
+    const localHome = MapService.getHomeAddress();
+    if (localHome && localHome.updatedAt && localHome.updatedAt > localMaxUpdated) {
+      localMaxUpdated = localHome.updatedAt;
+    }
+
     const remoteMaxUpdated = (remoteContent && typeof remoteContent.updatedAt === 'number')
       ? remoteContent.updatedAt
       : (remoteStats ? remoteStats.mtimeMs : 0);
@@ -439,6 +445,7 @@ async function runSync() {
     const uploadLocal = async () => {
       const placesPayload = {
         updatedAt: Date.now(),
+        homeAddress: MapService.getHomeAddress() || null,
         places: localPlaces.map(p => ({
           id: p.id,
           name: p.name,
@@ -488,8 +495,30 @@ async function runSync() {
     };
 
     const downloadRemote = async (remoteData) => {
-      const remotePlaces = remoteData.places || [];
+      const remotePlaces = remoteData ? (remoteData.places || []) : [];
       
+      // Update home address from remote if present
+      if (remoteData && remoteData.homeAddress !== undefined) {
+        const currentHome = MapService.getHomeAddress();
+        if (remoteData.homeAddress) {
+          if (!currentHome || (remoteData.homeAddress.updatedAt && (!currentHome.updatedAt || remoteData.homeAddress.updatedAt >= currentHome.updatedAt))) {
+            MapService.setHomeAddress(remoteData.homeAddress, true);
+          }
+        } else if (currentHome && remoteMaxUpdated > (currentHome.updatedAt || 0)) {
+          MapService.clearHomeAddress(true);
+        }
+      } else if (remotePlaces.length > 0) {
+        const homePlace = remotePlaces.find(rp => rp.category === 'home');
+        if (homePlace) {
+          MapService.setHomeAddress({
+            address: homePlace.name || `${homePlace.lat.toFixed(4)}, ${homePlace.lng.toFixed(4)}`,
+            lat: homePlace.lat,
+            lng: homePlace.lng,
+            updatedAt: homePlace.updatedAt || Date.now()
+          }, true);
+        }
+      }
+
       // Update local PouchDB with remote places
       const localMap = new Map(localPlaces.map(p => [p.id, p]));
 
@@ -548,7 +577,8 @@ async function runSync() {
         }
       }
 
-      // Dispatch custom event to notify MarkerController to redraw markers
+      // Dispatch custom events to notify UI and markers
+      window.dispatchEvent(new CustomEvent('maps-home-updated'));
       window.dispatchEvent(new CustomEvent('maps-places-updated'));
     };
 
@@ -557,7 +587,7 @@ async function runSync() {
       await uploadLocal();
     } else if (!placesFile) {
       // Remote file does not exist, upload local data
-      if (localPlaces.length > 0) {
+      if (localPlaces.length > 0 || localHome) {
         await uploadLocal();
       }
     } else if (localMaxUpdated > remoteMaxUpdated) {
@@ -586,3 +616,7 @@ async function runSync() {
     updateSyncStatus('error');
   }
 }
+
+window.addEventListener('maps-home-updated', () => {
+  triggerSyncReconciliation();
+});

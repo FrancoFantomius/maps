@@ -25,7 +25,6 @@ export const MarkerController = {
         const el = document.createElement('div');
         el.className = 'custom-map-pin-div';
         el.style.cursor = 'pointer';
-        el.style.position = 'relative';
         el.style.width = '34px';
         el.style.height = '42px';
         el.innerHTML = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -222,10 +221,21 @@ export const MarkerController = {
             return;
         }
 
-        const home = MapService.getHomeAddress();
+        let home = MapService.getHomeAddress();
 
         this.customMarkers.forEach((m, idx) => {
-            const isHomeMarker = (m.category === 'home') || (home && Math.abs(m.lat - home.lat) < 0.0001 && Math.abs(m.lng - home.lng) < 0.0001);
+            let isHomeMarker = (m.category === 'home') || (home && Math.abs(m.lat - home.lat) < 0.0001 && Math.abs(m.lng - home.lng) < 0.0001);
+
+            if (m.category === 'home' && !home) {
+                home = MapService.setHomeAddress({
+                    address: m.name || `${m.lat.toFixed(4)}, ${m.lng.toFixed(4)}`,
+                    lat: m.lat,
+                    lng: m.lng,
+                    updatedAt: m.updatedAt || Date.now()
+                });
+                isHomeMarker = true;
+                this.renderHomeMarker();
+            }
 
             if (!isHomeMarker) {
                 const el = this.createPin(m.category);
@@ -334,4 +344,8 @@ window.addEventListener('maps-places-updated', async () => {
     } catch (e) {
         console.error("[Sync UI] Error re-rendering markers:", e);
     }
+});
+
+window.addEventListener('maps-home-updated', () => {
+    MarkerController.renderHomeMarker();
 });

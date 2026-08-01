@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 - **GPS Button Animation**: when the GPS is locating, the button will have a pulsing animation.
 ### Fixed
 - **Images**: Fixed images not loading.
+- **Pin**: The position of the pins updates with the map view.
+- **Home Adress**: The home address is now saved and loaded correctly when signing in.
 
 ## [1.3.1] - 2026-08-01
 

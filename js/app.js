@@ -598,6 +598,14 @@ function setupEventListeners() {
 
     updateHomeUI();
 
+    window.addEventListener('maps-home-updated', () => {
+        updateHomeUI();
+    });
+
+    window.addEventListener('maps-places-updated', () => {
+        updateHomeUI();
+    });
+
     let homeAutocompleteTimeout = null;
     if (homeAddressInput && homeAddressAutocomplete) {
         homeAddressInput.addEventListener('input', () => {

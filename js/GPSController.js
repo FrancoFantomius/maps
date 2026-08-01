@@ -129,7 +129,6 @@ export const GPSController = {
         } else {
             const el = document.createElement('div');
             el.className = 'gps-pulse-marker';
-            el.style.position = 'relative';
             el.style.width = '18px';
             el.style.height = '18px';
             el.style.borderRadius = '50%';

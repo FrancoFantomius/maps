@@ -32,6 +32,19 @@ describe('MapService', () => {
 
       expect(MapService.getHomeAddress()).toBeNull();
     });
+
+    it('dispatches maps-home-updated event on setHomeAddress and clearHomeAddress', () => {
+      const listener = vi.fn();
+      window.addEventListener('maps-home-updated', listener);
+
+      MapService.setHomeAddress({ lat: 45.438, lng: 10.993, address: 'Verona' });
+      expect(listener).toHaveBeenCalledTimes(1);
+
+      MapService.clearHomeAddress();
+      expect(listener).toHaveBeenCalledTimes(2);
+
+      window.removeEventListener('maps-home-updated', listener);
+    });
   });
 
   describe('Last position management', () => {
