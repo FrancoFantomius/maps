@@ -2,8 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.3.1] - 2026-08-01
+
+### Added
+- **Vanilla Service Worker (`sw.js`)**: Implemented a lightweight, dependency-free Service Worker providing app-shell precaching, network-first caching for static assets, and custom tile caching with automatic LRU eviction.
+- **Dynamic SW Version Injection Plugin**: Added `serviceWorkerPlugin` in `vite.config.js` to dynamically inject the app version from `package.json` into `sw.js` during dev server requests and production builds for reliable precache cache-busting.
+- **Language Assets Plugin**: Integrated `languagesPlugin` in `vite.config.js` for seamless serving and bundling of localized JSON files from `/languages/`.
+
+### Changed
+- **Replaced `vite-plugin-pwa`**: Migrated away from `vite-plugin-pwa` to a fully customized vanilla Service Worker and Vite build pipeline for greater control and transparency.
+- **PWA Auto-Reload on Update**: Simplified `js/pwa.js` to listen for Service Worker `controllerchange` events and automatically refresh the client application when new versions take control.
+- **Refined PWA Web App Manifest**: Updated `manifest.json` with app `id`, `orientation`, aligned background theme colors, and enhanced app categories (`navigation`, `travel`, `utilities`).
+
 
 ## [1.3.0] - 2026-07-26
 

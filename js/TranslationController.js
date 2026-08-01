@@ -235,7 +235,9 @@ export const TranslationController = {
 
     applyTranslations(root = document) {
         if (typeof document !== 'undefined' && document.documentElement) {
-            document.documentElement.setAttribute('dir', this.currentLang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', this.currentLang);
+            const rtlLangs = ['ar', 'fa', 'he', 'ur'];
+            document.documentElement.setAttribute('dir', rtlLangs.includes(this.currentLang) ? 'rtl' : 'ltr');
         }
 
         if (!root || typeof root.querySelectorAll !== 'function') return;

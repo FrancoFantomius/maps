@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import { VitePWA } from 'vite-plugin-pwa';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -43,6 +42,29 @@ const languagesPlugin = () => ({
   }
 });
 
+const serviceWorkerPlugin = () => ({
+  name: 'inject-sw-version',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      if (req.url === '/sw.js') {
+        const src = fs.readFileSync(path.join(__dirname, 'sw.js'), 'utf-8');
+        res.setHeader('Content-Type', 'application/javascript');
+        res.end(src.replace(/__APP_VERSION__/g, pkg.version));
+        return;
+      }
+      next();
+    });
+  },
+  generateBundle() {
+    const src = fs.readFileSync(path.join(__dirname, 'sw.js'), 'utf-8');
+    this.emitFile({
+      type: 'asset',
+      fileName: 'sw.js',
+      source: src.replace(/__APP_VERSION__/g, pkg.version),
+    });
+  },
+});
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -62,6 +84,7 @@ export default defineConfig({
   },
   plugins: [
     languagesPlugin(),
+    serviceWorkerPlugin(),
     handlebars({
       partialDirectory: path.resolve(__dirname, 'templates'),
     }),
@@ -73,134 +96,6 @@ export default defineConfig({
         process: true,
       },
       protocolImports: true,
-    }),
-    VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'inline',
-      workbox: {
-        cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true,
-        globPatterns: ['**/*.{js,css,html,png,svg,woff,woff2,json,ico}'],
-        maximumFileSizeToCacheInBytes: 5000000,
-        runtimeCaching: [
-          {
-            // Satellite imagery MUST NEVER be cached
-            urlPattern: /^https:\/\/server\.arcgisonline\.com\/.*$/i,
-            handler: 'NetworkOnly',
-          },
-          {
-            // OpenFreeMap Vector tiles & style specs
-            urlPattern: /^https:\/\/tiles\.openfreemap\.org\/.*$/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'openfreemap-tiles',
-              expiration: {
-                maxEntries: 1000,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            // OpenStreetMap raster tiles
-            urlPattern: /^https:\/\/[a-c]\.tile\.openstreetmap\.org\/.*$/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'osm-tiles',
-              expiration: {
-                maxEntries: 1000,
-                maxAgeSeconds: 30 * 24 * 60 * 60,
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            // WaymarkedTrails bike path tiles
-            urlPattern: /^https:\/\/tile\.waymarkedtrails\.org\/.*$/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'bike-tiles',
-              expiration: {
-                maxEntries: 500,
-                maxAgeSeconds: 30 * 24 * 60 * 60,
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            // 3D Terrain DEM elevation tiles
-            urlPattern: /^https:\/\/s3\.amazonaws\.com\/elevation-tiles-prod\/.*$/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'terrain-dem-tiles',
-              expiration: {
-                maxEntries: 500,
-                maxAgeSeconds: 30 * 24 * 60 * 60,
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-        ],
-      },
-      manifest: {
-        name: 'Maps',
-        short_name: 'Maps',
-        description: 'Explore and customize maps with privacy. Have acces to bike trails, routes and other points of interest.',
-        version: pkg.version,
-        theme_color: '#F8F4F0',
-        background_color: '#F8F4F0',
-        display: 'standalone',
-        start_url: '/',
-        orientation: 'any',
-        icons: [
-          {
-            src: 'img/icons/maps_x48.png',
-            sizes: '48x48',
-            type: 'image/png'
-          },
-          {
-            src: 'img/icons/maps_x72.png',
-            sizes: '72x72',
-            type: 'image/png'
-          },
-          {
-            src: 'img/icons/maps_x96.png',
-            sizes: '96x96',
-            type: 'image/png'
-          },
-          {
-            src: 'img/icons/maps_x128.png',
-            sizes: '128x128',
-            type: 'image/png'
-          },
-          {
-            src: 'img/icons/maps_x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any'
-          },
-          {
-            src: 'img/icons/maps_x384.png',
-            sizes: '384x384',
-            type: 'image/png'
-          },
-          {
-            src: 'img/icons/maps_x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ]
-      }
     }),
   ],
   build: {

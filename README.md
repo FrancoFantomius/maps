@@ -1,7 +1,7 @@
 # Maps
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md#120)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
+[![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](CHANGELOG.md)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 
 A modern, privacy-focused, local-first web mapping application powered by MapLibre GL JS, OpenStreetMap, and Tailwind CSS. Built as a Progressive Web App (PWA) with cloud synchronization capabilities.
 
@@ -22,8 +22,8 @@ A modern, privacy-focused, local-first web mapping application powered by MapLib
 - **Custom Markers & Collections**: Save favorite locations, home address, and custom pins organized with PouchDB for local-first reliability.
 - **Cloud Sync**: Optional zero-knowledge / end-to-end cloud synchronization via **Filen** integration (`@filen/sdk`).
 - **Distance & Area Measurement**: On-map interactive tools to measure lines and multi-point paths.
-- **Offline & PWA Ready**: Installable on desktop and mobile devices with offline asset caching.
-- **Self-Hosted Typography & Styling**: Uses Fontsource for fonts (`Inter`, `Outfit`, `Material Icons Outlined`) with automatic light, dark, and system theme adaptation.
+- **Multi-Language Support**: Full internationalization with 60+ language localizations, automatic system language detection, English fallback, dynamic language switching without page reloads, and RTL language support.
+- **Offline & PWA Ready**: Installable Progressive Web App (PWA) powered by a custom Vanilla Service Worker (`sw.js`) with dynamic versioning, app-shell precaching, and LRU-evicted tile caching (OpenFreeMap, OpenStreetMap, WaymarkedTrails, Elevation DEM).
 
 ---
 
@@ -46,14 +46,20 @@ maps/
 │   ├── RoutingController.js    # Route calculation, profiles, and path display
 │   ├── SearchController.js     # Geocoding UI and search result handling
 │   ├── ThemeController.js      # Dark/light theme switcher
+│   ├── TranslationController.js# Dynamic i18n controller, language switcher, and fallback chains
 │   ├── app.js                  # Main application orchestrator & initialization
-│   └── db.js                   # Local database storage wrapper (PouchDB)
+│   ├── db.js                   # Local database storage wrapper (PouchDB)
+│   └── pwa.js                  # Service Worker lifecycle registration and update reloader
+├── languages/                  # i18n translation JSON files (60+ languages)
+├── templates/                  # Modular Handlebars HTML partial templates
 ├── img/                        # App icons and static images
 ├── index.html                  # Main application HTML entry point
 ├── privacy.html                # Privacy policy page
 ├── terms.html                  # Terms of service page
+├── manifest.json               # Web App Manifest configuration
+├── sw.js                       # Vanilla Service Worker (precaching, asset & tile caching strategies)
 ├── package.json                # Project dependencies and npm scripts
-└── vite.config.js              # Vite configuration & PWA setup
+└── vite.config.js              # Vite build setup, SW version injection, and Handlebars plugin
 ```
 
 ---

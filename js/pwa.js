@@ -10,5 +10,13 @@ export function initPWA() {
                 window.location.reload();
             }
         });
+
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then((registration) => {
+                console.log('[PWA] Service Worker registered, scope:', registration.scope);
+            })
+            .catch((error) => {
+                console.error('[PWA] Service Worker registration failed:', error);
+            });
     }
 }
