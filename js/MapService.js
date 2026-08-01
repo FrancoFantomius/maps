@@ -6,6 +6,7 @@ import { MeasurementController } from './MeasurementController.js';
 import { RoutingController } from './RoutingController.js';
 import { GPSController } from './GPSController.js';
 import { ApiService } from './ApiService.js';
+import { DarkMapStyle } from './DarkMapStyle.js';
 
 const STORAGE_KEY_LAYER = 'maps_active_layer';
 const STORAGE_KEY_LABELS = 'maps_labels_enabled';
@@ -50,7 +51,7 @@ export const MapService = {
         const initialBearing = savedBearing ? parseFloat(savedBearing) : 0;
 
         const isDark = document.documentElement.classList.contains('dark');
-        const initialStyle = isDark ? 'https://tiles.openfreemap.org/styles/dark' : 'https://tiles.openfreemap.org/styles/liberty';
+        const initialStyle = isDark ? DarkMapStyle : 'https://tiles.openfreemap.org/styles/liberty';
         this.currentStyleUrl = initialStyle;
 
         this.map = new maplibregl.Map({
@@ -284,6 +285,18 @@ export const MapService = {
         }
     },
 
+    ensureTerrainSource() {
+        if (!this.map) return;
+        if (!this.map.getSource('terrain-source')) {
+            this.map.addSource('terrain-source', {
+                type: 'raster-dem',
+                tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                encoding: 'terrarium'
+            });
+        }
+    },
+
     setupMapLayersAndSources() {
         if (!this.map) return;
 
@@ -380,15 +393,8 @@ export const MapService = {
         }
 
         // 4. Add 3D Terrain
-        if (!this.map.getSource('terrain-source')) {
-            this.map.addSource('terrain-source', {
-                type: 'raster-dem',
-                tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-                tileSize: 256,
-                encoding: 'terrarium'
-            });
-        }
-        if (this.activeOverlays.perspective) {
+        this.ensureTerrainSource();
+        if (this.activeOverlays.perspective && this.map.getSource('terrain-source')) {
             this.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
         } else {
             this.map.setTerrain(null);
@@ -725,7 +731,10 @@ export const MapService = {
             if (this.map) {
                 this.setAllExtrusionsVisibility(show);
                 if (show) {
-                    this.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
+                    this.ensureTerrainSource();
+                    if (this.map.getSource('terrain-source')) {
+                        this.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
+                    }
                 } else {
                     this.map.setTerrain(null);
                 }
@@ -762,9 +771,13 @@ export const MapService = {
     },
 
     setStyle(styleUrl) {
-        if (this.map && this.currentStyleUrl !== styleUrl) {
-            this.currentStyleUrl = styleUrl;
-            this.map.setStyle(styleUrl);
+        let targetStyle = styleUrl;
+        if (styleUrl === 'https://tiles.openfreemap.org/styles/dark') {
+            targetStyle = DarkMapStyle;
+        }
+        if (this.map && this.currentStyleUrl !== targetStyle) {
+            this.currentStyleUrl = targetStyle;
+            this.map.setStyle(targetStyle);
         }
     },
 

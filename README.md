@@ -1,6 +1,6 @@
 # Maps
 
-[![Version](https://img.shields.io/badge/version-1.3.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.2-blue.svg)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 
 A modern, privacy-focused, local-first web mapping application powered by MapLibre GL JS, OpenStreetMap, and Tailwind CSS. Built as a Progressive Web App (PWA) with cloud synchronization capabilities.

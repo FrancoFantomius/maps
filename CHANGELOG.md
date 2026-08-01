@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2026-08-01
+### Changed
+- **Map Style**: Changed the map style to a custom dark theme.
+- **GPS Button Animation**: when the GPS is locating, the button will have a pulsing animation.
+### Fixed
+- **Images**: Fixed images not loading.
 
 ## [1.3.1] - 2026-08-01
 

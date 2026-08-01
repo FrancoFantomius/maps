@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ThemeController } from '../js/ThemeController.js';
 import { MapService } from '../js/MapService.js';
+import { DarkMapStyle } from '../js/DarkMapStyle.js';
 
 vi.mock('../js/MapService.js', () => ({
   MapService: {
@@ -27,7 +28,7 @@ describe('ThemeController', () => {
 
       expect(localStorage.getItem('theme_preference')).toBe('dark');
       expect(document.documentElement.classList.contains('dark')).toBe(true);
-      expect(MapService.setStyle).toHaveBeenCalledWith('https://tiles.openfreemap.org/styles/dark');
+      expect(MapService.setStyle).toHaveBeenCalledWith(DarkMapStyle);
     });
 
     it('applies light theme correctly', () => {

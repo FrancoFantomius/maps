@@ -19,6 +19,8 @@ const PRECACHE_URLS = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/img/icons/maps_x192.png',
+  '/img/icons/maps_x512.png',
 ];
 
 // ─── Tile URL matchers ────────────────────────────────────────────────────────

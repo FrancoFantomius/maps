@@ -65,6 +65,91 @@ const serviceWorkerPlugin = () => ({
   },
 });
 
+const manifestPlugin = () => ({
+  name: 'serve-and-bundle',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      const rawUrl = req.url ? req.url.split('?')[0] : '';
+      if (rawUrl === '/manifest.json') {
+        const manifestPath = path.join(__dirname, 'manifest.json');
+        if (fs.existsSync(manifestPath)) {
+          res.setHeader('Content-Type', 'application/manifest+json');
+          return fs.createReadStream(manifestPath).pipe(res);
+        }
+      }
+      if (rawUrl.startsWith('/img/icons/') || rawUrl.startsWith('/assets/img/icons/')) {
+        const fileName = path.basename(rawUrl);
+        const iconPath = path.join(__dirname, 'img', 'icons', fileName);
+        if (fs.existsSync(iconPath) && fs.statSync(iconPath).isFile()) {
+          res.setHeader('Content-Type', 'image/png');
+          return fs.createReadStream(iconPath).pipe(res);
+        }
+      }
+      next();
+    });
+  },
+  generateBundle() {
+    const manifestPath = path.join(__dirname, 'manifest.json');
+    if (fs.existsSync(manifestPath)) {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'manifest.json',
+        source: fs.readFileSync(manifestPath),
+      });
+    }
+
+    const iconsDir = path.join(__dirname, 'img', 'icons');
+    if (fs.existsSync(iconsDir)) {
+      const files = fs.readdirSync(iconsDir);
+      for (const file of files) {
+        const filePath = path.join(iconsDir, file);
+        if (fs.statSync(filePath).isFile()) {
+          const content = fs.readFileSync(filePath);
+          this.emitFile({
+            type: 'asset',
+            fileName: `img/icons/${file}`,
+            source: content,
+          });
+          this.emitFile({
+            type: 'asset',
+            fileName: `assets/img/icons/${file}`,
+            source: content,
+          });
+        }
+      }
+    }
+  },
+});
+
+// Sync to public directory for standard Vite public static serving
+try {
+  const publicDir = path.join(__dirname, 'public');
+  const publicImgIcons = path.join(publicDir, 'img', 'icons');
+  const publicAssetsImgIcons = path.join(publicDir, 'assets', 'img', 'icons');
+
+  fs.mkdirSync(publicImgIcons, { recursive: true });
+  fs.mkdirSync(publicAssetsImgIcons, { recursive: true });
+
+  const manifestPath = path.join(__dirname, 'manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    fs.copyFileSync(manifestPath, path.join(publicDir, 'manifest.json'));
+  }
+
+  const iconsDir = path.join(__dirname, 'img', 'icons');
+  if (fs.existsSync(iconsDir)) {
+    const files = fs.readdirSync(iconsDir);
+    for (const file of files) {
+      const srcFile = path.join(iconsDir, file);
+      if (fs.statSync(srcFile).isFile()) {
+        fs.copyFileSync(srcFile, path.join(publicImgIcons, file));
+        fs.copyFileSync(srcFile, path.join(publicAssetsImgIcons, file));
+      }
+    }
+  }
+} catch {
+  // Ignore sync errors if filesystem permission restricts public creation
+}
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -85,6 +170,7 @@ export default defineConfig({
   plugins: [
     languagesPlugin(),
     serviceWorkerPlugin(),
+    manifestPlugin(),
     handlebars({
       partialDirectory: path.resolve(__dirname, 'templates'),
     }),

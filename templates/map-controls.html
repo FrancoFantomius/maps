@@ -64,7 +64,10 @@
     <!-- GPS Geolocation Button -->
     <button id="btn-gps"
         class="group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300 relative">
-        <span class="material-icons-outlined text-lg leading-none">my_location</span>
+        <span class="relative flex items-center justify-center pointer-events-none">
+            <span class="material-icons-outlined text-lg leading-none gps-icon-main">location_searching</span>
+            <span class="material-icons-outlined text-[6px] leading-none absolute inset-0 flex items-center justify-center gps-center-dot">circle</span>
+        </span>
         <span data-i18n="controls.my_location"
             class="absolute right-14 scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 pointer-events-none transition-all duration-200 bg-slate-900/90 dark:bg-slate-950/95 text-white text-[10.5px] font-bold px-2.5 py-1.5 rounded-lg shadow-md whitespace-nowrap">GPS
             Locate</span>

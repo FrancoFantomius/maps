@@ -1,6 +1,7 @@
 // maps Theme Controller - js/ThemeController.js
 
 import { MapService } from './MapService.js';
+import { DarkMapStyle } from './DarkMapStyle.js';
 
 export const ThemeController = {
     init() {
@@ -28,7 +29,7 @@ export const ThemeController = {
 
         if (isDark) {
             document.documentElement.classList.add('dark');
-            MapService.setStyle('https://tiles.openfreemap.org/styles/dark');
+            MapService.setStyle(DarkMapStyle);
         } else {
             document.documentElement.classList.remove('dark');
             MapService.setStyle('https://tiles.openfreemap.org/styles/liberty');

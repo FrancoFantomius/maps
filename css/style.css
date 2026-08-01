@@ -335,3 +335,88 @@
     right: 1rem !important;
   }
 }
+
+/* ─── MapLibre Navigation Control (Zoom In/Out Buttons) ─── */
+.maplibregl-ctrl-group {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+    overflow: hidden;
+}
+
+.maplibregl-ctrl-group button {
+    width: 38px !important;
+    height: 38px !important;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.maplibregl-ctrl-group button:hover {
+    background-color: rgba(241, 245, 249, 0.9) !important;
+}
+
+.maplibregl-ctrl-group button:active {
+    background-color: rgba(226, 232, 240, 0.9) !important;
+}
+
+.maplibregl-ctrl-group button + button {
+    border-top: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+/* Dark mode zoom buttons styling */
+.dark .maplibregl-ctrl-group {
+    background-color: rgba(15, 23, 42, 0.9) !important;
+    border-color: rgba(30, 41, 59, 0.8) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dark .maplibregl-ctrl-group button:hover {
+    background-color: rgba(30, 41, 59, 0.8) !important;
+}
+
+.dark .maplibregl-ctrl-group button:active {
+    background-color: rgba(51, 65, 85, 0.8) !important;
+}
+
+.dark .maplibregl-ctrl-group button + button {
+    border-top-color: rgba(30, 41, 59, 0.8) !important;
+}
+
+.dark .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+    filter: invert(1) brightness(1.8);
+}
+
+/* Dark mode map attribution control styling */
+.dark .maplibregl-ctrl-attrib {
+    background-color: rgba(15, 23, 42, 0.75) !important;
+    color: #94a3b8 !important;
+    border-radius: 6px 0 0 0;
+}
+
+.dark .maplibregl-ctrl-attrib a {
+    color: #cbd5e1 !important;
+}
+
+/* ─── GPS Button Locating Animation ─── */
+.gps-center-dot {
+    display: none;
+    transform-origin: center;
+    transition: opacity 0.3s ease;
+}
+
+#btn-gps.is-locating .gps-center-dot {
+    display: flex;
+    animation: gpsDotPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes gpsDotPulse {
+    0%, 100% {
+        opacity: 0.15;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}

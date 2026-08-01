@@ -70,17 +70,30 @@ describe('GPSController', () => {
   });
 
   describe('updateUI', () => {
-    it('updates button appearance based on tracking state', () => {
+    it('shows locating state while acquiring position fix', () => {
       GPSController.isFollowing = true;
       GPSController.watchId = 101;
+      GPSController.gpsCoords = null;
+      GPSController.updateUI();
+
+      const btn = document.getElementById('btn-gps');
+      expect(btn.className).toContain('is-locating');
+    });
+
+    it('switches to active state when position is found', () => {
+      GPSController.isFollowing = true;
+      GPSController.watchId = 101;
+      GPSController.gpsCoords = { lat: 45.438, lng: 10.993 };
       GPSController.updateUI();
 
       const btn = document.getElementById('btn-gps');
       expect(btn.className).toContain('bg-emerald-600 text-white');
+      expect(btn.className).not.toContain('is-locating');
 
       GPSController.stopTracking();
       expect(btn.className).toContain('text-emerald-600');
       expect(btn.className).not.toContain('bg-emerald-600 text-white');
+      expect(btn.className).not.toContain('is-locating');
     });
   });
 });

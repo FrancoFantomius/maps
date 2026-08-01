@@ -71,6 +71,7 @@ export const GPSController = {
 
                 // Update marker & accuracy circle
                 this.updateMarkerAndCircle(lng, lat, accuracy);
+                this.updateUI();
             },
             (error) => {
                 console.error("GPS watchPosition failed", error);
@@ -187,18 +188,23 @@ export const GPSController = {
         const btn = document.getElementById('btn-gps');
         if (!btn) return;
 
-        const iconSpan = btn.querySelector('.material-icons-outlined');
+        const iconSpan = btn.querySelector('.gps-icon-main') || btn.querySelector('.material-icons-outlined');
+        const isLocating = this.watchId !== null && !this.gpsCoords;
 
         if (this.watchId === null) {
             // State 1: Inactive (not tracking)
             btn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300 relative';
             if (iconSpan) iconSpan.textContent = 'my_location';
+        } else if (isLocating) {
+            // State 2: Locating (acquiring initial location fix)
+            btn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-emerald-500 dark:border-emerald-400 rounded-full shadow-lg hover:shadow-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300 relative is-locating';
+            if (iconSpan) iconSpan.textContent = 'location_searching';
         } else if (this.isFollowing) {
-            // State 2: Tracking & following
+            // State 3: Position found & following
             btn.className = 'group flex items-center justify-center w-12 h-12 bg-emerald-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-emerald-500 transition-all duration-300 relative border border-emerald-500';
             if (iconSpan) iconSpan.textContent = 'gps_fixed';
         } else {
-            // State 3: Tracking but not following
+            // State 4: Position found, tracking but not following
             btn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-emerald-500 dark:border-emerald-400 rounded-full shadow-lg hover:shadow-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300 relative';
             if (iconSpan) iconSpan.textContent = 'my_location';
         }
