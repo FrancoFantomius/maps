@@ -107,27 +107,27 @@
     "page_title": "Politique de Confidentialité - Cartes",
     "title": "Politique de Confidentialité",
     "last_updated": "Juillet 2026",
-    "intro": "La confidentialité est notre valeur fondamentale.",
-    "section1_title": "1. Stockage Local",
-    "section1_text": "Vos repères sont stockés localement sur votre appareil.",
-    "section2_title": "2. Synchronisation Chiffrée",
-    "section2_text1": "Synchronisation via Filen.",
-    "section2_text2": "Chiffrement AES-256-GCM côté client.",
-    "section3_title": "3. Pas de Collecte de Données",
-    "section3_text": "Aucune télémétrie ni suivi.",
+    "intro": "Chez Cartes, votre vie privée est notre priorité absolue. Cartes est conçue comme une application locale-first s'exécutant côté client. Nous n'exploitons aucune infrastructure de serveur pour collecter, stocker, suivre ou vendre vos données personnelles ou vos repères enregistrés.",
+    "section1_title": "1. Stockage Local et Sécurité de la Base de Données",
+    "section1_text": "Tous les repères, noms, descriptions et catégories personnalisées enregistrés sont stockés localement sur votre appareil dans une base de données PouchDB isolée. Ces données restent strictement privées dans votre navigateur. Effacer le cache du navigateur ou utiliser le mode navigation privée supprimera cette base de données.",
+    "section2_title": "2. Synchronisation Cloud Chiffrée de Bout en Bout",
+    "section2_text1": "Si vous choisissez d'activer la synchronisation dans le cloud, Cartes se connecte directement aux API cloud sécurisées fournies par Filen. Vos identifiants (e-mail, mot de passe et code d'authentification à deux facteurs) sont traités exclusivement côté client afin d'obtenir directement les clés de sécurité auprès de Filen.",
+    "section2_text2": "Vos lieux enregistrés sont compilés et chiffrés côté client avec un chiffrement de niveau militaire AES-256-GCM avant de quitter votre appareil, puis stockés dans un fichier privé nommé places.json au sein d'un dossier nommé Apps/maps. Nous n'avons aucun accès à vos clés de déchiffrement, mot de passe ou lieux en texte clair.",
+    "section3_title": "3. Statistiques et Collecte de Données",
+    "section3_text": "Nous ne collectons aucun diagnostic, rapport de plantage, suivi d'adresse IP, télémétrie ou analyse d'utilisation. L'application fonctionne dans un anonymat complet.",
     "section4_title": "4. Transparence Open Source",
-    "section4_text": "Licence libre AGPL-3.0."
+    "section4_text": "Puisque ce projet est open source et sous licence AGPL-3.0, vous pouvez consulter directement le code source, exécuter vos propres versions ou contribuer publiquement sur le dépôt."
   },
   "terms": {
     "page_title": "Conditions d'Utilisation - Cartes",
     "title": "Conditions d'Utilisation",
     "last_updated": "Juillet 2026",
-    "intro": "Bienvenue sur Cartes.",
+    "intro": "Bienvenue sur Cartes. En accédant ou en utilisant notre application, vous acceptez d'être lié par ces conditions. Veuillez les lire attentivement avant d'utiliser notre logiciel.",
     "section1_title": "1. Utilisation Acceptable",
-    "section1_text": "Gratuit pour un usage personnel.",
-    "section2_title": "2. Données et Services",
-    "section2_text": "Basé sur des données ouvertes.",
-    "section3_title": "3. Licence",
-    "section3_text": "Licence GNU AGPL-3.0."
+    "section1_text": "Cartes est fournie gratuitement pour une exploration personnelle et non commerciale. Vous vous engagez à ne pas faire un usage abusif de notre service, à ne pas tenter d'accès non autorisé aux API tierces ni à dépasser les quotas d'utilisation.",
+    "section2_title": "2. Avertissement sur les Données et Services Cloud",
+    "section2_text": "Cartes s'appuie sur des jeux de données géographiques ouverts (notamment OpenStreetMap et OpenFreeMap) et sur la synchronisation cloud tierce (Filen). Nous ne garantissons pas la disponibilité continue ni l'exactitude des données cartographiques ou des API tierces.",
+    "section3_title": "3. Licence et Code Source",
+    "section3_text": "Cartes est sous licence GNU Affero General Public License v3.0 (AGPL-3.0). Vous êtes libre de la modifier, redistribuer et d'héberger vos propres instances conformément aux exigences de l'AGPL-3.0."
   }
 }

@@ -20,18 +20,25 @@ export const MarkerController = {
         nature: { main: '#10b981', fill: '#34d399', emoji: '🌿', svg: 'M2 22h20v-2h-3l-3.23-6.46L19 12h-3l-3.32-6.64L15 4H9l2.32 4.64L8 10H5l3.23 6.46L5 18H2v4z' }
     },
 
-    createPin(category = 'poi', colorOverride = null) {
+    createPin(category = 'poi', colorOverride = null, content = null) {
         const config = this.colorPalette[category] || this.colorPalette.poi;
         const el = document.createElement('div');
         el.className = 'custom-map-pin-div';
         el.style.cursor = 'pointer';
         el.style.width = '34px';
         el.style.height = '42px';
+        const displayColor = colorOverride || config.main;
+        const isCustomContent = content !== null && content !== undefined;
+        const displayContent = isCustomContent ? content : config.emoji;
+        const fontStyle = isCustomContent
+            ? `font-size: 13px; font-weight: 700; color: ${displayColor}; font-family: 'Inter', system-ui, sans-serif;`
+            : `font-size: 14px;`;
+
         el.innerHTML = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17 0C7.61 0 0 7.61 0 17C0 26.5 17 42 17 42C17 42 34 26.5 34 17C34 7.61 26.39 0 17 0Z" fill="${colorOverride || config.main}"/>
+            <path d="M17 0C7.61 0 0 7.61 0 17C0 26.5 17 42 17 42C17 42 34 26.5 34 17C34 7.61 26.39 0 17 0Z" fill="${displayColor}"/>
             <circle cx="17" cy="17" r="11" fill="white"/>
         </svg>
-        <span style="position:absolute;top:7px;left:0;width:34px;height:22px;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;pointer-events:none;">${config.emoji}</span>`;
+        <span style="position:absolute;top:7px;left:0;width:34px;height:22px;display:flex;align-items:center;justify-content:center;line-height:1;pointer-events:none;${fontStyle}">${displayContent}</span>`;
         return el;
     },
 

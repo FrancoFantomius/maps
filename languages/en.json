@@ -112,7 +112,7 @@
     "section1_text": "All place markers, names, descriptions, and custom categories you record are stored locally on your device in a sandboxed PouchDB database. This data is private to your browser. Clearing your browser's application cache or using incognito/private modes will remove this database.",
     "section2_title": "2. End-to-End Encrypted Cloud Sync",
     "section2_text1": "If you choose to enable cloud synchronization, Maps links directly to the secure cloud APIs provided by Filen. Your credentials (email, password, and two-factor code) are processed purely on the client side to retrieve security keys directly from Filen.",
-    "section2_text2": "Your saved places are compiled and encrypted client-side using military-grade AES-256-GCM encryption before leaving your device, then stored as a private file named places.json inside a folder named maps. We do not have access to your decryption keys, password, or plaintext places.",
+    "section2_text2": "Your saved places are compiled and encrypted client-side using military-grade AES-256-GCM encryption before leaving your device, then stored as a private file named places.json inside a folder named Apps/maps. We do not have access to your decryption keys, password, or plaintext places.",
     "section3_title": "3. Analytics and Data Collection",
     "section3_text": "We do not collect diagnostics, crash logs, IP address tracking, telemetry, or user analytics. The application operates in complete anonymity.",
     "section4_title": "4. Open Source Transparency",

@@ -104,30 +104,30 @@
     "reset_north": "Nord ausrichten"
   },
   "privacy": {
-    "page_title": "Datenschutz-Bestimmungen - Karten",
-    "title": "Datenschutz-Bestimmungen",
+    "page_title": "Datenschutzerklärung - Karten",
+    "title": "Datenschutzerklärung",
     "last_updated": "Juli 2026",
-    "intro": "Datenschutz ist unser Kernwert.",
-    "section1_title": "1. Lokale Speicherung",
-    "section1_text": "Alle Marker werden lokal auf Ihrem Gerät gespeichert.",
-    "section2_title": "2. Verschlüsselte Synchro",
-    "section2_text1": "Synchronisierung über Filen Cloud-APIs.",
-    "section2_text2": "AES-256-GCM Verschlüsselung auf Ihrem Gerät.",
-    "section3_title": "3. Keine Datenerfassung",
-    "section3_text": "Keine Telemetrie oder Benutzer-Tracking.",
-    "section4_title": "4. Open-Source Transparenz",
-    "section4_text": "Lizenzierung unter GNU AGPL-3.0."
+    "intro": "Bei Karten ist Ihre Privatsphäre unser zentraler Wert. Karten wurde als clientseitige Local-First-Anwendung konzipiert. Wir betreiben keine Serverinfrastruktur, um Ihre persönlichen Daten oder gespeicherten Ortsmarkierungen zu erfassen, zu speichern, nachzuverfolgen oder zu verkaufen.",
+    "section1_title": "1. Lokale Speicherung & Datenbanksicherheit",
+    "section1_text": "Alle von Ihnen erfassten Ortsmarkierungen, Namen, Beschreibungen und benutzerdefinierten Kategorien werden lokal auf Ihrem Gerät in einer isolierten PouchDB-Datenbank gespeichert. Diese Daten verbleiben privat in Ihrem Browser. Das Löschen des Browser-Caches oder die Verwendung des Inkognito-Modus entfernt diese Datenbank.",
+    "section2_title": "2. Ende-zu-Ende verschlüsselte Cloud-Synchronisierung",
+    "section2_text1": "Wenn Sie die Cloud-Synchronisierung aktivieren, verbindet sich Karten direkt mit den sicheren Cloud-APIs von Filen. Ihre Anmeldedaten (E-Mail, Passwort und Zwei-Faktor-Code) werden rein clientseitig verarbeitet, um Sicherheitsschlüssel direkt von Filen zu beziehen.",
+    "section2_text2": "Ihre gespeicherten Orte werden clientseitig mit militärischer AES-256-GCM-Verschlüsselung kompiliert und verschlüsselt, bevor sie Ihr Gerät verlassen, und dann als private Datei namens places.json in einem Ordner namens Apps/maps gespeichert. Wir haben keinen Zugriff auf Ihre Entschlüsselungsschlüssel, Passwörter oder Orte im Klartext.",
+    "section3_title": "3. Analysen und Datenerfassung",
+    "section3_text": "Wir erfassen keine Diagnosedaten, Absturzberichte, IP-Adressen, Telemetrie oder Benutzeranalysen. Die Anwendung arbeitet in vollständiger Anonymität.",
+    "section4_title": "4. Open-Source-Transparenz",
+    "section4_text": "Da dieses Projekt Open-Source und unter der AGPL-3.0 lizenziert ist, können Sie den Quellcode direkt einsehen, eigene Builds ausführen oder offen zum Repository beitragen."
   },
   "terms": {
     "page_title": "Nutzungsbedingungen - Karten",
     "title": "Nutzungsbedingungen",
     "last_updated": "Juli 2026",
-    "intro": "Willkommen bei Karten.",
+    "intro": "Willkommen bei Karten. Durch den Zugriff auf oder die Nutzung unserer Anwendung erklären Sie sich mit diesen Bedingungen einverstanden. Bitte lesen Sie diese sorgfältig durch, bevor Sie unsere Software verwenden.",
     "section1_title": "1. Zulässige Nutzung",
-    "section1_text": "Kostenlos für persönliche Nutzung.",
-    "section2_title": "2. Haftungsausschluss",
-    "section2_text": "Basiert auf offenen Kartendaten.",
-    "section3_title": "3. Lizenz",
-    "section3_text": "GNU AGPL-3.0 Lizenz."
+    "section1_text": "Karten wird kostenlos für die persönliche und nicht-kommerzielle Erkundung bereitgestellt. Sie verpflichten sich, unseren Dienst nicht zu missbrauchen, keine unbefugten Zugriffe auf Drittanbieter-APIs zu versuchen und Nutzungsratenlimits nicht zu überschreiten.",
+    "section2_title": "2. Haftungsausschluss für Daten- und Cloud-Dienste",
+    "section2_text": "Karten basiert auf offenen geografischen Datensätzen (einschließlich OpenStreetMap und OpenFreeMap) sowie Cloud-Synchronisierung von Drittanbietern (Filen). Wir übernehmen keine Garantie für eine unterbrechungsfreie Verfügbarkeit oder Genauigkeit von Kartendaten oder APIs Dritter.",
+    "section3_title": "3. Lizenz & Quellcode",
+    "section3_text": "Karten ist unter der GNU Affero General Public License v3.0 (AGPL-3.0) lizenziert. Es steht Ihnen frei, eigene Instanzen gemäß den AGPL-3.0-Bedingungen anzupassen, weiterzuverbreiten und zu hosten."
   }
 }

@@ -107,27 +107,27 @@
     "page_title": "Política de Privacidade - Mapas",
     "title": "Política de Privacidade",
     "last_updated": "Julho 2026",
-    "intro": "Sua privacidade é nossa prioridade.",
-    "section1_title": "1. Armazenamento Local",
-    "section1_text": "Todos os seus dados são salvos localmente.",
-    "section2_title": "2. Sincronização Criptografada",
-    "section2_text1": "Sincronização via Filen.",
-    "section2_text2": "Criptografia AES-256-GCM no dispositivo.",
-    "section3_title": "3. Sem Coleta de Dados",
-    "section3_text": "Não coletamos telemetria.",
-    "section4_title": "4. Transparência Código Aberto",
-    "section4_text": "Licença AGPL-3.0."
+    "intro": "No Mapas, sua privacidade é nosso valor fundamental. O Mapas foi projetado como um aplicativo local-first do lado do cliente. Não operamos infraestrutura de servidores para coletar, armazenar, rastrear ou vender seus dados pessoais ou marcadores salvos.",
+    "section1_title": "1. Armazenamento Local e Segurança do Banco de Dados",
+    "section1_text": "Todos os marcadores, nomes, descrições e categorias personalizadas que você registra são armazenados localmente no seu dispositivo em um banco de dados PouchDB isolado. Esses dados são privados no seu navegador. Limpar o cache do navegador ou usar o modo anônimo removerá este banco de dados.",
+    "section2_title": "2. Sincronização em Nuvem Criptografada de Ponta a Ponta",
+    "section2_text1": "Se você optar por habilitar a sincronização em nuvem, o Mapas conecta-se diretamente às APIs seguras em nuvem fornecidas pela Filen. Suas credenciais (e-mail, senha e código de dois fatores) são processadas puramente no lado do cliente para obter chaves de segurança diretamente da Filen.",
+    "section2_text2": "Seus locais salvos são compilados e criptografados no lado do cliente usando criptografia de nível militar AES-256-GCM antes de sair do dispositivo, sendo armazenados como um arquivo privado chamado places.json dentro de uma pasta chamada Apps/maps. Não temos acesso às suas chaves de descriptografia, senha ou locais em texto simples.",
+    "section3_title": "3. Análises e Coleta de Dados",
+    "section3_text": "Não coletamos diagnósticos, logs de falhas, rastreamento de endereço IP, telemetria ou análises de usuário. O aplicativo funciona em completo anonimato.",
+    "section4_title": "4. Transparência de Código Aberto",
+    "section4_text": "Como este projeto é de código aberto e licenciado sob a AGPL-3.0, você pode revisar o código-fonte diretamente, executar suas próprias compilações ou contribuir abertamente no repositório."
   },
   "terms": {
     "page_title": "Termos de Serviço - Mapas",
     "title": "Termos de Serviço",
     "last_updated": "Julho 2026",
-    "intro": "Bem-vindo ao Mapas.",
+    "intro": "Bem-vindo ao Mapas. Ao acessar ou usar nosso aplicativo, você concorda em cumprir estes termos. Leia-os atentamente antes de usar nosso software.",
     "section1_title": "1. Uso Aceitável",
-    "section1_text": "Gratuito para uso pessoal.",
-    "section2_title": "2. Isenção de Responsabilidade",
-    "section2_text": "Baseado em dados abertos.",
-    "section3_title": "3. Licença",
-    "section3_text": "Licença GNU AGPL-3.0."
+    "section1_text": "O Mapas é fornecido gratuitamente para exploração pessoal e não comercial. Você concorda em não fazer uso indevido de nossos serviços, não tentar acesso não autorizado a APIs de terceiros nem exceder limites de taxa de uso.",
+    "section2_title": "2. Isenção de Responsabilidade sobre Dados e Serviços em Nuvem",
+    "section2_text": "O Mapas depende de conjuntos de dados geográficos abertos (incluindo OpenStreetMap e OpenFreeMap) e sincronização em nuvem de terceiros (Filen). Não garantimos a disponibilidade ininterrupta ou a precisão dos dados cartográficos ou APIs de terceiros.",
+    "section3_title": "3. Licença e Código-Fonte",
+    "section3_text": "O Mapas é licenciado sob a GNU Affero General Public License v3.0 (AGPL-3.0). Você é livre para modificar, redistribuir e hospedar suas próprias instâncias sujeito aos requisitos da AGPL-3.0."
   }
 }

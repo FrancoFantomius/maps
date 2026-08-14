@@ -8,10 +8,22 @@ export const ApiService = {
         return await res.json();
     },
 
-    async searchGeocode(query, limit = null) {
-        let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
+    async searchGeocode(query, limit = null, options = {}) {
+        let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&extratags=1&namedetails=1`;
         if (limit) {
-            url += `&limit=${limit}&addressdetails=1`;
+            url += `&limit=${limit}`;
+        }
+        if (options) {
+            if (typeof options === 'string') {
+                url += `&viewbox=${encodeURIComponent(options)}`;
+            } else if (typeof options === 'object') {
+                if (options.viewbox) {
+                    url += `&viewbox=${encodeURIComponent(options.viewbox)}`;
+                }
+                if (options.bounded !== undefined) {
+                    url += `&bounded=${options.bounded ? 1 : 0}`;
+                }
+            }
         }
         const res = await fetch(url);
         if (!res.ok) throw new Error(`Nominatim search geocode failed: ${res.statusText}`);

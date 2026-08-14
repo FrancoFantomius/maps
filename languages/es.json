@@ -107,27 +107,27 @@
     "page_title": "Política de Privacidad - Mapas",
     "title": "Política de Privacidad",
     "last_updated": "Julio 2026",
-    "intro": "En Mapas, tu privacidad es nuestra prioridad principal.",
-    "section1_title": "1. Almacenamiento Local y Seguridad",
-    "section1_text": "Todos tus marcadores se guardan localmente en tu dispositivo.",
-    "section2_title": "2. Sincronización Cifrada",
-    "section2_text1": "Sincronización cifrada de extremo a extremo mediante Filen.",
-    "section2_text2": "Tus datos se cifran con AES-256-GCM antes de salir de tu dispositivo.",
-    "section3_title": "3. Sin Recopilación de Datos",
-    "section3_text": "No recopilamos analíticas ni seguimiento.",
-    "section4_title": "4. Transparencia Código Abierto",
-    "section4_text": "Proyecto de código abierto con licencia AGPL-3.0."
+    "intro": "En Mapas, tu privacidad es nuestro valor fundamental. Mapas está diseñada como una aplicación local-first del lado del cliente. No operamos infraestructura de servidores para recopilar, almacenar, rastrear o vender tus datos personales o marcadores de lugares guardados.",
+    "section1_title": "1. Almacenamiento Local y Seguridad de la Base de Datos",
+    "section1_text": "Todos los marcadores de lugares, nombres, descripciones y categorías personalizadas que registras se almacenan localmente en tu dispositivo en una base de datos PouchDB aislada. Estos datos son privados para tu navegador. Borrar la caché del navegador o usar los modos de incógnito/privado eliminará esta base de datos.",
+    "section2_title": "2. Sincronización en la Nube Cifrada de Extremo a Extremo",
+    "section2_text1": "Si decides habilitar la sincronización en la nube, Mapas se conecta directamente a las API seguras en la nube proporcionadas por Filen. Tus credenciales (correo electrónico, contraseña y código de autenticación en dos pasos) se procesan exclusivamente en el cliente para obtener las claves de seguridad directamente desde Filen.",
+    "section2_text2": "Tus lugares guardados se compilan y cifran en el cliente mediante cifrado de grado militar AES-256-GCM antes de salir de tu dispositivo, y luego se almacenan como un archivo privado llamado places.json dentro de una carpeta llamada Apps/maps. No tenemos acceso a tus claves de descifrado, contraseña ni lugares en texto plano.",
+    "section3_title": "3. Análisis y Recopilación de Datos",
+    "section3_text": "No recopilamos diagnósticos, registros de fallos, seguimiento de direcciones IP, telemetría ni análisis de usuarios. La aplicación opera en completo anonimato.",
+    "section4_title": "4. Transparencia de Código Abierto",
+    "section4_text": "Dado que este proyecto es de código abierto y cuenta con licencia AGPL-3.0, puedes revisar el código fuente directamente, ejecutar tus propias compilaciones o contribuir abiertamente en el repositorio."
   },
   "terms": {
     "page_title": "Términos de Servicio - Mapas",
     "title": "Términos de Servicio",
     "last_updated": "Julio 2026",
-    "intro": "Bienvenido a Mapas.",
+    "intro": "Bienvenido a Mapas. Al acceder o utilizar nuestra aplicación, aceptas estar sujeto a estos términos. Léelos atentamente antes de usar nuestro software.",
     "section1_title": "1. Uso Aceptable",
-    "section1_text": "Uso personal y no comercial gratuito.",
-    "section2_title": "2. Exención de Responsabilidad",
-    "section2_text": "Basado en datos geográficos abiertos.",
-    "section3_title": "3. Licencia",
-    "section3_text": "Licencia GNU AGPL-3.0."
+    "section1_text": "Mapas se proporciona de forma gratuita para exploración personal y no comercial. Aceptas no hacer un uso indebido de nuestro servicio, no intentar accesos no autorizados a las API de terceros ni superar los límites de tasa de uso.",
+    "section2_title": "2. Exención de Responsabilidad sobre Datos y Servicios en la Nube",
+    "section2_text": "Mapas depende de conjuntos de datos geográficos abiertos (incluidos OpenStreetMap y OpenFreeMap) y de la sincronización en la nube de terceros (Filen). No garantizamos la disponibilidad ininterrumpida ni la precisión de los datos cartográficos o de las API de terceros.",
+    "section3_title": "3. Licencia y Código Fuente",
+    "section3_text": "Mapas está licenciado bajo la GNU Affero General Public License v3.0 (AGPL-3.0). Eres libre de modificar, redistribuir y alojar tus propias instancias sujeto a los requisitos de AGPL-3.0."
   }
 }

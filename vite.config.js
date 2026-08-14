@@ -127,8 +127,11 @@ try {
   const publicImgIcons = path.join(publicDir, 'img', 'icons');
   const publicAssetsImgIcons = path.join(publicDir, 'assets', 'img', 'icons');
 
+  const publicLanguages = path.join(publicDir, 'languages');
+
   fs.mkdirSync(publicImgIcons, { recursive: true });
   fs.mkdirSync(publicAssetsImgIcons, { recursive: true });
+  fs.mkdirSync(publicLanguages, { recursive: true });
 
   const manifestPath = path.join(__dirname, 'manifest.json');
   if (fs.existsSync(manifestPath)) {
@@ -143,6 +146,17 @@ try {
       if (fs.statSync(srcFile).isFile()) {
         fs.copyFileSync(srcFile, path.join(publicImgIcons, file));
         fs.copyFileSync(srcFile, path.join(publicAssetsImgIcons, file));
+      }
+    }
+  }
+
+  const langDir = path.join(__dirname, 'languages');
+  if (fs.existsSync(langDir)) {
+    const files = fs.readdirSync(langDir);
+    for (const file of files) {
+      const srcFile = path.join(langDir, file);
+      if (fs.statSync(srcFile).isFile() && file.endsWith('.json')) {
+        fs.copyFileSync(srcFile, path.join(publicLanguages, file));
       }
     }
   }

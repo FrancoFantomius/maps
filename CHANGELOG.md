@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-08-14
+
+### Added
+- **Interactive Search Pins on Map**: Search results are rendered as numbered custom pins (1, 2, 3...) directly on the map, with interactive hover popups displaying place names and numbers.
+- **Proximity-Based Search Ranking**: Search results are prioritized and sorted based on geographical proximity using the Haversine distance formula, following a user location priority chain: Current Map View center → Active GPS coordinates → Saved Home address.
+- **Viewport-Bounded Geocoding**: Enhanced `ApiService.searchGeocode` to support dynamic viewbox parameters (`viewbox`, `bounded`), biasing search results toward the current map extent.
+- **Rich Place & POI Details**: Selecting a search place enriches details with Wikipedia summaries, images, and Overpass OpenStreetMap amenity tags (opening hours, website, phone, cuisine, shop type, brand).
+- **Auto-Fit Map Bounds on Search**: Search results with multiple geographic coordinates automatically adjust map camera bounds to fit all markers with optimal padding.
+- **MapService View Helpers**: Added `getCenter()` and `getBounds()` helper methods to `MapService` for map viewport querying.
+- **Languages Parity Test Suite**: Added `tests/languages_parity.test.js` to ensure 100% key parity, valid schema, and non-empty translation strings across all localized languages.
+
+### Changed
+- **Filen Cloud Sync Directory**: Updated Filen cloud storage directory structure from `/maps/places.json` to `/Apps/maps/places.json`, automatically ensuring the remote directory hierarchy exists.
+- **Streamlined 11 Core Global Languages**: Curated and focused the translation catalog to 11 major global languages (`en`, `it`, `es`, `fr`, `de`, `zh`, `ja`, `ar`, `ru`, `pt`, `hi`) with 100% full key parity with `en.json`.
+- **Custom Numbered Pin Component**: Updated `MarkerController.createPin` to support custom numbers, text labels, and color overrides with `Inter` typography.
+- **Language Assets Build Pipeline**: Enhanced `vite.config.js` to automatically copy localized language files into the public bundle during build and development.
+
+### Fixed
+- **Sync Reconciliation Loops**: Prevented infinite sync loops by ignoring internal sync-triggered `maps-home-updated` events.
+- **Concurrent Sync Prevention**: Added `isSyncInProgress` concurrency locks to avoid overlapping sync requests.
+- **Sync Status Event Deduplication**: Eliminated duplicate `maps-sync-status` event dispatches.
+- **Search Marker Lifecycle**: Ensured search pins are cleanly removed when clearing search, closing search results, or switching HUD views.
+
 ## [1.3.2] - 2026-08-01
 ### Changed
 - **Map Style**: Changed the map style to a custom dark theme.

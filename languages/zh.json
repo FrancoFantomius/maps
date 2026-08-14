@@ -107,27 +107,27 @@
     "page_title": "隐私政策 - 地图",
     "title": "隐私政策",
     "last_updated": "2026年7月",
-    "intro": "在“地图”中，您的隐私是我们的核心价值。",
-    "section1_title": "1. 本地存储",
-    "section1_text": "所有标记和地点均本地存储在您的设备上。",
-    "section2_title": "2. 端到端加密同步",
-    "section2_text1": "通过 Filen 云 API 进行加密同步。",
-    "section2_text2": "在离开您的设备前使用 AES-256-GCM 算法加密。",
-    "section3_title": "3. 无数据收集",
-    "section3_text": "我们不收集任何分析或跟踪数据。",
-    "section4_title": "4. 开源透明",
-    "section4_text": "采用 AGPL-3.0 许可证。"
+    "intro": "在“地图”中，您的隐私是我们的核心价值。“地图”设计为客户端本地优先（Local-First）应用程序。我们不运营任何服务器基础设施来收集、存储、跟踪或出售您的个人信息或保存的地点标记。",
+    "section1_title": "1. 本地存储与数据库安全",
+    "section1_text": "您记录的所有地点标记、名称、描述和自定义分类均存储在您设备上的沙盒 PouchDB 数据库中。此数据对您的浏览器完全保密。清除浏览器缓存或使用无痕/隐身模式将清除此数据库。",
+    "section2_title": "2. 端到端加密云同步",
+    "section2_text1": "如果您选择启用云同步，“地图”将直接连接到 Filen 提供的安全云 API。您的凭据（电子邮件、密码和双重认证码）仅在客户端处理，直接从 Filen 获取安全密钥。",
+    "section2_text2": "您保存的地点在离开设备前会在客户端使用军用级 AES-256-GCM 算法进行编译和加密，然后作为名为 places.json 的私有文件存储在名为 Apps/maps 的文件夹中。我们无法访问您的解密密钥、密码或明文地点。",
+    "section3_title": "3. 分析与数据收集",
+    "section3_text": "我们不收集诊断信息、崩溃日志、IP 地址跟踪、遥测或用户行为分析。本应用程序在完全匿名状态下运行。",
+    "section4_title": "4. 开源透明度",
+    "section4_text": "由于本项目完全开源并采用 AGPL-3.0 许可证，您可以直接查看源代码、构建自己的实例或在代码库中公开发起贡献。"
   },
   "terms": {
     "page_title": "服务条款 - 地图",
     "title": "服务条款",
     "last_updated": "2026年7月",
-    "intro": "欢迎使用“地图”。",
+    "intro": "欢迎使用“地图”。访问或使用我们的应用程序即表示您同意遵守这些条款。请在使用软件前仔细阅读。",
     "section1_title": "1. 合理使用",
-    "section1_text": "免费供个人使用。",
-    "section2_title": "2. 数据免责声明",
-    "section2_text": "基于开放地理数据。",
-    "section3_title": "3. 许可证",
-    "section3_text": "GNU AGPL-3.0 许可证。"
+    "section1_text": "“地图”免费提供用于个人和非商业用途。您同意不滥用我们的服务，不尝试未经授权访问第三方 API，且不超过使用速率限制。",
+    "section2_title": "2. 数据与云服务免责声明",
+    "section2_text": "“地图”依赖于开放地理数据集（包括 OpenStreetMap 和 OpenFreeMap）以及第三方云同步（Filen）。我们不保证第三方地图数据或 API 的不间断可用性或准确性。",
+    "section3_title": "3. 许可证与源代码",
+    "section3_text": "“地图”基于 GNU Affero General Public License v3.0 (AGPL-3.0) 授权。在遵守 AGPL-3.0 要求的前提下，您可以自由修改、重新分发和托管自己的实例。"
   }
 }

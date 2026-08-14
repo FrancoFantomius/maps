@@ -36,10 +36,14 @@ if (Readable) {
 const db = new PouchDB('maps_db');
 
 // State variables for Filen Sync
+export const FILEN_SYNC_DIR = '/Apps/maps';
+export const FILEN_SYNC_FILE = '/Apps/maps/places.json';
+
 let filenClient = null;
 let syncPromise = Promise.resolve();
 let syncInterval = null;
 let currentSyncStatus = 'offline'; // 'offline', 'syncing', 'online', 'error'
+let isSyncInProgress = false;
 
 // Watch local database changes for live updates (sync, edits)
 db.changes({
@@ -275,6 +279,7 @@ function queueSync() {
 }
 
 function updateSyncStatus(status) {
+  if (currentSyncStatus === status) return;
   currentSyncStatus = status;
   console.log(`[Sync] Status: ${status}`);
   // Dispatch custom event to notify UI
@@ -360,9 +365,12 @@ async function initFilenAndSync(settings) {
       throw new Error("No credentials or active session keys available");
     }
 
-    // Ensure remote directory structures exist
+    // Ensure remote directory structures exist (/Apps and /Apps/maps)
     try {
-      await filenClient.fs().mkdir({ path: '/maps' });
+      await filenClient.fs().mkdir({ path: '/Apps' });
+    } catch (e) { }
+    try {
+      await filenClient.fs().mkdir({ path: FILEN_SYNC_DIR });
     } catch (e) { }
 
     queueSync();
@@ -379,30 +387,44 @@ async function initFilenAndSync(settings) {
 }
 
 async function runSync() {
-  if (!filenClient) return;
+  if (!filenClient || isSyncInProgress) return;
   const settings = await getSyncSettings();
   if (!settings.enabled || !filenClient.isLoggedIn()) return;
 
-  updateSyncStatus('syncing');
+  isSyncInProgress = true;
 
   try {
     // Resolve the parent directory UUID on Filen
-    const parentUUID = await filenClient.fs().pathToItemUUID({
-      path: '/maps',
+    let parentUUID = await filenClient.fs().pathToItemUUID({
+      path: FILEN_SYNC_DIR,
       type: 'directory'
     });
 
     if (!parentUUID) {
-      throw new Error("Could not resolve directory UUID for /maps.");
+      try {
+        await filenClient.fs().mkdir({ path: '/Apps' });
+      } catch (e) { }
+      try {
+        await filenClient.fs().mkdir({ path: FILEN_SYNC_DIR });
+      } catch (e) { }
+      parentUUID = await filenClient.fs().pathToItemUUID({
+        path: FILEN_SYNC_DIR,
+        type: 'directory'
+      });
     }
 
-    // Fetch list of files in /maps
+    if (!parentUUID) {
+      throw new Error(`Could not resolve directory UUID for ${FILEN_SYNC_DIR}.`);
+    }
+
+    // Fetch list of files in /Apps/maps
     let remoteFiles = [];
     try {
-      remoteFiles = await filenClient.fs().readdir({ path: '/maps' });
+      remoteFiles = await filenClient.fs().readdir({ path: FILEN_SYNC_DIR });
     } catch (err) {
       if (err.message && err.message.includes('not found')) {
-        await filenClient.fs().mkdir({ path: '/maps' });
+        await filenClient.fs().mkdir({ path: '/Apps' });
+        await filenClient.fs().mkdir({ path: FILEN_SYNC_DIR });
         remoteFiles = [];
       } else {
         throw err;
@@ -415,11 +437,11 @@ async function runSync() {
 
     if (placesFile) {
       try {
-        remoteStats = await filenClient.fs().stat({ path: '/maps/places.json' });
-        const dataBuffer = await filenClient.fs().readFile({ path: '/maps/places.json' });
+        remoteStats = await filenClient.fs().stat({ path: FILEN_SYNC_FILE });
+        const dataBuffer = await filenClient.fs().readFile({ path: FILEN_SYNC_FILE });
         remoteContent = JSON.parse(dataBuffer.toString('utf-8'));
       } catch (err) {
-        console.error("[Sync] Error reading remote places.json:", err);
+        console.error(`[Sync] Error reading remote ${FILEN_SYNC_FILE}:`, err);
       }
     }
 
@@ -443,8 +465,9 @@ async function runSync() {
       : (remoteStats ? remoteStats.mtimeMs : 0);
 
     const uploadLocal = async () => {
+      const payloadUpdatedAt = Math.max(localMaxUpdated, 1);
       const placesPayload = {
-        updatedAt: Date.now(),
+        updatedAt: payloadUpdatedAt,
         homeAddress: MapService.getHomeAddress() || null,
         places: localPlaces.map(p => ({
           id: p.id,
@@ -468,7 +491,7 @@ async function runSync() {
       // If remote places.json exists, remove it first to overwrite it correctly
       if (placesFile) {
         try {
-          await filenClient.fs().rm({ path: '/maps/places.json', permanent: true });
+          await filenClient.fs().rm({ path: FILEN_SYNC_FILE, permanent: true });
         } catch (e) {
           console.warn("[Sync] Failed to remove old places.json before upload:", e);
         }
@@ -578,23 +601,27 @@ async function runSync() {
       }
 
       // Dispatch custom events to notify UI and markers
-      window.dispatchEvent(new CustomEvent('maps-home-updated'));
+      window.dispatchEvent(new CustomEvent('maps-home-updated', { detail: { _fromSync: true } }));
       window.dispatchEvent(new CustomEvent('maps-places-updated'));
     };
 
     if (deletedQueue.length > 0) {
       // Local deletions occurred, always upload to overwrite remote file
+      updateSyncStatus('syncing');
       await uploadLocal();
     } else if (!placesFile) {
       // Remote file does not exist, upload local data
       if (localPlaces.length > 0 || localHome) {
+        updateSyncStatus('syncing');
         await uploadLocal();
       }
     } else if (localMaxUpdated > remoteMaxUpdated) {
       // Local changes are newer, upload
+      updateSyncStatus('syncing');
       await uploadLocal();
     } else if (remoteMaxUpdated > localMaxUpdated) {
       // Remote changes are newer, download
+      updateSyncStatus('syncing');
       await downloadRemote(remoteContent);
     } else {
       // Timestamps equal, ensure local markers are marked synced
@@ -614,9 +641,12 @@ async function runSync() {
   } catch (err) {
     console.error("[Sync] Error during sync reconciliation:", err);
     updateSyncStatus('error');
+  } finally {
+    isSyncInProgress = false;
   }
 }
 
-window.addEventListener('maps-home-updated', () => {
+window.addEventListener('maps-home-updated', (e) => {
+  if (e.detail && e.detail._fromSync) return;
   triggerSyncReconciliation();
 });

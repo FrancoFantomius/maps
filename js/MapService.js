@@ -1,6 +1,6 @@
 // maps Map Engine Module (Facade Pattern) - js/MapService.js
 
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { MarkerController } from './MarkerController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { RoutingController } from './RoutingController.js';
@@ -823,6 +823,23 @@ export const MapService = {
 
     getZoom() {
         return this.map ? this.map.getZoom() : 0;
+    },
+
+    getCenter() {
+        if (this.map && typeof this.map.getCenter === 'function') {
+            const center = this.map.getCenter();
+            if (center && typeof center.lat === 'number' && typeof center.lng === 'number') {
+                return { lat: center.lat, lng: center.lng };
+            }
+        }
+        return null;
+    },
+
+    getBounds() {
+        if (this.map && typeof this.map.getBounds === 'function') {
+            return this.map.getBounds();
+        }
+        return null;
     },
 
     getContainer() {

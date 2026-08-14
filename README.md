@@ -1,6 +1,6 @@
 # Maps
 
-[![Version](https://img.shields.io/badge/version-1.3.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 
 A modern, privacy-focused, local-first web mapping application powered by MapLibre GL JS, OpenStreetMap, and Tailwind CSS. Built as a Progressive Web App (PWA) with cloud synchronization capabilities.
@@ -12,7 +12,7 @@ A modern, privacy-focused, local-first web mapping application powered by MapLib
 ## Features
 
 - **Interactive Vector & Raster Maps**: Smooth rendering powered by MapLibre GL JS with custom style support (streets, outdoors, bike trails, satellite, hillshading).
-- **Search & Geocoding**: Instant search for places, addresses, and points of interest.
+- **Search & Geocoding**: Instant search for places, addresses, and points of interest with proximity-based ranking, viewport-bounded geocoding, interactive numbered on-map pins with hover previews, auto-fitting bounds, and rich POI/Wikipedia details.
 - **Routing & Directions**:
   - Route planning for Driving, Cycling, and Walking modes.
   - Custom ETA calculations tailored to personalized walking and biking speeds.
@@ -20,9 +20,9 @@ A modern, privacy-focused, local-first web mapping application powered by MapLib
 - **Heads-Up Display (HUD) / Navigation Mode**: Real-time speed monitor, compass heading, and live location tracking.
 - **Smart Initial Location Chain**: Automatic location resolution sequence: GPS position → last saved position → home address → IP-based fallback.
 - **Custom Markers & Collections**: Save favorite locations, home address, and custom pins organized with PouchDB for local-first reliability.
-- **Cloud Sync**: Optional zero-knowledge / end-to-end cloud synchronization via **Filen** integration (`@filen/sdk`).
+- **Cloud Sync**: Optional zero-knowledge / end-to-end cloud synchronization via **Filen** integration (`@filen/sdk`) with dedicated `/Apps/maps` storage and concurrency protection.
 - **Distance & Area Measurement**: On-map interactive tools to measure lines and multi-point paths.
-- **Multi-Language Support**: Full internationalization with 60+ language localizations, automatic system language detection, English fallback, dynamic language switching without page reloads, and RTL language support.
+- **Multi-Language Support**: Full internationalization with 11 core global languages (English, Italian, Spanish, French, German, Chinese, Japanese, Arabic, Russian, Portuguese, Hindi), 100% key parity, automatic system language detection, English fallback, dynamic language switching without page reloads, and RTL support.
 - **Offline & PWA Ready**: Installable Progressive Web App (PWA) powered by a custom Vanilla Service Worker (`sw.js`) with dynamic versioning, app-shell precaching, and LRU-evicted tile caching (OpenFreeMap, OpenStreetMap, WaymarkedTrails, Elevation DEM).
 
 ---
@@ -50,7 +50,7 @@ maps/
 │   ├── app.js                  # Main application orchestrator & initialization
 │   ├── db.js                   # Local database storage wrapper (PouchDB)
 │   └── pwa.js                  # Service Worker lifecycle registration and update reloader
-├── languages/                  # i18n translation JSON files (60+ languages)
+├── languages/                  # i18n translation JSON files (11 main languages)
 ├── templates/                  # Modular Handlebars HTML partial templates
 ├── img/                        # App icons and static images
 ├── index.html                  # Main application HTML entry point

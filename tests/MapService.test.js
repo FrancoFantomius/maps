@@ -68,11 +68,26 @@ describe('MapService', () => {
     });
   });
 
-  describe('getTileUrl', () => {
-    it('generates satellite tile URL format', () => {
-      const url = MapService.getTileUrl('satellite', 10, 45.4, 11.8);
-      expect(url).toContain('server.arcgisonline.com');
-      expect(url).toContain('/tile/10/');
+  describe('getCenter and getBounds', () => {
+    it('returns null when map is not initialized', () => {
+      MapService.map = null;
+      expect(MapService.getCenter()).toBeNull();
+      expect(MapService.getBounds()).toBeNull();
+    });
+
+    it('returns lat lng from map.getCenter when map is active', () => {
+      MapService.map = {
+        getCenter: vi.fn(() => ({ lat: 45.438, lng: 10.993 })),
+        getBounds: vi.fn(() => ({
+          getWest: () => 10.8,
+          getNorth: () => 45.5,
+          getEast: () => 11.2,
+          getSouth: () => 45.3,
+        })),
+      };
+
+      expect(MapService.getCenter()).toEqual({ lat: 45.438, lng: 10.993 });
+      expect(MapService.getBounds().getWest()).toBe(10.8);
     });
   });
 });

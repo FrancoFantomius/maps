@@ -42,6 +42,7 @@ describe('PWA & Caching Configuration', () => {
             Object.defineProperty(navigator, 'serviceWorker', {
                 writable: true,
                 value: {
+                    register: vi.fn().mockResolvedValue({ scope: '/' }),
                     addEventListener: vi.fn((event, cb) => {
                         eventListeners[event] = cb;
                     })

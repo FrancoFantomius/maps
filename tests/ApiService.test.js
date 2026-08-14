@@ -46,7 +46,7 @@ describe('ApiService', () => {
       const res = await ApiService.searchGeocode('Rome');
 
       expect(fetch).toHaveBeenCalledWith(
-        'https://nominatim.openstreetmap.org/search?format=json&q=Rome'
+        'https://nominatim.openstreetmap.org/search?format=json&q=Rome&addressdetails=1&extratags=1&namedetails=1'
       );
       expect(res).toEqual(mockResults);
     });
@@ -61,7 +61,35 @@ describe('ApiService', () => {
       await ApiService.searchGeocode('Rome', 5);
 
       expect(fetch).toHaveBeenCalledWith(
-        'https://nominatim.openstreetmap.org/search?format=json&q=Rome&limit=5&addressdetails=1'
+        'https://nominatim.openstreetmap.org/search?format=json&q=Rome&addressdetails=1&extratags=1&namedetails=1&limit=5'
+      );
+    });
+
+    it('fetches search results with viewbox and bounded options', async () => {
+      const mockResults = [{ display_name: 'Verona, Italy', lat: '45.438', lon: '10.993' }];
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResults,
+      });
+
+      await ApiService.searchGeocode('Verona', 10, { viewbox: '10.8,45.5,11.1,45.3', bounded: true });
+
+      expect(fetch).toHaveBeenCalledWith(
+        'https://nominatim.openstreetmap.org/search?format=json&q=Verona&addressdetails=1&extratags=1&namedetails=1&limit=10&viewbox=10.8%2C45.5%2C11.1%2C45.3&bounded=1'
+      );
+    });
+
+    it('fetches search results with viewbox string option', async () => {
+      const mockResults = [{ display_name: 'Verona, Italy', lat: '45.438', lon: '10.993' }];
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResults,
+      });
+
+      await ApiService.searchGeocode('Verona', null, '10.8,45.5,11.1,45.3');
+
+      expect(fetch).toHaveBeenCalledWith(
+        'https://nominatim.openstreetmap.org/search?format=json&q=Verona&addressdetails=1&extratags=1&namedetails=1&viewbox=10.8%2C45.5%2C11.1%2C45.3'
       );
     });
   });

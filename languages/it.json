@@ -107,27 +107,27 @@
     "page_title": "Informativa sulla Privacy - Mappe",
     "title": "Informativa sulla Privacy",
     "last_updated": "Luglio 2026",
-    "intro": "Per Mappe la tua privacy è un valore fondamentale. Mappe è progettata come un'applicazione locale-first in esecuzione nel tuo browser. Non utilizziamo infrastrutture server per raccogliere, memorizzare o vendere i tuoi dati personali o segnaposto.",
-    "section1_title": "1. Archiviazione Locale & Sicurezza Database",
-    "section1_text": "Tutti i segnaposto, i nomi e le descrizioni registrati sono salvati localmente sul tuo dispositivo in un database PouchDB isolato. Questi dati rimangono privati nel tuo browser.",
+    "intro": "In Mappe, la tua privacy è il nostro valore fondamentale. Mappe è progettata come applicazione locale-first in esecuzione lato client. Non gestiamo infrastrutture server per raccogliere, archiviare, tracciare o vendere i tuoi dati personali o i segnaposto salvati.",
+    "section1_title": "1. Archiviazione Locale & Sicurezza del Database",
+    "section1_text": "Tutti i segnaposto, i nomi, le descrizioni e le categorie personalizzate registrate sono salvati localmente sul tuo dispositivo in un database PouchDB isolato. Questi dati rimangono privati nel tuo browser. La cancellazione della cache del browser o l'uso della modalità di navigazione in incognito eliminerà questo database.",
     "section2_title": "2. Sincronizzazione Cloud Crittografata End-to-End",
-    "section2_text1": "Se scegli di abilitare la sincronizzazione cloud, Mappe si collega direttamente alle API cloud di Filen.",
-    "section2_text2": "I tuoi luoghi salvati vengono crittografati lato client con algoritmo AES-256-GCM prima di lasciare il dispositivo e salvati in un file places.json.",
+    "section2_text1": "Se scegli di abilitare la sincronizzazione cloud, Mappe si collega direttamente alle API cloud sicure fornite da Filen. Le tue credenziali (email, password e codice a due fattori) vengono elaborate esclusivamente lato client per ottenere le chiavi di sicurezza direttamente da Filen.",
+    "section2_text2": "I tuoi luoghi salvati vengono compilati e crittografati lato client con crittografia militare AES-256-GCM prima di lasciare il dispositivo, quindi memorizzati come file privato denominato places.json all'interno di una cartella denominata Apps/maps. Non abbiamo accesso alle tue chiavi di decifratura, password o luoghi in chiaro.",
     "section3_title": "3. Analisi e Raccolta Dati",
-    "section3_text": "Non raccogliamo dati di diagnostica, tracciamento IP, telemetria o analisi utente. L'applicazione funziona in completo anonimato.",
+    "section3_text": "Non raccogliamo diagnostica, log di arresto anomalo, tracciamento di indirizzi IP, telemetria o analisi utente. L'applicazione funziona in completo anonimato.",
     "section4_title": "4. Trasparenza Open Source",
-    "section4_text": "Questo progetto è open source e con licenza AGPL-3.0; puoi esaminare direttamente il codice sorgente nel repository."
+    "section4_text": "Poiché questo progetto è open-source e distribuito con licenza AGPL-3.0, puoi esaminare direttamente il codice sorgente, eseguire le tue compilazioni o contribuire apertamente al repository."
   },
   "terms": {
     "page_title": "Termini di Servizio - Mappe",
     "title": "Termini di Servizio",
     "last_updated": "Luglio 2026",
-    "intro": "Benvenuto in Mappe. Accedendo o utilizzando la nostra applicazione accetti i presenti termini di servizio.",
-    "section1_title": "1. Uso Consentito",
-    "section1_text": "Mappe è fornita gratuitamente per uso personale e non commerciale.",
-    "section2_title": "2. Esclusione di Responsabilità Dati",
-    "section2_text": "Mappe si basa su dati geografici aperti (OpenStreetMap e OpenFreeMap) e servizi terzi.",
+    "intro": "Benvenuto in Mappe. Accedendo o utilizzando la nostra applicazione, accetti di essere vincolato da questi termini. Ti invitiamo a leggerli attentamente prima di utilizzare il software.",
+    "section1_title": "1. Uso Accettabile",
+    "section1_text": "Mappe è fornita gratuitamente per l'esplorazione personale e non commerciale. Accetti di non abusare del servizio, di non tentare accessi non autorizzati alle API di terze parti e di non superare i limiti di frequenza.",
+    "section2_title": "2. Esclusione di Responsabilità per Dati e Servizi Cloud",
+    "section2_text": "Mappe si affida a dataset geografici aperti (inclusi OpenStreetMap e OpenFreeMap) e alla sincronizzazione cloud di terze parti (Filen). Non garantiamo la disponibilità ininterrotta o l'accuratezza dei dati cartografici o delle API di terze parti.",
     "section3_title": "3. Licenza e Codice Sorgente",
-    "section3_text": "Mappe è rilasciata sotto licenza GNU Affero General Public License v3.0 (AGPL-3.0)."
+    "section3_text": "Mappe è rilasciata sotto la licenza GNU Affero General Public License v3.0 (AGPL-3.0). Sei libero di modificare, ridistribuire e ospitare le tue istanze nel rispetto dei requisiti AGPL-3.0."
   }
 }

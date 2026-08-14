@@ -3,6 +3,7 @@
 import { MapService } from './MapService.js';
 import { MarkerController } from './MarkerController.js';
 import { RoutingController } from './RoutingController.js';
+import { SearchController } from './SearchController.js';
 
 export const HUDController = {
     currentState: 'places',
@@ -58,6 +59,12 @@ export const HUDController = {
         if (hudState !== 'place-details') {
             MarkerController.removeTempMarker();
             this.clearHighlightedPath();
+        }
+
+        if (hudState !== 'place-details' && hudState !== 'search-results') {
+            if (SearchController && typeof SearchController.clearSearchMarkers === 'function') {
+                SearchController.clearSearchMarkers();
+            }
         }
 
         const panels = ['panel-places', 'panel-search', 'panel-details', 'measure-panel', 'nav-panel'];

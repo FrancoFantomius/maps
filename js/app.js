@@ -337,7 +337,8 @@ function setupEventListeners() {
         const query = searchInput.value.trim();
         if (!query) return;
         try {
-            const data = await ApiService.searchGeocode(query);
+            const viewbox = SearchController.getViewbox ? SearchController.getViewbox() : null;
+            const data = await ApiService.searchGeocode(query, null, viewbox ? { viewbox } : {});
             if (data && data.length > 0) {
                 SearchController.renderResults(data);
                 HUDController.setState('search-results');
@@ -360,6 +361,7 @@ function setupEventListeners() {
         btnClearSearch.classList.add('hidden');
         HUDController.setState('places');
         MarkerController.removeTempMarker();
+        SearchController.clearSearchMarkers();
     });
 
     document.getElementById('btn-close-search').addEventListener('click', () => {
@@ -367,6 +369,7 @@ function setupEventListeners() {
         btnClearSearch.classList.add('hidden');
         HUDController.setState('places');
         MarkerController.removeTempMarker();
+        SearchController.clearSearchMarkers();
     });
 
     // Toggle Saved Places (My Places) list

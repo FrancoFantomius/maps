@@ -1,6 +1,6 @@
 // tests/db.test.js
 import { describe, it, expect, beforeEach } from 'vitest';
-import { saveSyncSettings, getSyncSettings, savePlace, loadAllPlaces, deletePlaceFromDB } from '../js/db.js';
+import { saveSyncSettings, getSyncSettings, savePlace, loadAllPlaces, deletePlaceFromDB, startSync, stopSync, FILEN_SYNC_DIR, FILEN_SYNC_FILE } from '../js/db.js';
 
 describe('db module', () => {
   beforeEach(async () => {
@@ -69,4 +69,30 @@ describe('db module', () => {
       expect(match).toBeUndefined();
     });
   });
+
+  describe('Sync lifecycle and status events', () => {
+    it('does not dispatch duplicate sync status events when status has not changed', async () => {
+      const events = [];
+      const listener = (e) => events.push(e.detail);
+      window.addEventListener('maps-sync-status', listener);
+
+      stopSync();
+      stopSync();
+      await startSync({ enabled: false });
+
+      // Only one offline event should be triggered if already offline or transitioning to offline
+      expect(events.filter(status => status === 'offline').length).toBeLessThanOrEqual(1);
+
+      window.removeEventListener('maps-sync-status', listener);
+    });
+  });
+
+  describe('Filen cloud sync directory configuration', () => {
+    it('uses Apps/maps as the Filen cloud sync directory', () => {
+      expect(FILEN_SYNC_DIR).toBe('/Apps/maps');
+      expect(FILEN_SYNC_FILE).toBe('/Apps/maps/places.json');
+    });
+  });
 });
+
+
