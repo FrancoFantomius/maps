@@ -15,7 +15,7 @@ const STORAGE_KEY_LABELS = 'maps_labels_enabled';
 export const MapService = {
     map: null,
     activeLayerKey: 'street',
-    activeOverlays: { labels: false, bike: false, perspective: false },
+    activeOverlays: { labels: true, bike: false, perspective: false },
     highlightedPathCoords: null,
 
     init() {
@@ -44,6 +44,9 @@ export const MapService = {
         const savedLayer = localStorage.getItem(STORAGE_KEY_LAYER);
         this.activeLayerKey = (savedLayer === 'satellite') ? 'satellite' : 'street';
 
+        const savedLabels = localStorage.getItem(STORAGE_KEY_LABELS);
+        this.activeOverlays.labels = (savedLabels === null || savedLabels === 'true');
+
         const savedPerspective = localStorage.getItem('maps_perspective_enabled') === 'true';
         this.activeOverlays.perspective = savedPerspective;
         const initialPitch = savedPerspective ? 45 : 0;
@@ -68,6 +71,10 @@ export const MapService = {
         });
 
         this.map.addControl(new maplibregl.NavigationControl({ showCompass: false, showZoom: true }), 'bottom-left');
+
+        this.map.on('error', (err) => {
+            console.warn('[MapService] MapLibre warning/error:', err);
+        });
 
         this.map.on('load', () => {
             this.setupMapLayersAndSources();

@@ -109,6 +109,15 @@ const manifestPlugin = () => ({
       });
     }
 
+    const cnamePath = path.join(__dirname, 'CNAME');
+    if (fs.existsSync(cnamePath)) {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'CNAME',
+        source: fs.readFileSync(cnamePath),
+      });
+    }
+
     const iconsDir = path.join(__dirname, 'img', 'icons');
     if (fs.existsSync(iconsDir)) {
       const files = fs.readdirSync(iconsDir);
@@ -140,6 +149,11 @@ try {
 
   fs.mkdirSync(publicImgIcons, { recursive: true });
   fs.mkdirSync(publicAssetsImgIcons, { recursive: true });
+
+  const cnamePath = path.join(__dirname, 'CNAME');
+  if (fs.existsSync(cnamePath)) {
+    fs.copyFileSync(cnamePath, path.join(publicDir, 'CNAME'));
+  }
 
   const manifestPath = path.join(__dirname, 'manifest.json');
   if (fs.existsSync(manifestPath)) {

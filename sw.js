@@ -74,7 +74,16 @@ const CACHEABLE_EXTENSIONS = /\.(js|css|html|png|svg|json|ico)(\?.*)?$/i;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(PRECACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
+    caches.open(PRECACHE_NAME).then(async (cache) => {
+      // Safely cache app-shell items without allowing a single 404 to break installation
+      await Promise.allSettled(
+        PRECACHE_URLS.map((url) =>
+          cache.add(url).catch((err) => {
+            console.warn(`[PWA SW] Precache skipped for ${url}:`, err);
+          })
+        )
+      );
+    })
   );
   self.skipWaiting();
 });
@@ -134,20 +143,30 @@ self.addEventListener('fetch', (event) => {
 // ─── Strategies ───────────────────────────────────────────────────────────────
 
 /**
- * Cache-first for tile requests with LRU-style eviction.
+ * Cache-first for tile requests with LRU-style eviction and robust error handling.
  */
 async function tilesCacheFirst(request, route) {
-  const cache = await caches.open(route.cacheName);
-  const cached = await cache.match(request);
-  if (cached) return cached;
+  try {
+    const cache = await caches.open(route.cacheName);
+    const cached = await cache.match(request);
+    if (cached) return cached;
 
-  const response = await fetch(request);
-  if (response.ok || response.status === 0) {
-    const clone = response.clone();
-    // Fire-and-forget: put + evict in background
-    cache.put(request, clone).then(() => evictOldEntries(route.cacheName, route.maxEntries));
+    const response = await fetch(request);
+    if (response && (response.ok || response.status === 0)) {
+      try {
+        const clone = response.clone();
+        cache.put(request, clone)
+          .then(() => evictOldEntries(route.cacheName, route.maxEntries))
+          .catch(() => {});
+      } catch {
+        // Ignore clone/put issues for non-cloneable streams
+      }
+    }
+    return response;
+  } catch (err) {
+    // If cache lookup or fetch failed, fallback directly to raw network fetch
+    return fetch(request).catch(() => new Response('', { status: 408, statusText: 'Request Timeout' }));
   }
-  return response;
 }
 
 /**
