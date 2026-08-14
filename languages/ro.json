@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "Hărți",
+    "subtitle": "Explorați și personalizați hărți cu confidențialitate deplină."
+  },
+  "nav": {
+    "privacy": "Politica de confidențialitate",
+    "terms": "Termeni și condiții",
+    "close": "Închide",
+    "back": "Înapoi"
+  },
+  "settings": {
+    "title": "Setări hartă",
+    "subtitle": "Configurați straturile hărții și aspectul",
+    "language": "Limbă",
+    "language_system": "Sistem (Auto)",
+    "show_details": "Afișează detalii",
+    "street_names": "Nume de străzi",
+    "bike_paths": "Piste de biciclete",
+    "buildings": "Clădiri 3D",
+    "home_location": "Locație acasă",
+    "home_address": "Adresă acasă",
+    "search_home_placeholder": "Căutare adresă acasă...",
+    "fly_to_home": "Mergi acasă",
+    "clear_home": "Șterge adresa",
+    "map_rotation": "Rotire hartă",
+    "rotate_ccw": "Rotire spre stânga",
+    "rotate_cw": "Rotire spre dreapta",
+    "bearing_angle": "Unghi de orientare",
+    "tilt_pitch": "Înclinare / Pitch",
+    "appearance_theme": "Aspect",
+    "theme_light": "Luminos",
+    "theme_system": "Sistem",
+    "theme_dark": "Întunecat"
+  },
+  "hud": {
+    "search_placeholder": "Căutare",
+    "route": "Traseu",
+    "measure": "Măsurare",
+    "layers": "Straturi",
+    "markers": "Marcaje",
+    "login": "Autentificare",
+    "account": "Cont",
+    "offline_notice": "Mod offline activ"
+  },
+  "search": {
+    "no_results": "Nu s-au găsit rezultate",
+    "searching": "Se caută..."
+  },
+  "routing": {
+    "title": "Planificator de traseu",
+    "origin": "Punct de plecare",
+    "destination": "Destinație",
+    "profile_driving": "Mașină",
+    "profile_cycling": "Bicicletă",
+    "profile_walking": "Mers pe jos",
+    "calculate": "Calculează traseul",
+    "clear": "Șterge traseul",
+    "distance": "Distanță",
+    "duration": "Durată"
+  },
+  "measurement": {
+    "title": "Măsurare distanță",
+    "click_to_start": "Faceți clic pe hartă pentru a începe măsurarea",
+    "total_distance": "Distanță totală",
+    "clear": "Șterge măsurătoarea"
+  },
+  "markers": {
+    "title": "Marcaje salvate",
+    "add_marker": "Adaugă marcaj",
+    "edit_marker": "Editează marcaj",
+    "delete_marker": "Șterge marcaj",
+    "name": "Nume marcaj",
+    "category": "Categorie",
+    "description": "Descriere",
+    "save": "Salvează marcajul",
+    "cancel": "Anulează",
+    "no_markers": "Niciun marcaj salvat încă."
+  },
+  "login": {
+    "title": "Sincronizare Filen Cloud",
+    "subtitle": "Autentificați-vă pentru a sincroniza locațiile criptat end-to-end",
+    "email": "Adresă de e-mail",
+    "password": "Parolă",
+    "two_factor": "Cod 2FA (dacă este activat)",
+    "sign_in": "Autentificare",
+    "signing_in": "Se autentifică...",
+    "sign_out": "Deconectare",
+    "status_logged_in": "Autentificat ca",
+    "status_logged_out": "Neautentificat"
+  },
+  "layers": {
+    "title": "Straturi hartă",
+    "liberty": "Liberty (Implicit)",
+    "dark": "Hartă întunecată",
+    "satellite": "Imagini satelit",
+    "osm": "OpenStreetMap Standard",
+    "bike": "Piste de biciclete"
+  },
+  "controls": {
+    "zoom_in": "Mărește",
+    "zoom_out": "Micșorează",
+    "my_location": "Locația mea",
+    "reset_north": "Resetează nordul"
+  },
+  "privacy": {
+    "page_title": "Politica de confidențialitate - Hărți",
+    "title": "Politica de confidențialitate",
+    "last_updated": "Iulie 2026",
+    "intro": "Confidențialitatea este valoarea noastră de bază.",
+    "section1_title": "1. Stocare locală",
+    "section1_text": "Toate datele sunt stocate local pe dispozitivul dvs.",
+    "section2_title": "2. Sincronizare criptată",
+    "section2_text1": "Sincronizare prin Filen.",
+    "section2_text2": "Criptare AES-256-GCM pe dispozitivul dvs.",
+    "section3_title": "3. Fără colectare de date",
+    "section3_text": "Nu colectăm nicio dată.",
+    "section4_title": "4. Sursă deschisă",
+    "section4_text": "Licențiat sub GNU AGPL-3.0."
+  },
+  "terms": {
+    "page_title": "Termeni și condiții - Hărți",
+    "title": "Termeni și condiții",
+    "last_updated": "Iulie 2026",
+    "intro": "Bine ați venit la Hărți.",
+    "section1_title": "1. Utilizare acceptabilă",
+    "section1_text": "Gratuit pentru uz personal.",
+    "section2_title": "2. Declinarea responsabilității",
+    "section2_text": "Bazat pe date geografice deschise.",
+    "section3_title": "3. Licență",
+    "section3_text": "Licență GNU AGPL-3.0."
+  }
+}

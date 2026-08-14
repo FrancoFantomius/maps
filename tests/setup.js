@@ -13,37 +13,32 @@ vi.mock('maplibre-gl', () => ({
   ...maplibreglMock
 }));
 
-// Mock window properties if running in jsdom/browser environment
-if (typeof window !== 'undefined') {
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: vi.fn().mockImplementation(query => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(), // deprecated
-      removeListener: vi.fn(), // deprecated
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    })),
-  });
+// Mock window.matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
 
-  if (!window.URL.createObjectURL) {
-    window.URL.createObjectURL = vi.fn().mockReturnValue('blob:http://localhost/mock-blob-id');
-  }
-  if (!window.URL.revokeObjectURL) {
-    window.URL.revokeObjectURL = vi.fn();
-  }
+// Mock URL.createObjectURL
+if (!window.URL.createObjectURL) {
+  window.URL.createObjectURL = vi.fn().mockReturnValue('blob:http://localhost/mock-blob-id');
+}
+if (!window.URL.revokeObjectURL) {
+  window.URL.revokeObjectURL = vi.fn();
 }
 
 // Reset DOM body before each test
 beforeEach(() => {
-  if (typeof document !== 'undefined') {
-    document.body.innerHTML = '';
-  }
-  if (typeof localStorage !== 'undefined') {
-    localStorage.clear();
-  }
+  document.body.innerHTML = '';
+  localStorage.clear();
   vi.clearAllMocks();
 });

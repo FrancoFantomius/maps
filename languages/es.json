@@ -18,7 +18,7 @@
     "street_names": "Nombres de Calles",
     "bike_paths": "Carriles Bici",
     "buildings": "Edificios 3D",
-    "home_location": "Ubicación de casa",
+    "home_location": "Ubicación de Casa",
     "home_address": "Dirección de Casa",
     "search_home_placeholder": "Buscar dirección de casa...",
     "fly_to_home": "Ir a Casa",
@@ -45,8 +45,7 @@
   },
   "search": {
     "no_results": "No se encontraron resultados",
-    "searching": "Buscando...",
-    "matching_locations": "Ubicaciones encontradas"
+    "searching": "Buscando..."
   },
   "routing": {
     "title": "Planificador de Rutas",
@@ -58,11 +57,7 @@
     "calculate": "Calcular Ruta",
     "clear": "Borrar Ruta",
     "distance": "Distancia",
-    "duration": "Duración",
-    "fastest_route": "Ruta más rápida",
-    "prompt_instructions": "Establece el origen y el destino para ver las indicaciones",
-    "swap": "Intercambiar origen y destino",
-    "head_on": "Dirígete {modifier} en"
+    "duration": "Duración"
   },
   "measurement": {
     "title": "Medición de Distancia",
@@ -80,14 +75,7 @@
     "description": "Descripción",
     "save": "Guardar Marcador",
     "cancel": "Cancelar",
-    "no_markers": "Aún no hay marcadores guardados.",
-    "category_poi": "Punto de interés",
-    "category_home": "Casa",
-    "category_food": "Comida y bebida",
-    "category_lodging": "Alojamiento",
-    "category_nature": "Naturaleza / Paisaje",
-    "save_location": "Guardar ubicación",
-    "no_notes": "Sin notas o descripción guardadas."
+    "no_markers": "Aún no hay marcadores guardados."
   },
   "login": {
     "title": "Sincronización en la Nube Filen",
@@ -99,11 +87,7 @@
     "signing_in": "Iniciando sesión...",
     "sign_out": "Cerrar Sesión",
     "status_logged_in": "Conectado como",
-    "status_logged_out": "No conectado",
-    "verifying": "Iniciando sesión y verificando credenciales...",
-    "err_enter_both": "Por favor introduce tanto el correo como la contraseña.",
-    "err_failed": "Error al iniciar sesión. Por favor revisa tus credenciales.",
-    "confirm_signout": "¿Estás seguro de que deseas cerrar sesión? La sincronización se desactivará, pero tus lugares locales permanecerán."
+    "status_logged_out": "No conectado"
   },
   "layers": {
     "title": "Capas del Mapa",
@@ -111,17 +95,13 @@
     "dark": "Mapa Modo Oscuro",
     "satellite": "Imágenes por Satélite",
     "osm": "OpenStreetMap Estándar",
-    "bike": "Carriles Bici",
-    "switch_map_type": "Cambiar tipo de mapa",
-    "labels": "Etiquetas"
+    "bike": "Carriles Bici"
   },
   "controls": {
     "zoom_in": "Acercar",
     "zoom_out": "Alejar",
     "my_location": "Mi Ubicación",
-    "reset_north": "Restablecer Norte",
-    "directions": "Indicaciones",
-    "perspective": "Perspectiva"
+    "reset_north": "Restablecer Norte"
   },
   "privacy": {
     "page_title": "Política de Privacidad - Mapas",
@@ -132,7 +112,7 @@
     "section1_text": "Todos tus marcadores se guardan localmente en tu dispositivo.",
     "section2_title": "2. Sincronización Cifrada",
     "section2_text1": "Sincronización cifrada de extremo a extremo mediante Filen.",
-    "section2_text2": "Tus lugares guardados se cifran con AES-256-GCM antes de salir de tu dispositivo y se guardan como un archivo privado places.json dentro de la carpeta /Apps/maps.",
+    "section2_text2": "Tus datos se cifran con AES-256-GCM antes de salir de tu dispositivo.",
     "section3_title": "3. Sin Recopilación de Datos",
     "section3_text": "No recopilamos analíticas ni seguimiento.",
     "section4_title": "4. Transparencia Código Abierto",
@@ -149,26 +129,5 @@
     "section2_text": "Basado en datos geográficos abiertos.",
     "section3_title": "3. Licencia",
     "section3_text": "Licencia GNU AGPL-3.0."
-  },
-  "poi": {
-    "dropped_pin": "Marcador colocado",
-    "save_prompt": "Para guardar esta coordenada como un lugar guardado, haz clic en el botón de abajo para asignar un nombre, categoría y descripción.",
-    "shop_details": "Detalles de la tienda",
-    "type": "Tipo:",
-    "brand": "Marca:",
-    "hours": "Horario:",
-    "cuisine": "Cocina:",
-    "web": "Web:",
-    "phone": "Teléfono:",
-    "save_place": "Guardar lugar",
-    "directions": "Indicaciones",
-    "get_directions": "Obtener indicaciones",
-    "edit": "Editar",
-    "delete": "Eliminar",
-    "highlighting": "Resaltando: {streetName}"
-  },
-  "account": {
-    "purge_cache": "Purgar caché local",
-    "confirm_purge": "ADVERTENCIA: Esto eliminará permanentemente todos los lugares locales en este navegador. Tu base de datos sincronizada en la nube Filen no se verá afectada. ¿Deseas purgar la caché local?"
   }
 }

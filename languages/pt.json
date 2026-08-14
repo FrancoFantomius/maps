@@ -18,7 +18,7 @@
     "street_names": "Nomes das Ruas",
     "bike_paths": "Ciclovias",
     "buildings": "Edifícios 3D",
-    "home_location": "Local de casa",
+    "home_location": "Localização de Casa",
     "home_address": "Endereço de Casa",
     "search_home_placeholder": "Pesquisar endereço de casa...",
     "fly_to_home": "Ir para Casa",
@@ -45,8 +45,7 @@
   },
   "search": {
     "no_results": "Nenhum resultado encontrado",
-    "searching": "Pesquisando...",
-    "matching_locations": "Locais correspondentes encontrados"
+    "searching": "Pesquisando..."
   },
   "routing": {
     "title": "Planejador de Rotas",
@@ -58,11 +57,7 @@
     "calculate": "Calcular Rota",
     "clear": "Limpar Rota",
     "distance": "Distância",
-    "duration": "Duração",
-    "fastest_route": "Rota mais rápida",
-    "prompt_instructions": "Defina a origem e o destino para ver as direções da rota",
-    "swap": "Inverter origem e destino",
-    "head_on": "Siga {modifier} em"
+    "duration": "Duração"
   },
   "measurement": {
     "title": "Medição de Distância",
@@ -80,14 +75,7 @@
     "description": "Descrição",
     "save": "Salvar Marcador",
     "cancel": "Cancelar",
-    "no_markers": "Nenhum marcador salvo.",
-    "category_poi": "Ponto de interesse",
-    "category_home": "Casa",
-    "category_food": "Comida e bebida",
-    "category_lodging": "Alojamento",
-    "category_nature": "Natureza / Panorâmico",
-    "save_location": "Salvar localização",
-    "no_notes": "Nenhuma nota ou descrição salva."
+    "no_markers": "Nenhum marcador salvo."
   },
   "login": {
     "title": "Sincronização Cloud Filen",
@@ -99,11 +87,7 @@
     "signing_in": "Entrando...",
     "sign_out": "Sair",
     "status_logged_in": "Conectado como",
-    "status_logged_out": "Não conectado",
-    "verifying": "Entrando e verificando credenciais...",
-    "err_enter_both": "Por favor, insira o e-mail e a senha.",
-    "err_failed": "Falha ao entrar. Por favor, verifique suas credenciais.",
-    "confirm_signout": "Tem certeza de que deseja sair? A sincronização será desativada, mas os locais locais serão mantidos."
+    "status_logged_out": "Não conectado"
   },
   "layers": {
     "title": "Camadas do Mapa",
@@ -111,17 +95,13 @@
     "dark": "Mapa Escuro",
     "satellite": "Imagens de Satélite",
     "osm": "OpenStreetMap Padrão",
-    "bike": "Ciclovias",
-    "switch_map_type": "Alternar tipo de mapa",
-    "labels": "Rótulos"
+    "bike": "Ciclovias"
   },
   "controls": {
     "zoom_in": "Aumentar Zoom",
     "zoom_out": "Diminuir Zoom",
     "my_location": "Minha Localização",
-    "reset_north": "Redefinir Norte",
-    "directions": "Direções",
-    "perspective": "Perspectiva"
+    "reset_north": "Redefinir Norte"
   },
   "privacy": {
     "page_title": "Política de Privacidade - Mapas",
@@ -132,7 +112,7 @@
     "section1_text": "Todos os seus dados são salvos localmente.",
     "section2_title": "2. Sincronização Criptografada",
     "section2_text1": "Sincronização via Filen.",
-    "section2_text2": "Seus locais salvos são criptografados com AES-256-GCM no dispositivo e armazenados como um arquivo privado places.json na pasta /Apps/maps.",
+    "section2_text2": "Criptografia AES-256-GCM no dispositivo.",
     "section3_title": "3. Sem Coleta de Dados",
     "section3_text": "Não coletamos telemetria.",
     "section4_title": "4. Transparência Código Aberto",
@@ -149,26 +129,5 @@
     "section2_text": "Baseado em dados abertos.",
     "section3_title": "3. Licença",
     "section3_text": "Licença GNU AGPL-3.0."
-  },
-  "poi": {
-    "dropped_pin": "Marcador inserido",
-    "save_prompt": "Para salvar esta coordenada como um local salvo, clique no botão abaixo para atribuir um nome, categoria e descrição.",
-    "shop_details": "Detalhes da loja",
-    "type": "Tipo:",
-    "brand": "Marca:",
-    "hours": "Horário:",
-    "cuisine": "Cozinha:",
-    "web": "Website:",
-    "phone": "Telefone:",
-    "save_place": "Salvar local",
-    "directions": "Direções",
-    "get_directions": "Obter direções",
-    "edit": "Editar",
-    "delete": "Excluir",
-    "highlighting": "Destaque: {streetName}"
-  },
-  "account": {
-    "purge_cache": "Limpar cache local",
-    "confirm_purge": "AVISO: Isso excluirá permanentemente todos os locais locais neste navegador. Seu banco de dados em nuvem no Filen não será afetado. Deseja limpar o cache local?"
   }
 }

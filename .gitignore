@@ -51,6 +51,7 @@ Thumbs.db
 # Vite
 .vite/
 dist/
+public/
 maps_db/
 coverage/
 

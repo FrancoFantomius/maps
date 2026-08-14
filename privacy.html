@@ -13,7 +13,7 @@
 
         <!-- Content -->
         <div class="p-8 space-y-6 text-sm leading-relaxed text-slate-655 dark:text-slate-350">
-            <p class="text-base text-slate-700 dark:text-slate-200 font-medium" data-i18n="privacy.intro">
+            <p class="text-base text-slate-700 dark:text-slate-200 font-medium">
                 At Maps, your privacy is our core value. Maps is designed as a local-first, client-side application. We do not operate server infrastructure to collect, store, track, or sell your personal details or saved place markers.
             </p>
 
@@ -22,9 +22,9 @@
             <section class="space-y-3">
                 <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="material-icons-outlined text-indigo-500 text-xl leading-none">dns</span>
-                    <span data-i18n="privacy.section1_title">1. Local Storage & Database Security</span>
+                    <span>1. Local Storage & Database Security</span>
                 </h2>
-                <p data-i18n="privacy.section1_text">
+                <p>
                     All place markers, names, descriptions, and custom categories you record are stored locally on your device in a sandboxed PouchDB database. This data is private to your browser. Clearing your browser's application cache or using incognito/private modes will remove this database.
                 </p>
             </section>
@@ -32,22 +32,22 @@
             <section class="space-y-3">
                 <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="material-icons-outlined text-indigo-500 text-xl leading-none">vpn_key</span>
-                    <span data-i18n="privacy.section2_title">2. End-to-End Encrypted Cloud Sync</span>
+                    <span>2. End-to-End Encrypted Cloud Sync</span>
                 </h2>
-                <p data-i18n-html="privacy.section2_text1">
+                <p>
                     If you choose to enable cloud synchronization, Maps links directly to the secure cloud APIs provided by <strong>Filen</strong>. Your credentials (email, password, and two-factor code) are processed purely on the client side to retrieve security keys directly from Filen.
                 </p>
-                <p data-i18n-html="privacy.section2_text2">
-                    Your saved places are compiled and encrypted client-side using military-grade AES-256-GCM encryption before leaving your device, then stored as a private file named <code>places.json</code> inside a folder named <code>/Apps/maps</code>. We do not have access to your decryption keys, password, or plaintext places.
+                <p>
+                    Your saved places are compiled and encrypted client-side using military-grade AES-256-GCM encryption before leaving your device, then stored as a private file named <code>places.json</code> inside a folder named <code>maps</code>. We do not have access to your decryption keys, password, or plaintext places.
                 </p>
             </section>
 
             <section class="space-y-3">
                 <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="material-icons-outlined text-indigo-500 text-xl leading-none">analytics</span>
-                    <span data-i18n="privacy.section3_title">3. Analytics and Data Collection</span>
+                    <span>3. Analytics and Data Collection</span>
                 </h2>
-                <p data-i18n="privacy.section3_text">
+                <p>
                     We do not collect diagnostics, crash logs, IP address tracking, telemetry, or user analytics. The application operates in complete anonymity.
                 </p>
             </section>
@@ -55,9 +55,9 @@
             <section class="space-y-3">
                 <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
                     <span class="material-icons-outlined text-indigo-500 text-xl leading-none">code</span>
-                    <span data-i18n="privacy.section4_title">4. Open Source Transparency</span>
+                    <span>4. Open Source Transparency</span>
                 </h2>
-                <p data-i18n="privacy.section4_text">
+                <p>
                     Because this project is open-source and AGPL-3.0 licensed, you can review the source code directly, run your own builds, or contribute adjustments openly on the repository.
                 </p>
             </section>
@@ -67,11 +67,6 @@
         {{> page-footer}}
 
     </div>
-
-    <script type="module">
-        import { TranslationController } from '/js/TranslationController.js';
-        await TranslationController.init();
-    </script>
 </body>
 
 </html>

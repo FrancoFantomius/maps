@@ -1,0 +1,133 @@
+{
+  "app": {
+    "title": "Kart",
+    "subtitle": "Utforsk og tilpass kart med fullt personvern."
+  },
+  "nav": {
+    "privacy": "Personvernerklæring",
+    "terms": "Vilkår for bruk",
+    "close": "Lukk",
+    "back": "Tilbake"
+  },
+  "settings": {
+    "title": "Kartinnstillinger",
+    "subtitle": "Konfigurer kartlag, overlag og utseende",
+    "language": "Språk",
+    "language_system": "System (Auto)",
+    "show_details": "Vis detaljer",
+    "street_names": "Gatenavn",
+    "bike_paths": "Sykkelveier",
+    "buildings": "3D-bygninger",
+    "home_location": "Hjemmeadresse",
+    "home_address": "Hjemmeadresse",
+    "search_home_placeholder": "Søk hjemmeadresse...",
+    "fly_to_home": "Gå til hjem",
+    "clear_home": "Slett hjemmeadresse",
+    "map_rotation": "Kartrotering",
+    "rotate_ccw": "Roter mot klokken",
+    "rotate_cw": "Roter med klokken",
+    "bearing_angle": "Kompassvinkel",
+    "tilt_pitch": "Helning / Pitch",
+    "appearance_theme": "Utseende",
+    "theme_light": "Lys",
+    "theme_system": "System",
+    "theme_dark": "Mørk"
+  },
+  "hud": {
+    "search_placeholder": "Søk",
+    "route": "Rute",
+    "measure": "Mål",
+    "layers": "Lag",
+    "markers": "Markører",
+    "login": "Logg inn",
+    "account": "Konto",
+    "offline_notice": "Frakoblet modus aktiv"
+  },
+  "search": {
+    "no_results": "Ingen resultater funnet",
+    "searching": "Søker..."
+  },
+  "routing": {
+    "title": "Ruteplanlegger",
+    "origin": "Startsted",
+    "destination": "Destinasjon",
+    "profile_driving": "Kjøring",
+    "profile_cycling": "Sykling",
+    "profile_walking": "Gåing",
+    "calculate": "Beregn rute",
+    "clear": "Tøm rute",
+    "distance": "Avstand",
+    "duration": "Varighet"
+  },
+  "measurement": {
+    "title": "Avstandsmåling",
+    "click_to_start": "Klikk på kartet for å starte måling",
+    "total_distance": "Total avstand",
+    "clear": "Tøm måling"
+  },
+  "markers": {
+    "title": "Lagrede markører",
+    "add_marker": "Legg til markør",
+    "edit_marker": "Rediger markør",
+    "delete_marker": "Slett markør",
+    "name": "Markørnavn",
+    "category": "Kategori",
+    "description": "Beskrivelse",
+    "save": "Lagre markør",
+    "cancel": "Avbryt",
+    "no_markers": "Ingen lagrede markører ennå."
+  },
+  "login": {
+    "title": "Filen Cloud Sync",
+    "subtitle": "Logg inn for å synkronisere steder med ende-til-ende-kryptering",
+    "email": "E-postadresse",
+    "password": "Passord",
+    "two_factor": "2FA-kode (hvis aktivert)",
+    "sign_in": "Logg inn",
+    "signing_in": "Logger inn...",
+    "sign_out": "Logg ut",
+    "status_logged_in": "Innlogget som",
+    "status_logged_out": "Ikke innlogget"
+  },
+  "layers": {
+    "title": "Kartlag",
+    "liberty": "Liberty (Standard)",
+    "dark": "Mørkt kart",
+    "satellite": "Satellittbilder",
+    "osm": "OpenStreetMap Standard",
+    "bike": "Sykkelveier"
+  },
+  "controls": {
+    "zoom_in": "Zoom inn",
+    "zoom_out": "Zoom ut",
+    "my_location": "Min posisjon",
+    "reset_north": "Tilbakestill nord"
+  },
+  "privacy": {
+    "page_title": "Personvernerklæring - Kart",
+    "title": "Personvernerklæring",
+    "last_updated": "Juli 2026",
+    "intro": "Personvern er vår kjerneverdi.",
+    "section1_title": "1. Lokal lagring",
+    "section1_text": "Alle data lagres lokalt på din enhet.",
+    "section2_title": "2. Kryptert synk",
+    "section2_text1": "Synkronisering via Filen.",
+    "section2_text2": "AES-256-GCM-kryptering på din enhet.",
+    "section3_title": "3. Ingen datainnsamling",
+    "section3_text": "Vi samler ikke inn data.",
+    "section4_title": "4. Åpen kildekode",
+    "section4_text": "Lisensiert under GNU AGPL-3.0."
+  },
+  "terms": {
+    "page_title": "Vilkår for bruk - Kart",
+    "title": "Vilkår for bruk",
+    "last_updated": "Juli 2026",
+    "intro": "Velkommen til Kart.",
+    "section1_title": "1. Akseptabel bruk",
+    "section1_text": "Gratis for personlig bruk.",
+    "section2_title": "2. Ansvarsfraskrivelse",
+    "section2_text": "Basert på åpne geografiske data.",
+    "section3_title": "3. Lisens",
+    "section3_text": "GNU AGPL-3.0-lisens."
+  }
+}

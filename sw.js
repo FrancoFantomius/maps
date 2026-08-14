@@ -15,16 +15,12 @@ const TILE_CACHES = {
 
 // App-shell URLs to precache on install.
 // Vite-hashed assets (JS/CSS) are fetched via index.html and cached at runtime on first load.
-// __PRECACHE_FONTS__ is replaced at build time by serviceWorkerPlugin with font assets.
-const DYNAMIC_FONT_PRECACHES = typeof __PRECACHE_FONTS__ !== 'undefined' ? __PRECACHE_FONTS__ : [];
-
 const PRECACHE_URLS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/img/icons/maps_x192.png',
   '/img/icons/maps_x512.png',
-  ...(Array.isArray(DYNAMIC_FONT_PRECACHES) ? DYNAMIC_FONT_PRECACHES : []),
 ];
 
 // ─── Tile URL matchers ────────────────────────────────────────────────────────
@@ -64,26 +60,14 @@ const TILE_ROUTES = [
   },
 ];
 
-// File extensions for fonts (Cache-First strategy for instant loading of Material Icons, Inter, Outfit)
-const FONT_EXTENSIONS = /\.(woff|woff2|ttf|otf|eot)(\?.*)?$/i;
-
-// File extensions to cache at runtime via network-first
-const CACHEABLE_EXTENSIONS = /\.(js|mjs|css|html|png|svg|json|ico)(\?.*)?$/i;
+// File extensions to cache at runtime (mirrors the old Workbox globPatterns)
+const CACHEABLE_EXTENSIONS = /\.(js|css|html|png|svg|woff|woff2|json|ico)(\?.*)?$/i;
 
 // ─── Install ──────────────────────────────────────────────────────────────────
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(PRECACHE_NAME).then(async (cache) => {
-      // Safely cache app-shell items without allowing a single 404 to break installation
-      await Promise.allSettled(
-        PRECACHE_URLS.map((url) =>
-          cache.add(url).catch((err) => {
-            console.warn(`[PWA SW] Precache skipped for ${url}:`, err);
-          })
-        )
-      );
-    })
+    caches.open(PRECACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
   );
   self.skipWaiting();
 });
@@ -125,15 +109,8 @@ self.addEventListener('fetch', (event) => {
     }
   }
 
-  const url = new URL(request.url);
-
-  // For same-origin font assets (Material Icons, web fonts): cache-first for instant 0ms load
-  if (url.origin === self.location.origin && (FONT_EXTENSIONS.test(url.pathname) || request.destination === 'font')) {
-    event.respondWith(appCacheFirst(request));
-    return;
-  }
-
   // For same-origin cacheable assets: network-first with precache fallback
+  const url = new URL(request.url);
   if (url.origin === self.location.origin && CACHEABLE_EXTENSIONS.test(url.pathname)) {
     event.respondWith(appNetworkFirst(request));
     return;
@@ -143,50 +120,20 @@ self.addEventListener('fetch', (event) => {
 // ─── Strategies ───────────────────────────────────────────────────────────────
 
 /**
- * Cache-first for tile requests with LRU-style eviction and robust error handling.
+ * Cache-first for tile requests with LRU-style eviction.
  */
 async function tilesCacheFirst(request, route) {
-  try {
-    const cache = await caches.open(route.cacheName);
-    const cached = await cache.match(request);
-    if (cached) return cached;
-
-    const response = await fetch(request);
-    if (response && (response.ok || response.status === 0)) {
-      try {
-        const clone = response.clone();
-        cache.put(request, clone)
-          .then(() => evictOldEntries(route.cacheName, route.maxEntries))
-          .catch(() => {});
-      } catch {
-        // Ignore clone/put issues for non-cloneable streams
-      }
-    }
-    return response;
-  } catch (err) {
-    // If cache lookup or fetch failed, fallback directly to raw network fetch
-    return fetch(request).catch(() => new Response('', { status: 408, statusText: 'Request Timeout' }));
-  }
-}
-
-/**
- * Cache-first for font assets (Material Icons, Inter, Outfit).
- * Serves cached font files immediately. If missing, fetches over network and caches for future visits.
- */
-async function appCacheFirst(request) {
-  const cache = await caches.open(PRECACHE_NAME);
+  const cache = await caches.open(route.cacheName);
   const cached = await cache.match(request);
   if (cached) return cached;
 
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch {
-    return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+  const response = await fetch(request);
+  if (response.ok || response.status === 0) {
+    const clone = response.clone();
+    // Fire-and-forget: put + evict in background
+    cache.put(request, clone).then(() => evictOldEntries(route.cacheName, route.maxEntries));
   }
+  return response;
 }
 
 /**

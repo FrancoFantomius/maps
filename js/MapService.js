@@ -1,14 +1,12 @@
 // maps Map Engine Module (Facade Pattern) - js/MapService.js
 
-import * as maplibregl from 'maplibre-gl';
-import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
+import maplibregl from 'maplibre-gl';
 import { MarkerController } from './MarkerController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { RoutingController } from './RoutingController.js';
 import { GPSController } from './GPSController.js';
 import { ApiService } from './ApiService.js';
 import { DarkMapStyle } from './DarkMapStyle.js';
-import { TranslationController } from './TranslationController.js';
 
 const STORAGE_KEY_LAYER = 'maps_active_layer';
 const STORAGE_KEY_LABELS = 'maps_labels_enabled';
@@ -16,17 +14,10 @@ const STORAGE_KEY_LABELS = 'maps_labels_enabled';
 export const MapService = {
     map: null,
     activeLayerKey: 'street',
-    activeOverlays: { labels: true, bike: false, perspective: false },
+    activeOverlays: { labels: false, bike: false, perspective: false },
     highlightedPathCoords: null,
 
     init() {
-        // Point MapLibre at the bundled worker asset. maplibre-gl resolves its worker
-        // dynamically (new URL(...)) which Vite cannot bundle, so it 404s in production
-        // and the map renders blank. setWorkerUrl fixes that for both dev and build.
-        if (typeof maplibregl.setWorkerUrl === 'function' && maplibreWorkerUrl) {
-            maplibregl.setWorkerUrl(maplibreWorkerUrl);
-        }
-
         let initialLat = 45.4064; // DEFAULT_LAT
         let initialLng = 11.8768; // DEFAULT_LNG
         let initialZoom = 13;
@@ -52,9 +43,6 @@ export const MapService = {
         const savedLayer = localStorage.getItem(STORAGE_KEY_LAYER);
         this.activeLayerKey = (savedLayer === 'satellite') ? 'satellite' : 'street';
 
-        const savedLabels = localStorage.getItem(STORAGE_KEY_LABELS);
-        this.activeOverlays.labels = (savedLabels === null || savedLabels === 'true');
-
         const savedPerspective = localStorage.getItem('maps_perspective_enabled') === 'true';
         this.activeOverlays.perspective = savedPerspective;
         const initialPitch = savedPerspective ? 45 : 0;
@@ -79,10 +67,6 @@ export const MapService = {
         });
 
         this.map.addControl(new maplibregl.NavigationControl({ showCompass: false, showZoom: true }), 'bottom-left');
-
-        this.map.on('error', (err) => {
-            console.warn('[MapService] MapLibre warning/error:', err);
-        });
 
         this.map.on('load', () => {
             this.setupMapLayersAndSources();
@@ -644,9 +628,7 @@ export const MapService = {
         const labelsBtn = document.getElementById('layer-labels-btn');
 
         if (label) {
-            label.textContent = this.activeLayerKey === 'street' 
-                ? TranslationController.t('layers.satellite', {}, 'Satellite') 
-                : TranslationController.t('layers.liberty', {}, 'Map');
+            label.textContent = this.activeLayerKey === 'street' ? 'Satellite' : 'Map';
         }
 
         if (labelsBtn) {

@@ -18,7 +18,7 @@
     "street_names": "Straßennamen",
     "bike_paths": "Radwege",
     "buildings": "3D-Gebäude",
-    "home_location": "Heimatadresse",
+    "home_location": "Heimatort",
     "home_address": "Heimatadresse",
     "search_home_placeholder": "Heimatadresse suchen...",
     "fly_to_home": "Zum Heimatort fliegen",
@@ -45,8 +45,7 @@
   },
   "search": {
     "no_results": "Keine Ergebnisse gefunden",
-    "searching": "Suche läuft...",
-    "matching_locations": "Passende Orte gefunden"
+    "searching": "Suche läuft..."
   },
   "routing": {
     "title": "Routenplaner",
@@ -58,11 +57,7 @@
     "calculate": "Route berechnen",
     "clear": "Route löschen",
     "distance": "Entfernung",
-    "duration": "Dauer",
-    "fastest_route": "Schnellste Route",
-    "prompt_instructions": "Start und Ziel festlegen, um Wegbeschreibungen anzuzeigen",
-    "swap": "Start und Ziel tauschen",
-    "head_on": "Fahren Sie {modifier} auf"
+    "duration": "Dauer"
   },
   "measurement": {
     "title": "Entfernungsmessung",
@@ -80,14 +75,7 @@
     "description": "Beschreibung",
     "save": "Marker speichern",
     "cancel": "Abbrechen",
-    "no_markers": "Noch keine Marker gespeichert.",
-    "category_poi": "Sehenswürdigkeit",
-    "category_home": "Zuhause",
-    "category_food": "Essen & Trinken",
-    "category_lodging": "Unterkunft",
-    "category_nature": "Natur / Aussicht",
-    "save_location": "Standort speichern",
-    "no_notes": "Keine Notizen oder Beschreibung gespeichert."
+    "no_markers": "Noch keine Marker gespeichert."
   },
   "login": {
     "title": "Filen Cloud-Synchro",
@@ -99,11 +87,7 @@
     "signing_in": "Anmeldung läuft...",
     "sign_out": "Abmelden",
     "status_logged_in": "Angemeldet als",
-    "status_logged_out": "Nicht angemeldet",
-    "verifying": "Anmeldung & Überprüfung der Anmeldedaten...",
-    "err_enter_both": "Bitte geben Sie sowohl E-Mail als auch Passwort ein.",
-    "err_failed": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.",
-    "confirm_signout": "Möchten Sie sich wirklich abmelden? Die Synchronisierung wird deaktiviert, Ihre lokalen Orte bleiben jedoch erhalten."
+    "status_logged_out": "Nicht angemeldet"
   },
   "layers": {
     "title": "Kartenebenen",
@@ -111,17 +95,13 @@
     "dark": "Dunkle Karte",
     "satellite": "Satellitenbilder",
     "osm": "OpenStreetMap Standard",
-    "bike": "Radwege",
-    "switch_map_type": "Kartentyp wechseln",
-    "labels": "Beschriftungen"
+    "bike": "Radwege"
   },
   "controls": {
     "zoom_in": "Vergrößern",
     "zoom_out": "Verkleinern",
     "my_location": "Mein Standort",
-    "reset_north": "Nord ausrichten",
-    "directions": "Route",
-    "perspective": "Perspektive"
+    "reset_north": "Nord ausrichten"
   },
   "privacy": {
     "page_title": "Datenschutz-Bestimmungen - Karten",
@@ -132,7 +112,7 @@
     "section1_text": "Alle Marker werden lokal auf Ihrem Gerät gespeichert.",
     "section2_title": "2. Verschlüsselte Synchro",
     "section2_text1": "Synchronisierung über Filen Cloud-APIs.",
-    "section2_text2": "Ihre gespeicherten Orte werden auf Ihrem Gerät mit AES-256-GCM verschlüsselt und als private Datei places.json im Ordner /Apps/maps gespeichert.",
+    "section2_text2": "AES-256-GCM Verschlüsselung auf Ihrem Gerät.",
     "section3_title": "3. Keine Datenerfassung",
     "section3_text": "Keine Telemetrie oder Benutzer-Tracking.",
     "section4_title": "4. Open-Source Transparenz",
@@ -149,26 +129,5 @@
     "section2_text": "Basiert auf offenen Kartendaten.",
     "section3_title": "3. Lizenz",
     "section3_text": "GNU AGPL-3.0 Lizenz."
-  },
-  "poi": {
-    "dropped_pin": "Gesetzter Stecknadel",
-    "save_prompt": "Um diese Koordinate als gespeicherten Ort zu sichern, klicken Sie unten, um Name, Kategorie und Beschreibung zuzuweisen.",
-    "shop_details": "Geschäftsdetails",
-    "type": "Typ:",
-    "brand": "Marke:",
-    "hours": "Öffnungszeiten:",
-    "cuisine": "Küche:",
-    "web": "Web:",
-    "phone": "Telefon:",
-    "save_place": "Ort speichern",
-    "directions": "Route",
-    "get_directions": "Route berechnen",
-    "edit": "Bearbeiten",
-    "delete": "Löschen",
-    "highlighting": "Hervorgehoben: {streetName}"
-  },
-  "account": {
-    "purge_cache": "Lokalen Cache leeren",
-    "confirm_purge": "WARNUNG: Dadurch werden alle lokalen Orte in diesem Browser dauerhaft gelöscht. Ihre synchronisierte Cloud-Datenbank auf Filen ist davon nicht betroffen. Möchten Sie den lokalen Cache leeren?"
   }
 }

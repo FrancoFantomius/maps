@@ -2,38 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.4.0] - 2026-08-14
-
-### Added
-- **Structured Sync Error Diagnostics & Codes**: Introduced `SYNC_ERROR_CODES` enum (`NO_SESSION`, `LOGIN_FAILED`, `INIT_FAILED`, `DIR_NOT_FOUND`, `REMOTE_READ`, `UPLOAD`, `DOWNLOAD`, `RECONCILE`, `PROFILE`) along with error construction and formatted logging helpers for clear diagnostics during cloud synchronization failures.
-- **Filen Directory & File Path Constants**: Exported `FILEN_SYNC_DIR` and `FILEN_SYNC_FILE` constants with dedicated test coverage to enforce the `/Apps/maps` storage convention.
-
-### Changed
-- **Standardized Cloud Sync App Folder (`/Apps/maps`)**: Migrated remote Filen synchronization storage directory from `/maps` to `/Apps/maps/places.json`.
-- **Privacy Policy & Localization Alignment**: Updated privacy documentation and localized strings (`privacy.html` and all `languages/*.json` files) to document the `/Apps/maps` cloud storage location.
-- **Service Worker Module Caching**: Added `.mjs` support to `CACHEABLE_EXTENSIONS` in `sw.js` for proper offline caching of JavaScript ES module assets.
-- **Vite Build & Asset Pipeline Cleanup**: Streamlined `vite.config.js` by removing redundant icon file emissions into `assets/img/icons/` and legacy static directory synchronization routines.
-
-### Fixed
-- **MapLibre Web Worker Asset Resolution**: Fixed blank map rendering in production builds by explicitly setting `maplibregl.setWorkerUrl()` with Vite's URL asset resolver for `maplibre-gl-worker.mjs`.
-- **Sync Polling Log Redundancy**: Reduced console noise during routine 30-second sync polling intervals by only logging actionable state changes and deduplicated error transitions.
-
-## [1.3.3] - 2026-08-14
-
-### Added
-- **Interactive Search Pins & Preview**: Introduced interactive pin dropping on search results with automatic map centering, zoom adjustments, location markers, and synced result list selection.
-- **Language Parity Automated Test Suite**: Added `tests/languages_parity.test.js` to continuously verify key completeness, structural equality across language files, and `data-i18n` template attribute integrity.
-
-### Changed
-- **Optimized Language Pack (11 Main Languages)**: Streamlined i18n coverage to 11 fully validated tier-1 languages (`en`, `it`, `es`, `fr`, `de`, `zh`, `ja`, `ar`, `ru`, `pt`, `hi`), pruning unmaintained language files for improved maintenance and smaller bundle size.
-- **Self-Hosted Material Icons & Precache Pipeline**: Migrated Material Icons Outlined font loading to self-hosted `@fontsource` packages, fixing offline font caching in `sw.js` Service Worker.
-- **Dependencies Upgrade**: Upgraded core framework dependencies including Tailwind CSS (`v4.3.3`), MapLibre GL JS (`v6.3.0`), Vite (`v8.2.1`), Vitest (`v4.1.10`), and JS-DOM (`v30.0.1`).
-- **UI & Layout Refinements**: Refined search header, HUD panel layout, layer switcher, marker modal dialogs, and image alignments on legal documents (`privacy.html`, `terms.html`).
-
-### Fixed
-- **Test Database Lock Isolation**: Configured `PouchDBAdapterMemory` in test environments to eliminate `maps_db/LOCK` concurrency collisions during Vitest test execution.
-- **Service Worker Controllerchange Handler**: Updated PWA lifecycle event listeners in tests to verify service worker reloads and controller updates.
-
 ## [1.3.2] - 2026-08-01
 ### Changed
 - **Map Style**: Changed the map style to a custom dark theme.

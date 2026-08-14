@@ -18,7 +18,7 @@
     "street_names": "Street Names",
     "bike_paths": "Bike Paths",
     "buildings": "Buildings",
-    "home_location": "自宅の位置",
+    "home_location": "Home Location",
     "home_address": "Home Address",
     "search_home_placeholder": "Search home address...",
     "fly_to_home": "Fly to Home",
@@ -45,8 +45,7 @@
   },
   "search": {
     "no_results": "No results found",
-    "searching": "Searching...",
-    "matching_locations": "該当する場所が見つかりました"
+    "searching": "Searching..."
   },
   "routing": {
     "title": "Route Planner",
@@ -58,11 +57,7 @@
     "calculate": "Calculate Route",
     "clear": "Clear Route",
     "distance": "Distance",
-    "duration": "Duration",
-    "fastest_route": "最速ルート",
-    "prompt_instructions": "出発地と目的地を設定して道順を表示",
-    "swap": "出発地と目的地を入れ替え",
-    "head_on": "{modifier} 方面へ進む"
+    "duration": "Duration"
   },
   "measurement": {
     "title": "Distance Measurement",
@@ -80,14 +75,7 @@
     "description": "Description",
     "save": "Save Marker",
     "cancel": "Cancel",
-    "no_markers": "No saved markers yet.",
-    "category_poi": "おすすめスポット",
-    "category_home": "自宅",
-    "category_food": "飲食",
-    "category_lodging": "宿泊施設",
-    "category_nature": "自然 / 景勝地",
-    "save_location": "位置を保存",
-    "no_notes": "メモや説明は保存されていません。"
+    "no_markers": "No saved markers yet."
   },
   "login": {
     "title": "Filen Cloud Sync",
@@ -99,11 +87,7 @@
     "signing_in": "Signing in...",
     "sign_out": "Sign Out",
     "status_logged_in": "Logged in as",
-    "status_logged_out": "Not logged in",
-    "verifying": "サインインして認証情報を確認中...",
-    "err_enter_both": "メールアドレスとパスワードの両方を入力してください。",
-    "err_failed": "サインインに失敗しました。認証情報を確認してください。",
-    "confirm_signout": "サインアウトしてもよろしいですか？同期は無効になりますが、ローカルの場所は保持されます。"
+    "status_logged_out": "Not logged in"
   },
   "layers": {
     "title": "Map Layers",
@@ -111,17 +95,13 @@
     "dark": "Dark Mode Map",
     "satellite": "Satellite Imagery",
     "osm": "OpenStreetMap Standard",
-    "bike": "Bike Overlay",
-    "switch_map_type": "マップタイプを切替",
-    "labels": "ラベル"
+    "bike": "Bike Overlay"
   },
   "controls": {
     "zoom_in": "Zoom In",
     "zoom_out": "Zoom Out",
     "my_location": "My Location",
-    "reset_north": "Reset North",
-    "directions": "ルート",
-    "perspective": "視点"
+    "reset_north": "Reset North"
   },
   "privacy": {
     "page_title": "Privacy Policy - Maps",
@@ -132,7 +112,7 @@
     "section1_text": "All place markers, names, descriptions, and custom categories you record are stored locally on your device in a sandboxed PouchDB database. This data is private to your browser. Clearing your browser's application cache or using incognito/private modes will remove this database.",
     "section2_title": "2. End-to-End Encrypted Cloud Sync",
     "section2_text1": "If you choose to enable cloud synchronization, Maps links directly to the secure cloud APIs provided by Filen. Your credentials (email, password, and two-factor code) are processed purely on the client side to retrieve security keys directly from Filen.",
-    "section2_text2": "Your saved places are compiled and encrypted client-side using military-grade AES-256-GCM encryption before leaving your device, then stored as a private file named places.json inside a folder named /Apps/maps. We do not have access to your decryption keys, password, or plaintext places.",
+    "section2_text2": "Your saved places are compiled and encrypted client-side using military-grade AES-256-GCM encryption before leaving your device, then stored as a private file named places.json inside a folder named maps. We do not have access to your decryption keys, password, or plaintext places.",
     "section3_title": "3. Analytics and Data Collection",
     "section3_text": "We do not collect diagnostics, crash logs, IP address tracking, telemetry, or user analytics. The application operates in complete anonymity.",
     "section4_title": "4. Open Source Transparency",
@@ -149,26 +129,5 @@
     "section2_text": "Maps relies on open geographic datasets (including OpenStreetMap and OpenFreeMap) and third-party cloud synchronization (Filen). We do not guarantee uninterrupted availability or accuracy of third-party map data or APIs.",
     "section3_title": "3. License & Source Code",
     "section3_text": "Maps is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). You are free to modify, redistribute, and host your own instances subject to AGPL-3.0 requirements."
-  },
-  "poi": {
-    "dropped_pin": "ドロップされたピン",
-    "save_prompt": "この座標を保存済みの場所として登録するには、下のボタンをクリックして名前、カテゴリ、説明を設定してください。",
-    "shop_details": "店舗詳細",
-    "type": "種類:",
-    "brand": "ブランド:",
-    "hours": "営業時間:",
-    "cuisine": "料理:",
-    "web": "ウェブ:",
-    "phone": "電話番号:",
-    "save_place": "場所を保存",
-    "directions": "ルート案内",
-    "get_directions": "ルートを取得",
-    "edit": "編集",
-    "delete": "削除",
-    "highlighting": "ハイライト: {streetName}"
-  },
-  "account": {
-    "purge_cache": "ローカルキャッシュを消去",
-    "confirm_purge": "警告: このブラウザ上のすべてのローカル場所が永久に削除されます。Filen 上のクラウドデータベースには影響しません。ローカルキャッシュを消去しますか？"
   }
 }

@@ -1,6 +1,6 @@
 // tests/db.test.js
 import { describe, it, expect, beforeEach } from 'vitest';
-import { saveSyncSettings, getSyncSettings, savePlace, loadAllPlaces, deletePlaceFromDB, FILEN_SYNC_DIR, FILEN_SYNC_FILE } from '../js/db.js';
+import { saveSyncSettings, getSyncSettings, savePlace, loadAllPlaces, deletePlaceFromDB } from '../js/db.js';
 
 describe('db module', () => {
   beforeEach(async () => {
@@ -16,11 +16,6 @@ describe('db module', () => {
   });
 
   describe('Sync settings local storage', () => {
-    it('uses /Apps/maps as the Filen sync directory and places.json file path', () => {
-      expect(FILEN_SYNC_DIR).toBe('/Apps/maps');
-      expect(FILEN_SYNC_FILE).toBe('/Apps/maps/places.json');
-    });
-
     it('retrieves default settings when not saved yet', async () => {
       const settings = await getSyncSettings();
       expect(settings).toBeDefined();

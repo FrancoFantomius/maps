@@ -18,7 +18,7 @@
     "street_names": "Noms de Rues",
     "bike_paths": "Pistes Cyclables",
     "buildings": "Bâtiments 3D",
-    "home_location": "Adresse du domicile",
+    "home_location": "Lieu de Domicile",
     "home_address": "Adresse du Domicile",
     "search_home_placeholder": "Rechercher l'adresse du domicile...",
     "fly_to_home": "Aller au Domicile",
@@ -45,8 +45,7 @@
   },
   "search": {
     "no_results": "Aucun résultat trouvé",
-    "searching": "Recherche en cours...",
-    "matching_locations": "Lieux correspondants trouvés"
+    "searching": "Recherche en cours..."
   },
   "routing": {
     "title": "Calculateur d'Itinéraire",
@@ -58,11 +57,7 @@
     "calculate": "Calculer l'Itinéraire",
     "clear": "Effacer l'Itinéraire",
     "distance": "Distance",
-    "duration": "Durée",
-    "fastest_route": "Itinéraire le plus rapide",
-    "prompt_instructions": "Définissez le point de départ et la destination pour voir les instructions",
-    "swap": "Inverser le départ et la destination",
-    "head_on": "Dirigez-vous {modifier} sur"
+    "duration": "Durée"
   },
   "measurement": {
     "title": "Mesure de Distance",
@@ -80,14 +75,7 @@
     "description": "Description",
     "save": "Enregistrer le Repère",
     "cancel": "Annuler",
-    "no_markers": "Aucun repère enregistré.",
-    "category_poi": "Point d'intérêt",
-    "category_home": "Domicile",
-    "category_food": "Restauration",
-    "category_lodging": "Hébergement",
-    "category_nature": "Nature / Panoramique",
-    "save_location": "Enregistrer l'emplacement",
-    "no_notes": "Aucune note ou description enregistrée."
+    "no_markers": "Aucun repère enregistré."
   },
   "login": {
     "title": "Synchronisation Cloud Filen",
@@ -99,11 +87,7 @@
     "signing_in": "Connexion...",
     "sign_out": "Se Déconnecter",
     "status_logged_in": "Connecté en tant que",
-    "status_logged_out": "Non connecté",
-    "verifying": "Connexion et vérification des identifiants...",
-    "err_enter_both": "Veuillez saisir votre e-mail et votre mot de passe.",
-    "err_failed": "Échec de la connexion. Veuillez vérifier vos identifiants.",
-    "confirm_signout": "Voulez-vous vraiment vous déconnecter ? La synchronisation sera désactivée, mais vos lieux locaux seront conservés."
+    "status_logged_out": "Non connecté"
   },
   "layers": {
     "title": "Calques de Carte",
@@ -111,17 +95,13 @@
     "dark": "Carte Mode Sombre",
     "satellite": "Imagerie Satellite",
     "osm": "OpenStreetMap Standard",
-    "bike": "Pistes Cyclables",
-    "switch_map_type": "Changer le type de carte",
-    "labels": "Étiquettes"
+    "bike": "Pistes Cyclables"
   },
   "controls": {
     "zoom_in": "Zoom Avant",
     "zoom_out": "Zoom Arrière",
     "my_location": "Ma Position",
-    "reset_north": "Réinitialiser Nord",
-    "directions": "Itinéraire",
-    "perspective": "Perspective"
+    "reset_north": "Réinitialiser Nord"
   },
   "privacy": {
     "page_title": "Politique de Confidentialité - Cartes",
@@ -132,7 +112,7 @@
     "section1_text": "Vos repères sont stockés localement sur votre appareil.",
     "section2_title": "2. Synchronisation Chiffrée",
     "section2_text1": "Synchronisation via Filen.",
-    "section2_text2": "Vos lieux enregistrés sont chiffrés avec AES-256-GCM côté client et stockés dans un fichier privé places.json dans le dossier /Apps/maps.",
+    "section2_text2": "Chiffrement AES-256-GCM côté client.",
     "section3_title": "3. Pas de Collecte de Données",
     "section3_text": "Aucune télémétrie ni suivi.",
     "section4_title": "4. Transparence Open Source",
@@ -149,26 +129,5 @@
     "section2_text": "Basé sur des données ouvertes.",
     "section3_title": "3. Licence",
     "section3_text": "Licence GNU AGPL-3.0."
-  },
-  "poi": {
-    "dropped_pin": "Repère placé",
-    "save_prompt": "Pour enregistrer cette coordonnée, cliquez sur le bouton ci-dessous pour lui attribuer un nom, une catégorie et une description.",
-    "shop_details": "Détails du commerce",
-    "type": "Type :",
-    "brand": "Marque :",
-    "hours": "Horaires :",
-    "cuisine": "Cuisine :",
-    "web": "Site web :",
-    "phone": "Téléphone :",
-    "save_place": "Enregistrer le lieu",
-    "directions": "Itinéraire",
-    "get_directions": "Obtenir l'itinéraire",
-    "edit": "Modifier",
-    "delete": "Supprimer",
-    "highlighting": "En évidence : {streetName}"
-  },
-  "account": {
-    "purge_cache": "Purger le cache local",
-    "confirm_purge": "AVERTISSEMENT : Cela supprimera définitivement tous les lieux locaux sur ce navigateur. Votre base de données synchronisée sur le cloud Filen ne sera pas affectée. Voulez-vous purger le cache local ?"
   }
 }

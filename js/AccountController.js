@@ -3,7 +3,6 @@
  */
 
 import { getSyncSettings, saveSyncSettings, startSync, stopSync, destroyDatabase } from './db.js';
-import { TranslationController } from './TranslationController.js';
 
 // DOM Elements cache
 let elements = {};
@@ -26,7 +25,6 @@ export const AccountController = {
       btnDropdownSignout: document.getElementById('btn-dropdown-signout'),
       btnDropdownPurge: document.getElementById('btn-dropdown-purge'),
       loginModal: document.getElementById('login-modal'),
-      loginForm: document.getElementById('login-form'),
       btnLoginClose: document.getElementById('btn-login-close'),
       btnLoginCancel: document.getElementById('btn-login-cancel'),
       btnSaveSync: document.getElementById('btn-save-sync'),
@@ -66,12 +64,7 @@ export const AccountController = {
       });
     }
 
-    if (elements.loginForm) {
-      elements.loginForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        this.handleLogin();
-      });
-    } else if (elements.btnSaveSync) {
+    if (elements.btnSaveSync) {
       elements.btnSaveSync.addEventListener('click', (e) => {
         e.preventDefault();
         this.handleLogin();
@@ -128,9 +121,10 @@ export const AccountController = {
       elements.syncStatusMsg.textContent = '';
       elements.syncStatusMsg.className = 'status-message text-slate-500 dark:text-slate-400 text-xs';
     }
-    if (elements.syncEmail) {
-      setTimeout(() => elements.syncEmail.focus(), 50);
-    }
+    // Clean fields
+    if (elements.syncEmail) elements.syncEmail.value = '';
+    if (elements.syncPassword) elements.syncPassword.value = '';
+    if (elements.syncTwoFactor) elements.syncTwoFactor.value = '';
   },
 
   hideLoginModal() {
@@ -151,11 +145,11 @@ export const AccountController = {
     const twoFactorCode = elements.syncTwoFactor.value.trim();
 
     if (!email || !password) {
-      this.showStatusError(TranslationController.t('login.err_enter_both', {}, "Please enter both email and password."));
+      this.showStatusError("Please enter both email and password.");
       return;
     }
 
-    this.showStatusLoading(TranslationController.t('login.verifying', {}, "Signing in & verifying credentials..."));
+    this.showStatusLoading("Signing in & verifying credentials...");
 
     try {
       const initialSettings = {
@@ -173,14 +167,13 @@ export const AccountController = {
       this.updateProfileUI(saved);
       this.hideLoginModal();
     } catch (err) {
-      const code = err && err.code ? ` [${err.code}]` : '';
-      console.error(`Login verification failed${code}:`, err);
-      this.showStatusError(err.message || TranslationController.t('login.err_failed', {}, "Failed to log in. Please check your credentials."));
+      console.error("Login verification failed:", err);
+      this.showStatusError(err.message || "Failed to log in. Please check your credentials.");
     }
   },
 
   async handleSignout() {
-    if (confirm(TranslationController.t('login.confirm_signout', {}, "Are you sure you want to sign out? Synchronization will be disabled, but your local places will remain."))) {
+    if (confirm("Are you sure you want to sign out? Synchronization will be disabled, but your local places will remain.")) {
       try {
         stopSync();
         const settings = await getSyncSettings();
@@ -203,7 +196,7 @@ export const AccountController = {
   },
 
   async handlePurge() {
-    if (confirm(TranslationController.t('account.confirm_purge', {}, "WARNING: This will permanently delete all local places on this browser. Your synchronized cloud database on Filen will not be affected. Do you want to purge local cache?"))) {
+    if (confirm("WARNING: This will permanently delete all local places on this browser. Your synchronized cloud database on Filen will not be affected. Do you want to purge local cache?")) {
       try {
         await destroyDatabase();
       } catch (err) {

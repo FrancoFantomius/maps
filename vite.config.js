@@ -49,52 +49,18 @@ const serviceWorkerPlugin = () => ({
       if (req.url === '/sw.js') {
         const src = fs.readFileSync(path.join(__dirname, 'sw.js'), 'utf-8');
         res.setHeader('Content-Type', 'application/javascript');
-        res.end(src.replace(/__APP_VERSION__/g, pkg.version).replace(/__PRECACHE_FONTS__/g, '[]'));
+        res.end(src.replace(/__APP_VERSION__/g, pkg.version));
         return;
       }
       next();
     });
   },
-  generateBundle(options, bundle) {
-    const fontAssets = [];
-    for (const fileName of Object.keys(bundle)) {
-      if (/\.(woff|woff2|ttf|otf|eot)$/i.test(fileName)) {
-        fontAssets.push(`/${fileName}`);
-      }
-    }
-
+  generateBundle() {
     const src = fs.readFileSync(path.join(__dirname, 'sw.js'), 'utf-8');
-    const injectedSrc = src
-      .replace(/__APP_VERSION__/g, pkg.version)
-      .replace(/__PRECACHE_FONTS__/g, JSON.stringify(fontAssets));
-
     this.emitFile({
       type: 'asset',
       fileName: 'sw.js',
-      source: injectedSrc,
-    });
-  },
-});
-
-const maplibrePlugin = () => ({
-  name: 'serve-and-bundle-maplibre',
-  configureServer(server) {
-    server.middlewares.use((req, res, next) => {
-      const rawUrl = req.url ? req.url.split('?')[0] : '';
-      if (rawUrl === '/assets/maplibre-gl.mjs') {
-        res.setHeader('Content-Type', 'application/javascript');
-        return fs.createReadStream(path.join(__dirname, 'node_modules/maplibre-gl/dist/maplibre-gl.mjs')).pipe(res);
-      }
-      next();
-    });
-  },
-  generateBundle() {
-    // Ship the minified maplibre-gl as a standalone asset so the built app can
-    // load it via the import map instead of bundling it into main-*.js.
-    this.emitFile({
-      type: 'asset',
-      fileName: 'assets/maplibre-gl.mjs',
-      source: fs.readFileSync(path.join(__dirname, 'node_modules/maplibre-gl/dist/maplibre-gl.mjs')),
+      source: src.replace(/__APP_VERSION__/g, pkg.version),
     });
   },
 });
@@ -111,7 +77,7 @@ const manifestPlugin = () => ({
           return fs.createReadStream(manifestPath).pipe(res);
         }
       }
-      if (rawUrl.startsWith('/img/icons/')) {
+      if (rawUrl.startsWith('/img/icons/') || rawUrl.startsWith('/assets/img/icons/')) {
         const fileName = path.basename(rawUrl);
         const iconPath = path.join(__dirname, 'img', 'icons', fileName);
         if (fs.existsSync(iconPath) && fs.statSync(iconPath).isFile()) {
@@ -132,15 +98,6 @@ const manifestPlugin = () => ({
       });
     }
 
-    const cnamePath = path.join(__dirname, 'CNAME');
-    if (fs.existsSync(cnamePath)) {
-      this.emitFile({
-        type: 'asset',
-        fileName: 'CNAME',
-        source: fs.readFileSync(cnamePath),
-      });
-    }
-
     const iconsDir = path.join(__dirname, 'img', 'icons');
     if (fs.existsSync(iconsDir)) {
       const files = fs.readdirSync(iconsDir);
@@ -153,11 +110,45 @@ const manifestPlugin = () => ({
             fileName: `img/icons/${file}`,
             source: content,
           });
+          this.emitFile({
+            type: 'asset',
+            fileName: `assets/img/icons/${file}`,
+            source: content,
+          });
         }
       }
     }
   },
 });
+
+// Sync to public directory for standard Vite public static serving
+try {
+  const publicDir = path.join(__dirname, 'public');
+  const publicImgIcons = path.join(publicDir, 'img', 'icons');
+  const publicAssetsImgIcons = path.join(publicDir, 'assets', 'img', 'icons');
+
+  fs.mkdirSync(publicImgIcons, { recursive: true });
+  fs.mkdirSync(publicAssetsImgIcons, { recursive: true });
+
+  const manifestPath = path.join(__dirname, 'manifest.json');
+  if (fs.existsSync(manifestPath)) {
+    fs.copyFileSync(manifestPath, path.join(publicDir, 'manifest.json'));
+  }
+
+  const iconsDir = path.join(__dirname, 'img', 'icons');
+  if (fs.existsSync(iconsDir)) {
+    const files = fs.readdirSync(iconsDir);
+    for (const file of files) {
+      const srcFile = path.join(iconsDir, file);
+      if (fs.statSync(srcFile).isFile()) {
+        fs.copyFileSync(srcFile, path.join(publicImgIcons, file));
+        fs.copyFileSync(srcFile, path.join(publicAssetsImgIcons, file));
+      }
+    }
+  }
+} catch {
+  // Ignore sync errors if filesystem permission restricts public creation
+}
 
 export default defineConfig({
   resolve: {
@@ -170,20 +161,16 @@ export default defineConfig({
     setupFiles: './tests/setup.js',
     globals: true,
   },
-  optimizeDeps: {
-    exclude: ['maplibre-gl'],
-  },
   server: {
     watch: {
       usePolling: true,
-      ignored: ['**/node_modules/**', '**/dist/**'],
+      ignored: ['**/node_modules/**', '**/dist/**', '**/public/**'],
     },
   },
   plugins: [
     languagesPlugin(),
     serviceWorkerPlugin(),
     manifestPlugin(),
-    maplibrePlugin(),
     handlebars({
       partialDirectory: path.resolve(__dirname, 'templates'),
     }),
@@ -199,7 +186,6 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      external: ['maplibre-gl'],
       input: {
         main: path.resolve(__dirname, 'index.html'),
         privacy: path.resolve(__dirname, 'privacy.html'),

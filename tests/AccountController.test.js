@@ -24,16 +24,12 @@ describe('AccountController', () => {
       <div id="account-dropdown-email"></div>
       <div id="dropdown-profile-letter"></div>
       <div id="account-dropdown" style="display: none;"></div>
-      <div id="login-modal" class="hidden">
-        <form id="login-form">
-          <input id="sync-email" />
-          <input id="sync-password" />
-          <button id="btn-save-sync" type="submit"></button>
-        </form>
-      </div>
+      <div id="login-modal" class="hidden"></div>
       <button id="btn-login-close"></button>
       <button id="btn-login-cancel"></button>
       <button id="btn-dropdown-signout"></button>
+      <input id="sync-email" />
+      <input id="sync-password" />
       <div id="sync-settings-status"></div>
     `;
     vi.clearAllMocks();

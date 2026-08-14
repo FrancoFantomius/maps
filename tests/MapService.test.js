@@ -75,10 +75,4 @@ describe('MapService', () => {
       expect(url).toContain('/tile/10/');
     });
   });
-
-  describe('Overlays default state', () => {
-    it('defaults labels overlay to true', () => {
-      expect(MapService.activeOverlays.labels).toBe(true);
-    });
-  });
 });

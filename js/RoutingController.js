@@ -4,7 +4,6 @@ import { MapService } from './MapService.js';
 import { HUDController } from './HUDController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { ApiService } from './ApiService.js';
-import { TranslationController } from './TranslationController.js';
 
 const AUTOCOMPLETE_DEBOUNCE_MS = 350;
 const PROFILE_SPEEDS = {
@@ -87,7 +86,7 @@ export const RoutingController = {
             const template = document.getElementById('template-autocomplete-item');
             if (template) {
                 const clone = template.content.cloneNode(true);
-                clone.querySelector('.item-name').textContent = TranslationController.t('settings.home_location', {}, 'Home');
+                clone.querySelector('.item-name').textContent = 'Home';
                 clone.querySelector('.item-address').textContent = home.address;
                 const iconSpan = clone.querySelector('.material-icons-outlined');
                 if (iconSpan) iconSpan.textContent = 'home';
@@ -684,8 +683,7 @@ export const RoutingController = {
             }
 
             const instructionEl = clone.querySelector('.step-instruction');
-            const headOnPrefix = TranslationController.t('routing.head_on', { modifier: step.maneuver.modifier || '' }, `Head ${step.maneuver.modifier || ''} on`).trim();
-            instructionEl.textContent = `${isFirst ? headOnPrefix + ' ' : isLast ? '' : ''}${instruction}`;
+            instructionEl.textContent = `${isFirst ? 'Head ' + (step.maneuver.modifier || '') + ' on ' : isLast ? '' : ''}${instruction}`;
 
             const distEl = clone.querySelector('.step-distance');
             if (!isLast) {
