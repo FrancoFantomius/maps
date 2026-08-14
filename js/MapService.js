@@ -1,6 +1,7 @@
 // maps Map Engine Module (Facade Pattern) - js/MapService.js
 
 import * as maplibregl from 'maplibre-gl';
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
 import { MarkerController } from './MarkerController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { RoutingController } from './RoutingController.js';
@@ -19,6 +20,13 @@ export const MapService = {
     highlightedPathCoords: null,
 
     init() {
+        // Point MapLibre at the bundled worker asset. maplibre-gl resolves its worker
+        // dynamically (new URL(...)) which Vite cannot bundle, so it 404s in production
+        // and the map renders blank. setWorkerUrl fixes that for both dev and build.
+        if (typeof maplibregl.setWorkerUrl === 'function' && maplibreWorkerUrl) {
+            maplibregl.setWorkerUrl(maplibreWorkerUrl);
+        }
+
         let initialLat = 45.4064; // DEFAULT_LAT
         let initialLng = 11.8768; // DEFAULT_LNG
         let initialZoom = 13;

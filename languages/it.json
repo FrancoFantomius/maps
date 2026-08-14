@@ -132,7 +132,7 @@
     "section1_text": "Tutti i segnaposto, i nomi e le descrizioni registrati sono salvati localmente sul tuo dispositivo in un database PouchDB isolato. Questi dati rimangono privati nel tuo browser.",
     "section2_title": "2. Sincronizzazione Cloud Crittografata End-to-End",
     "section2_text1": "Se scegli di abilitare la sincronizzazione cloud, Mappe si collega direttamente alle API cloud di Filen.",
-    "section2_text2": "I tuoi luoghi salvati vengono crittografati lato client con algoritmo AES-256-GCM prima di lasciare il dispositivo e salvati in un file places.json.",
+    "section2_text2": "I tuoi luoghi salvati vengono crittografati lato client con algoritmo AES-256-GCM prima di lasciare il dispositivo e salvati come file privato places.json all'interno della cartella /Apps/maps. Non abbiamo accesso alle tue chiavi di decrittazione, password o luoghi in chiaro.",
     "section3_title": "3. Analisi e Raccolta Dati",
     "section3_text": "Non raccogliamo dati di diagnostica, tracciamento IP, telemetria o analisi utente. L'applicazione funziona in completo anonimato.",
     "section4_title": "4. Trasparenza Open Source",

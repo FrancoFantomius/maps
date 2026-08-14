@@ -168,7 +168,8 @@ export const AccountController = {
       this.updateProfileUI(saved);
       this.hideLoginModal();
     } catch (err) {
-      console.error("Login verification failed:", err);
+      const code = err && err.code ? ` [${err.code}]` : '';
+      console.error(`Login verification failed${code}:`, err);
       this.showStatusError(err.message || TranslationController.t('login.err_failed', {}, "Failed to log in. Please check your credentials."));
     }
   },

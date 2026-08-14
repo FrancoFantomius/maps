@@ -132,7 +132,7 @@
     "section1_text": "Todos tus marcadores se guardan localmente en tu dispositivo.",
     "section2_title": "2. Sincronización Cifrada",
     "section2_text1": "Sincronización cifrada de extremo a extremo mediante Filen.",
-    "section2_text2": "Tus datos se cifran con AES-256-GCM antes de salir de tu dispositivo.",
+    "section2_text2": "Tus lugares guardados se cifran con AES-256-GCM antes de salir de tu dispositivo y se guardan como un archivo privado places.json dentro de la carpeta /Apps/maps.",
     "section3_title": "3. Sin Recopilación de Datos",
     "section3_text": "No recopilamos analíticas ni seguimiento.",
     "section4_title": "4. Transparencia Código Abierto",

@@ -1,7 +1,7 @@
 {
   "name": "maps",
   "private": true,
-  "version": "1.3.3",
+  "version": "1.4.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -29,5 +29,9 @@
     "vite-plugin-handlebars": "^2.0.3",
     "vite-plugin-node-polyfills": "^0.28.0",
     "vitest": "^4.1.10"
+  },
+  "allowScripts": {
+    "leveldown@5.6.0": true,
+    "leveldown@6.1.1": true
   }
 }

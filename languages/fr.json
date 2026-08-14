@@ -132,7 +132,7 @@
     "section1_text": "Vos repères sont stockés localement sur votre appareil.",
     "section2_title": "2. Synchronisation Chiffrée",
     "section2_text1": "Synchronisation via Filen.",
-    "section2_text2": "Chiffrement AES-256-GCM côté client.",
+    "section2_text2": "Vos lieux enregistrés sont chiffrés avec AES-256-GCM côté client et stockés dans un fichier privé places.json dans le dossier /Apps/maps.",
     "section3_title": "3. Pas de Collecte de Données",
     "section3_text": "Aucune télémétrie ni suivi.",
     "section4_title": "4. Transparence Open Source",

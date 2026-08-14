@@ -47,6 +47,43 @@ let filenClient = null;
 let syncPromise = Promise.resolve();
 let syncInterval = null;
 let currentSyncStatus = 'offline'; // 'offline', 'syncing', 'online', 'error'
+let lastReportedSyncKey = '';      // (status or status:code) already logged, to avoid console spam
+let syncInProgress = false;        // guards against overlapping sync runs
+
+export const FILEN_SYNC_DIR = '/Apps/maps';
+export const FILEN_SYNC_FILE = `${FILEN_SYNC_DIR}/places.json`;
+
+/**
+ * Machine-readable error codes for the Filen sync module.
+ * Always log/throw with these so issues are searchable and debuggable.
+ */
+export const SYNC_ERROR_CODES = {
+  NOT_CONFIGURED: 'SYNC_ERR_NOT_CONFIGURED',
+  LOGIN_FAILED: 'SYNC_ERR_LOGIN',
+  NO_SESSION: 'SYNC_ERR_NO_SESSION',
+  INIT_FAILED: 'SYNC_ERR_INIT',
+  DIR_NOT_FOUND: 'SYNC_ERR_DIR',
+  REMOTE_READ: 'SYNC_ERR_REMOTE_READ',
+  UPLOAD: 'SYNC_ERR_UPLOAD',
+  DOWNLOAD: 'SYNC_ERR_DOWNLOAD',
+  RECONCILE: 'SYNC_ERR_RECONCILE',
+  PROFILE: 'SYNC_ERR_PROFILE',
+};
+
+/**
+ * Create an Error carrying a stable sync error code.
+ */
+function syncError(code, message, cause) {
+  const err = new Error(`${message} (${code})`);
+  err.code = code;
+  err.cause = cause;
+  return err;
+}
+
+function formatSyncError(err) {
+  if (err && err.code) return `[${err.code}] ${err.message}`;
+  return err ? String(err.message || err) : 'Unknown sync error';
+}
 
 // Watch local database changes for live updates (sync, edits)
 db.changes({
@@ -276,14 +313,36 @@ export function triggerSyncReconciliation() {
 }
 
 function queueSync() {
+  if (syncInProgress || !filenClient) return;
+  syncInProgress = true;
   syncPromise = syncPromise.then(() => runSync()).catch(err => {
-    console.error("[Sync] Error in sync queue:", err);
+    console.error(`[Sync] Error in sync queue: ${formatSyncError(err)}`);
+  }).finally(() => {
+    syncInProgress = false;
   });
 }
 
-function updateSyncStatus(status) {
+function updateSyncStatus(status, errorInfo = null) {
   currentSyncStatus = status;
-  console.log(`[Sync] Status: ${status}`);
+
+  // Intermediate 'syncing' state is never worth logging (it fires every 30s tick).
+  if (status === 'syncing') {
+    window.dispatchEvent(new CustomEvent('maps-sync-status', { detail: status }));
+    return;
+  }
+
+  // Only log on real transitions, deduplicating repeated errors by status+code.
+  const key = errorInfo ? `${status}:${errorInfo.code}` : status;
+  if (key !== lastReportedSyncKey) {
+    lastReportedSyncKey = key;
+    if (errorInfo) {
+      const cause = errorInfo.cause ? ` (${errorInfo.cause})` : '';
+      console.error(`[Sync] Status: ${status} [${errorInfo.code}] ${errorInfo.message}${cause}`);
+    } else {
+      console.log(`[Sync] Status: ${status}`);
+    }
+  }
+
   // Dispatch custom event to notify UI
   window.dispatchEvent(new CustomEvent('maps-sync-status', { detail: status }));
 }
@@ -326,14 +385,18 @@ async function initFilenAndSync(settings) {
           }
         }
       } catch (e) {
-        console.warn("[Sync] Failed to update profile info in background:", e);
+        console.warn(`[Sync] Failed to update profile info in background [${SYNC_ERROR_CODES.PROFILE}]:`, e);
       }
     } else if (settings.email && settings.password) {
-      await filenClient.login({
-        email: settings.email,
-        password: settings.password,
-        twoFactorCode: settings.twoFactorCode || undefined
-      });
+      try {
+        await filenClient.login({
+          email: settings.email,
+          password: settings.password,
+          twoFactorCode: settings.twoFactorCode || undefined
+        });
+      } catch (e) {
+        throw syncError(SYNC_ERROR_CODES.LOGIN_FAILED, 'Filen login failed. Check your credentials and two-factor code.', e);
+      }
 
       let nickname = settings.email.split('@')[0];
       let avatarURL = '';
@@ -345,7 +408,7 @@ async function initFilenAndSync(settings) {
           if (accountInfo.avatarURL) avatarURL = accountInfo.avatarURL;
         }
       } catch (e) {
-        console.warn("[Sync] Failed to fetch profile info during login:", e);
+        console.warn(`[Sync] Failed to fetch profile info during login [${SYNC_ERROR_CODES.PROFILE}]:`, e);
       }
 
       const sessionSettings = {
@@ -364,12 +427,12 @@ async function initFilenAndSync(settings) {
 
       await saveSyncSettings(sessionSettings);
     } else {
-      throw new Error("No credentials or active session keys available");
+      throw syncError(SYNC_ERROR_CODES.NO_SESSION, "No credentials or active session keys available");
     }
 
     // Ensure remote directory structures exist
     try {
-      await filenClient.fs().mkdir({ path: '/maps' });
+      await filenClient.fs().mkdir({ path: FILEN_SYNC_DIR });
     } catch (e) { }
 
     queueSync();
@@ -379,9 +442,14 @@ async function initFilenAndSync(settings) {
     }, 30000);
 
   } catch (err) {
-    console.error("[Sync] Failed to initialize Filen SDK client:", err);
-    updateSyncStatus('error');
-    throw err;
+    // Preserve a code already attached (e.g. LOGIN_FAILED), otherwise use INIT_FAILED.
+    const code = (err && err.code) ? err.code : SYNC_ERROR_CODES.INIT_FAILED;
+    const message = (err && err.code) ? err.message : 'Failed to initialize Filen SDK client';
+    const cause = (err && err.code) ? err.cause : err;
+    const coded = err && err.code ? err : syncError(code, message, cause);
+    console.error(`[Sync] ${formatSyncError(coded)}`);
+    updateSyncStatus('error', { code, message, cause });
+    throw coded;
   }
 }
 
@@ -395,21 +463,21 @@ async function runSync() {
   try {
     // Resolve the parent directory UUID on Filen
     const parentUUID = await filenClient.fs().pathToItemUUID({
-      path: '/maps',
+      path: FILEN_SYNC_DIR,
       type: 'directory'
     });
 
     if (!parentUUID) {
-      throw new Error("Could not resolve directory UUID for /maps.");
+      throw syncError(SYNC_ERROR_CODES.DIR_NOT_FOUND, `Could not resolve directory UUID for ${FILEN_SYNC_DIR}.`);
     }
 
-    // Fetch list of files in /maps
+    // Fetch list of files in /Apps/maps
     let remoteFiles = [];
     try {
-      remoteFiles = await filenClient.fs().readdir({ path: '/maps' });
+      remoteFiles = await filenClient.fs().readdir({ path: FILEN_SYNC_DIR });
     } catch (err) {
       if (err.message && err.message.includes('not found')) {
-        await filenClient.fs().mkdir({ path: '/maps' });
+        await filenClient.fs().mkdir({ path: FILEN_SYNC_DIR });
         remoteFiles = [];
       } else {
         throw err;
@@ -422,11 +490,11 @@ async function runSync() {
 
     if (placesFile) {
       try {
-        remoteStats = await filenClient.fs().stat({ path: '/maps/places.json' });
-        const dataBuffer = await filenClient.fs().readFile({ path: '/maps/places.json' });
+        remoteStats = await filenClient.fs().stat({ path: FILEN_SYNC_FILE });
+        const dataBuffer = await filenClient.fs().readFile({ path: FILEN_SYNC_FILE });
         remoteContent = JSON.parse(dataBuffer.toString('utf-8'));
       } catch (err) {
-        console.error("[Sync] Error reading remote places.json:", err);
+        console.error(`[Sync] Error reading remote places.json [${SYNC_ERROR_CODES.REMOTE_READ}]:`, err);
       }
     }
 
@@ -475,7 +543,7 @@ async function runSync() {
       // If remote places.json exists, remove it first to overwrite it correctly
       if (placesFile) {
         try {
-          await filenClient.fs().rm({ path: '/maps/places.json', permanent: true });
+          await filenClient.fs().rm({ path: FILEN_SYNC_FILE, permanent: true });
         } catch (e) {
           console.warn("[Sync] Failed to remove old places.json before upload:", e);
         }
@@ -591,18 +659,34 @@ async function runSync() {
 
     if (deletedQueue.length > 0) {
       // Local deletions occurred, always upload to overwrite remote file
-      await uploadLocal();
+      try {
+        await uploadLocal();
+      } catch (err) {
+        throw syncError(SYNC_ERROR_CODES.UPLOAD, 'Failed to upload local changes to Filen', err);
+      }
     } else if (!placesFile) {
       // Remote file does not exist, upload local data
       if (localPlaces.length > 0 || localHome) {
-        await uploadLocal();
+        try {
+          await uploadLocal();
+        } catch (err) {
+          throw syncError(SYNC_ERROR_CODES.UPLOAD, 'Failed to upload local changes to Filen', err);
+        }
       }
     } else if (localMaxUpdated > remoteMaxUpdated) {
       // Local changes are newer, upload
-      await uploadLocal();
+      try {
+        await uploadLocal();
+      } catch (err) {
+        throw syncError(SYNC_ERROR_CODES.UPLOAD, 'Failed to upload local changes to Filen', err);
+      }
     } else if (remoteMaxUpdated > localMaxUpdated) {
       // Remote changes are newer, download
-      await downloadRemote(remoteContent);
+      try {
+        await downloadRemote(remoteContent);
+      } catch (err) {
+        throw syncError(SYNC_ERROR_CODES.DOWNLOAD, 'Failed to apply remote changes locally', err);
+      }
     } else {
       // Timestamps equal, ensure local markers are marked synced
       let updatedAny = false;
@@ -619,8 +703,13 @@ async function runSync() {
 
     updateSyncStatus('online');
   } catch (err) {
-    console.error("[Sync] Error during sync reconciliation:", err);
-    updateSyncStatus('error');
+    // Preserve a code already attached (e.g. UPLOAD/DOWNLOAD/DIR_NOT_FOUND), else RECONCILE.
+    const code = (err && err.code) ? err.code : SYNC_ERROR_CODES.RECONCILE;
+    const message = (err && err.code) ? err.message : 'Error during sync reconciliation';
+    const cause = (err && err.code) ? err.cause : err;
+    const coded = err && err.code ? err : syncError(code, message, cause);
+    console.error(`[Sync] ${formatSyncError(coded)}`);
+    updateSyncStatus('error', { code, message, cause });
   }
 }
 

@@ -132,7 +132,7 @@
     "section1_text": "Todos os seus dados são salvos localmente.",
     "section2_title": "2. Sincronização Criptografada",
     "section2_text1": "Sincronização via Filen.",
-    "section2_text2": "Criptografia AES-256-GCM no dispositivo.",
+    "section2_text2": "Seus locais salvos são criptografados com AES-256-GCM no dispositivo e armazenados como um arquivo privado places.json na pasta /Apps/maps.",
     "section3_title": "3. Sem Coleta de Dados",
     "section3_text": "Não coletamos telemetria.",
     "section4_title": "4. Transparência Código Aberto",

@@ -132,7 +132,7 @@
     "section1_text": "Alle Marker werden lokal auf Ihrem Gerät gespeichert.",
     "section2_title": "2. Verschlüsselte Synchro",
     "section2_text1": "Synchronisierung über Filen Cloud-APIs.",
-    "section2_text2": "AES-256-GCM Verschlüsselung auf Ihrem Gerät.",
+    "section2_text2": "Ihre gespeicherten Orte werden auf Ihrem Gerät mit AES-256-GCM verschlüsselt und als private Datei places.json im Ordner /Apps/maps gespeichert.",
     "section3_title": "3. Keine Datenerfassung",
     "section3_text": "Keine Telemetrie oder Benutzer-Tracking.",
     "section4_title": "4. Open-Source Transparenz",

@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2026-08-14
+
+### Added
+- **Structured Sync Error Diagnostics & Codes**: Introduced `SYNC_ERROR_CODES` enum (`NO_SESSION`, `LOGIN_FAILED`, `INIT_FAILED`, `DIR_NOT_FOUND`, `REMOTE_READ`, `UPLOAD`, `DOWNLOAD`, `RECONCILE`, `PROFILE`) along with error construction and formatted logging helpers for clear diagnostics during cloud synchronization failures.
+- **Filen Directory & File Path Constants**: Exported `FILEN_SYNC_DIR` and `FILEN_SYNC_FILE` constants with dedicated test coverage to enforce the `/Apps/maps` storage convention.
+
+### Changed
+- **Standardized Cloud Sync App Folder (`/Apps/maps`)**: Migrated remote Filen synchronization storage directory from `/maps` to `/Apps/maps/places.json`.
+- **Privacy Policy & Localization Alignment**: Updated privacy documentation and localized strings (`privacy.html` and all `languages/*.json` files) to document the `/Apps/maps` cloud storage location.
+- **Service Worker Module Caching**: Added `.mjs` support to `CACHEABLE_EXTENSIONS` in `sw.js` for proper offline caching of JavaScript ES module assets.
+- **Vite Build & Asset Pipeline Cleanup**: Streamlined `vite.config.js` by removing redundant icon file emissions into `assets/img/icons/` and legacy static directory synchronization routines.
+
+### Fixed
+- **MapLibre Web Worker Asset Resolution**: Fixed blank map rendering in production builds by explicitly setting `maplibregl.setWorkerUrl()` with Vite's URL asset resolver for `maplibre-gl-worker.mjs`.
+- **Sync Polling Log Redundancy**: Reduced console noise during routine 30-second sync polling intervals by only logging actionable state changes and deduplicated error transitions.
+
 ## [1.3.3] - 2026-08-14
 
 ### Added

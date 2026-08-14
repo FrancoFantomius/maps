@@ -68,7 +68,7 @@ const TILE_ROUTES = [
 const FONT_EXTENSIONS = /\.(woff|woff2|ttf|otf|eot)(\?.*)?$/i;
 
 // File extensions to cache at runtime via network-first
-const CACHEABLE_EXTENSIONS = /\.(js|css|html|png|svg|json|ico)(\?.*)?$/i;
+const CACHEABLE_EXTENSIONS = /\.(js|mjs|css|html|png|svg|json|ico)(\?.*)?$/i;
 
 // ─── Install ──────────────────────────────────────────────────────────────────
 

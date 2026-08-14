@@ -132,7 +132,7 @@
     "section1_text": "所有标记和地点均本地存储在您的设备上。",
     "section2_title": "2. 端到端加密同步",
     "section2_text1": "通过 Filen 云 API 进行加密同步。",
-    "section2_text2": "在离开您的设备前使用 AES-256-GCM 算法加密。",
+    "section2_text2": "您保存的地点在离开设备前使用 AES-256-GCM 加密，并作为名为 places.json 的私有文件存储在 /Apps/maps 文件夹中。",
     "section3_title": "3. 无数据收集",
     "section3_text": "我们不收集任何分析或跟踪数据。",
     "section4_title": "4. 开源透明",
