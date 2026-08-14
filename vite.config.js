@@ -49,18 +49,29 @@ const serviceWorkerPlugin = () => ({
       if (req.url === '/sw.js') {
         const src = fs.readFileSync(path.join(__dirname, 'sw.js'), 'utf-8');
         res.setHeader('Content-Type', 'application/javascript');
-        res.end(src.replace(/__APP_VERSION__/g, pkg.version));
+        res.end(src.replace(/__APP_VERSION__/g, pkg.version).replace(/__PRECACHE_FONTS__/g, '[]'));
         return;
       }
       next();
     });
   },
-  generateBundle() {
+  generateBundle(options, bundle) {
+    const fontAssets = [];
+    for (const fileName of Object.keys(bundle)) {
+      if (/\.(woff|woff2|ttf|otf|eot)$/i.test(fileName)) {
+        fontAssets.push(`/${fileName}`);
+      }
+    }
+
     const src = fs.readFileSync(path.join(__dirname, 'sw.js'), 'utf-8');
+    const injectedSrc = src
+      .replace(/__APP_VERSION__/g, pkg.version)
+      .replace(/__PRECACHE_FONTS__/g, JSON.stringify(fontAssets));
+
     this.emitFile({
       type: 'asset',
       fileName: 'sw.js',
-      source: src.replace(/__APP_VERSION__/g, pkg.version),
+      source: injectedSrc,
     });
   },
 });
@@ -160,6 +171,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './tests/setup.js',
     globals: true,
+  },
+  optimizeDeps: {
+    exclude: ['maplibre-gl'],
   },
   server: {
     watch: {

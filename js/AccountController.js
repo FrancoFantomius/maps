@@ -3,6 +3,7 @@
  */
 
 import { getSyncSettings, saveSyncSettings, startSync, stopSync, destroyDatabase } from './db.js';
+import { TranslationController } from './TranslationController.js';
 
 // DOM Elements cache
 let elements = {};
@@ -145,11 +146,11 @@ export const AccountController = {
     const twoFactorCode = elements.syncTwoFactor.value.trim();
 
     if (!email || !password) {
-      this.showStatusError("Please enter both email and password.");
+      this.showStatusError(TranslationController.t('login.err_enter_both', {}, "Please enter both email and password."));
       return;
     }
 
-    this.showStatusLoading("Signing in & verifying credentials...");
+    this.showStatusLoading(TranslationController.t('login.verifying', {}, "Signing in & verifying credentials..."));
 
     try {
       const initialSettings = {
@@ -168,12 +169,12 @@ export const AccountController = {
       this.hideLoginModal();
     } catch (err) {
       console.error("Login verification failed:", err);
-      this.showStatusError(err.message || "Failed to log in. Please check your credentials.");
+      this.showStatusError(err.message || TranslationController.t('login.err_failed', {}, "Failed to log in. Please check your credentials."));
     }
   },
 
   async handleSignout() {
-    if (confirm("Are you sure you want to sign out? Synchronization will be disabled, but your local places will remain.")) {
+    if (confirm(TranslationController.t('login.confirm_signout', {}, "Are you sure you want to sign out? Synchronization will be disabled, but your local places will remain."))) {
       try {
         stopSync();
         const settings = await getSyncSettings();
@@ -196,7 +197,7 @@ export const AccountController = {
   },
 
   async handlePurge() {
-    if (confirm("WARNING: This will permanently delete all local places on this browser. Your synchronized cloud database on Filen will not be affected. Do you want to purge local cache?")) {
+    if (confirm(TranslationController.t('account.confirm_purge', {}, "WARNING: This will permanently delete all local places on this browser. Your synchronized cloud database on Filen will not be affected. Do you want to purge local cache?"))) {
       try {
         await destroyDatabase();
       } catch (err) {

@@ -2,16 +2,16 @@
 <div id="layer-switcher" class="fixed bottom-24 left-4 z-10 pointer-events-auto bottom-ui-element">
     <!-- Main tile toggle button -->
     <div class="layer-switcher-container">
-        <button id="layer-toggle-btn" class="layer-toggle-btn" title="Switch map type">
+        <button id="layer-toggle-btn" class="layer-toggle-btn" title="Switch map type" data-i18n-title="layers.switch_map_type">
             <img id="layer-toggle-preview"
                 src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/13/2933/4366"
                 alt="Switch layer" class="layer-toggle-img">
-            <span id="layer-toggle-label" class="layer-toggle-label">Satellite</span>
+            <span id="layer-toggle-label" class="layer-toggle-label" data-i18n="layers.satellite">Satellite</span>
         </button>
         <!-- Labels sub-button (visible in satellite mode) -->
-        <button id="layer-labels-btn" class="layer-labels-btn hidden" title="Toggle street names & labels">
+        <button id="layer-labels-btn" class="layer-labels-btn hidden" title="Toggle street names & labels" data-i18n-title="layers.labels">
             <span class="material-icons-outlined text-[15px] leading-none">label</span>
-            <span class="text-[10px] font-bold">Labels</span>
+            <span class="text-[10px] font-bold" data-i18n="layers.labels">Labels</span>
         </button>
     </div>
 </div>

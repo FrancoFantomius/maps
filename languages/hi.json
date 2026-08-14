@@ -18,7 +18,7 @@
     "street_names": "Street Names",
     "bike_paths": "Bike Paths",
     "buildings": "Buildings",
-    "home_location": "Home Location",
+    "home_location": "घर का स्थान",
     "home_address": "Home Address",
     "search_home_placeholder": "Search home address...",
     "fly_to_home": "Fly to Home",
@@ -45,7 +45,8 @@
   },
   "search": {
     "no_results": "No results found",
-    "searching": "Searching..."
+    "searching": "Searching...",
+    "matching_locations": "प्रासंगिक स्थान मिले"
   },
   "routing": {
     "title": "Route Planner",
@@ -57,7 +58,11 @@
     "calculate": "Calculate Route",
     "clear": "Clear Route",
     "distance": "Distance",
-    "duration": "Duration"
+    "duration": "Duration",
+    "fastest_route": "सबसे तेज़ मार्ग",
+    "prompt_instructions": "दिशा-निर्देश देखने के लिए शुरुआत और गंतव्य तय करें",
+    "swap": "शुरुआत और गंतव्य बदलें",
+    "head_on": "{modifier} की ओर बढ़ें"
   },
   "measurement": {
     "title": "Distance Measurement",
@@ -75,7 +80,14 @@
     "description": "Description",
     "save": "Save Marker",
     "cancel": "Cancel",
-    "no_markers": "No saved markers yet."
+    "no_markers": "No saved markers yet.",
+    "category_poi": "रुचि का बिंदु",
+    "category_home": "घर",
+    "category_food": "खान-पान",
+    "category_lodging": "आवास",
+    "category_nature": "प्रकृति / दर्शनीय",
+    "save_location": "स्थान सहेजें",
+    "no_notes": "कोई टिप्पणी या विवरण नहीं सहेजा गया।"
   },
   "login": {
     "title": "Filen Cloud Sync",
@@ -87,7 +99,11 @@
     "signing_in": "Signing in...",
     "sign_out": "Sign Out",
     "status_logged_in": "Logged in as",
-    "status_logged_out": "Not logged in"
+    "status_logged_out": "Not logged in",
+    "verifying": "साइन इन और क्रेडेंशियल सत्यापित किए जा रहे हैं...",
+    "err_enter_both": "कृपया ईमेल और पासवर्ड दोनों दर्ज करें।",
+    "err_failed": "साइन इन करने में विफल। कृपया अपने क्रेडेंशियल जांचें।",
+    "confirm_signout": "क्या आप वाकई साइन आउट करना चाहते हैं? सिंक अक्षम हो जाएगा, लेकिन आपके स्थानीय स्थान बने रहेंगे।"
   },
   "layers": {
     "title": "Map Layers",
@@ -95,13 +111,17 @@
     "dark": "Dark Mode Map",
     "satellite": "Satellite Imagery",
     "osm": "OpenStreetMap Standard",
-    "bike": "Bike Overlay"
+    "bike": "Bike Overlay",
+    "switch_map_type": "मानचित्र प्रकार बदलें",
+    "labels": "लेबल"
   },
   "controls": {
     "zoom_in": "Zoom In",
     "zoom_out": "Zoom Out",
     "my_location": "My Location",
-    "reset_north": "Reset North"
+    "reset_north": "Reset North",
+    "directions": "दिशा-निर्देश",
+    "perspective": "दृष्टिकोण"
   },
   "privacy": {
     "page_title": "Privacy Policy - Maps",
@@ -129,5 +149,26 @@
     "section2_text": "Maps relies on open geographic datasets (including OpenStreetMap and OpenFreeMap) and third-party cloud synchronization (Filen). We do not guarantee uninterrupted availability or accuracy of third-party map data or APIs.",
     "section3_title": "3. License & Source Code",
     "section3_text": "Maps is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). You are free to modify, redistribute, and host your own instances subject to AGPL-3.0 requirements."
+  },
+  "poi": {
+    "dropped_pin": "ड्रॉप किया गया पिन",
+    "save_prompt": "इस निर्देशांक को सहेजे गए स्थान के रूप में रखने के लिए, नाम, श्रेणी और विवरण देने हेतु नीचे दिए गए बटन पर क्लिक करें।",
+    "shop_details": "दुकान का विवरण",
+    "type": "प्रकार:",
+    "brand": "ब्रांड:",
+    "hours": "समय:",
+    "cuisine": "व्यंजन:",
+    "web": "वेबसाइट:",
+    "phone": "फोन:",
+    "save_place": "स्थान सहेजें",
+    "directions": "दिशा-निर्देश",
+    "get_directions": "दिशा-निर्देश प्राप्त करें",
+    "edit": "संपादित करें",
+    "delete": "हटाएं",
+    "highlighting": "हाइलाइट: {streetName}"
+  },
+  "account": {
+    "purge_cache": "स्थानीय कैश हटाएं",
+    "confirm_purge": "चेतावनी: यह इस ब्राउज़र पर सभी स्थानीय स्थानों को स्थायी रूप से हटा देगा। फाइलन पर आपका क्लाउड डेटाबेस प्रभावित नहीं होगा। क्या आप कैश हटाना चाहते हैं?"
   }
 }

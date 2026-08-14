@@ -3,6 +3,7 @@
 import { MapService } from './MapService.js';
 import { MarkerController } from './MarkerController.js';
 import { RoutingController } from './RoutingController.js';
+import { TranslationController } from './TranslationController.js';
 
 export const HUDController = {
     currentState: 'places',
@@ -59,6 +60,8 @@ export const HUDController = {
             MarkerController.removeTempMarker();
             this.clearHighlightedPath();
         }
+
+        window.dispatchEvent(new CustomEvent('maps-hud-state-changed', { detail: { state: hudState } }));
 
         const panels = ['panel-places', 'panel-search', 'panel-details', 'measure-panel', 'nav-panel'];
         panels.forEach(id => {
@@ -130,7 +133,7 @@ export const HUDController = {
             const template = document.getElementById('template-place-details-temp');
             const clone = template.content.cloneNode(true);
 
-            clone.querySelector('.place-name').textContent = data.name || "Dropped Pin";
+            clone.querySelector('.place-name').textContent = data.name || TranslationController.t('poi.dropped_pin', {}, "Dropped Pin");
             clone.querySelector('.place-coords').textContent = `${data.lat.toFixed(5)}, ${data.lng.toFixed(5)}`;
             clone.querySelector('.btn-close').addEventListener('click', () => this.setState('places'));
 
@@ -145,7 +148,7 @@ export const HUDController = {
             if (data.streetName) {
                 const highlightContainer = clone.querySelector('.street-highlight-container');
                 highlightContainer.classList.remove('hidden');
-                highlightContainer.querySelector('.street-name').textContent = `Highlighting: ${data.streetName}`;
+                highlightContainer.querySelector('.street-name').textContent = TranslationController.t('poi.highlighting', { streetName: data.streetName }, `Highlighting: ${data.streetName}`);
             }
 
             if (data.wikiSummary) {
@@ -224,11 +227,11 @@ export const HUDController = {
             const colorPalette = MarkerController.colorPalette;
             const config = colorPalette[data.category] || colorPalette.poi;
             const categoryLabels = {
-                poi: '🎯 Point of Interest',
-                home: '🏠 Home',
-                food: '🍕 Food & Drink',
-                lodging: '🏨 Lodging',
-                nature: '🌿 Nature / Scenic'
+                poi: `🎯 ${TranslationController.t('markers.category_poi', {}, 'Point of Interest')}`,
+                home: `🏠 ${TranslationController.t('markers.category_home', {}, 'Home')}`,
+                food: `🍕 ${TranslationController.t('markers.category_food', {}, 'Food & Drink')}`,
+                lodging: `🏨 ${TranslationController.t('markers.category_lodging', {}, 'Lodging')}`,
+                nature: `🌿 ${TranslationController.t('markers.category_nature', {}, 'Nature / Scenic')}`
             };
 
             const badge = clone.querySelector('.place-badge');
@@ -253,7 +256,7 @@ export const HUDController = {
             if (data.desc) {
                 descText.textContent = data.desc;
             } else {
-                descText.textContent = "No notes or description saved.";
+                descText.textContent = TranslationController.t('markers.no_notes', {}, "No notes or description saved.");
                 descText.className = "place-desc-text text-xs text-slate-400 dark:text-slate-600 italic";
             }
 

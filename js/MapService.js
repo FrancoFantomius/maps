@@ -1,12 +1,13 @@
 // maps Map Engine Module (Facade Pattern) - js/MapService.js
 
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import { MarkerController } from './MarkerController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { RoutingController } from './RoutingController.js';
 import { GPSController } from './GPSController.js';
 import { ApiService } from './ApiService.js';
 import { DarkMapStyle } from './DarkMapStyle.js';
+import { TranslationController } from './TranslationController.js';
 
 const STORAGE_KEY_LAYER = 'maps_active_layer';
 const STORAGE_KEY_LABELS = 'maps_labels_enabled';
@@ -628,7 +629,9 @@ export const MapService = {
         const labelsBtn = document.getElementById('layer-labels-btn');
 
         if (label) {
-            label.textContent = this.activeLayerKey === 'street' ? 'Satellite' : 'Map';
+            label.textContent = this.activeLayerKey === 'street' 
+                ? TranslationController.t('layers.satellite', {}, 'Satellite') 
+                : TranslationController.t('layers.liberty', {}, 'Map');
         }
 
         if (labelsBtn) {

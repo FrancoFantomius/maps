@@ -8,6 +8,8 @@ import { Buffer } from "buffer";
 import { Readable } from "stream";
 import { MapService } from './MapService.js';
 
+import PouchDBAdapterMemory from 'pouchdb-adapter-memory';
+
 // Polyfill Readable.from in the browser stream polyfill
 if (Readable) {
   Readable.from = function (iterable, options) {
@@ -32,8 +34,13 @@ if (Readable) {
   };
 }
 
+const isTest = (typeof process !== 'undefined' && (process.env.NODE_ENV === 'test' || process.env.VITEST)) || (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.MODE === 'test');
+if (isTest) {
+  PouchDB.plugin(PouchDBAdapterMemory);
+}
+
 // Initialize PouchDB local database
-const db = new PouchDB('maps_db');
+const db = new PouchDB('maps_db', isTest ? { adapter: 'memory' } : {});
 
 // State variables for Filen Sync
 let filenClient = null;

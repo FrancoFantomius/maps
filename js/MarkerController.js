@@ -5,6 +5,7 @@ import { HUDController } from './HUDController.js';
 import { MeasurementController } from './MeasurementController.js';
 import { RoutingController } from './RoutingController.js';
 import { savePlace, deletePlaceFromDB, loadAllPlaces } from './db.js';
+import { TranslationController } from './TranslationController.js';
 
 export const MarkerController = {
     customMarkers: [],
@@ -73,14 +74,14 @@ export const MarkerController = {
                 modalName.value = m.name;
                 modalCategory.value = m.category;
                 modalDesc.value = m.desc;
-                modalTitle.innerText = "Edit Marker";
+                modalTitle.innerText = TranslationController.t('markers.edit_marker', {}, "Edit Marker");
             }
         } else {
             modalId.value = '';
             modalName.value = tempDetails ? tempDetails.name : '';
             modalCategory.value = 'poi';
             modalDesc.value = '';
-            modalTitle.innerText = "Save Location";
+            modalTitle.innerText = TranslationController.t('markers.save_location', {}, "Save Location");
         }
         markerModal.classList.remove('hidden');
     },

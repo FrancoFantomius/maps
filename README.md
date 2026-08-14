@@ -1,6 +1,6 @@
 # Maps
 
-[![Version](https://img.shields.io/badge/version-1.3.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.3-blue.svg)](CHANGELOG.md)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 
 A modern, privacy-focused, local-first web mapping application powered by MapLibre GL JS, OpenStreetMap, and Tailwind CSS. Built as a Progressive Web App (PWA) with cloud synchronization capabilities.
@@ -22,7 +22,7 @@ A modern, privacy-focused, local-first web mapping application powered by MapLib
 - **Custom Markers & Collections**: Save favorite locations, home address, and custom pins organized with PouchDB for local-first reliability.
 - **Cloud Sync**: Optional zero-knowledge / end-to-end cloud synchronization via **Filen** integration (`@filen/sdk`).
 - **Distance & Area Measurement**: On-map interactive tools to measure lines and multi-point paths.
-- **Multi-Language Support**: Full internationalization with 60+ language localizations, automatic system language detection, English fallback, dynamic language switching without page reloads, and RTL language support.
+- **Multi-Language Support**: Full internationalization with main global language localizations (en, it, es, fr, de, zh, ja, ar, ru, pt, hi), automatic system language detection, English fallback, dynamic language switching without page reloads, and RTL language support.
 - **Offline & PWA Ready**: Installable Progressive Web App (PWA) powered by a custom Vanilla Service Worker (`sw.js`) with dynamic versioning, app-shell precaching, and LRU-evicted tile caching (OpenFreeMap, OpenStreetMap, WaymarkedTrails, Elevation DEM).
 
 ---
@@ -50,7 +50,7 @@ maps/
 │   ├── app.js                  # Main application orchestrator & initialization
 │   ├── db.js                   # Local database storage wrapper (PouchDB)
 │   └── pwa.js                  # Service Worker lifecycle registration and update reloader
-├── languages/                  # i18n translation JSON files (60+ languages)
+├── languages/                  # i18n translation JSON files (11 main languages)
 ├── templates/                  # Modular Handlebars HTML partial templates
 ├── img/                        # App icons and static images
 ├── index.html                  # Main application HTML entry point

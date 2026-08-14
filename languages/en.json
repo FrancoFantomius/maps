@@ -45,7 +45,8 @@
   },
   "search": {
     "no_results": "No results found",
-    "searching": "Searching..."
+    "searching": "Searching...",
+    "matching_locations": "Matching locations found"
   },
   "routing": {
     "title": "Route Planner",
@@ -57,7 +58,11 @@
     "calculate": "Calculate Route",
     "clear": "Clear Route",
     "distance": "Distance",
-    "duration": "Duration"
+    "duration": "Duration",
+    "fastest_route": "Fastest route",
+    "prompt_instructions": "Set origin and destination to see route directions",
+    "swap": "Swap origin and destination",
+    "head_on": "Head {modifier} on"
   },
   "measurement": {
     "title": "Distance Measurement",
@@ -75,7 +80,14 @@
     "description": "Description",
     "save": "Save Marker",
     "cancel": "Cancel",
-    "no_markers": "No saved markers yet."
+    "no_markers": "No saved markers yet.",
+    "category_poi": "Point of Interest",
+    "category_home": "Home",
+    "category_food": "Food & Drink",
+    "category_lodging": "Lodging",
+    "category_nature": "Nature / Scenic",
+    "save_location": "Save Location",
+    "no_notes": "No notes or description saved."
   },
   "login": {
     "title": "Filen Cloud Sync",
@@ -87,7 +99,11 @@
     "signing_in": "Signing in...",
     "sign_out": "Sign Out",
     "status_logged_in": "Logged in as",
-    "status_logged_out": "Not logged in"
+    "status_logged_out": "Not logged in",
+    "verifying": "Signing in & verifying credentials...",
+    "err_enter_both": "Please enter both email and password.",
+    "err_failed": "Failed to log in. Please check your credentials.",
+    "confirm_signout": "Are you sure you want to sign out? Synchronization will be disabled, but your local places will remain."
   },
   "layers": {
     "title": "Map Layers",
@@ -95,13 +111,17 @@
     "dark": "Dark Mode Map",
     "satellite": "Satellite Imagery",
     "osm": "OpenStreetMap Standard",
-    "bike": "Bike Overlay"
+    "bike": "Bike Overlay",
+    "switch_map_type": "Switch map type",
+    "labels": "Labels"
   },
   "controls": {
     "zoom_in": "Zoom In",
     "zoom_out": "Zoom Out",
     "my_location": "My Location",
-    "reset_north": "Reset North"
+    "reset_north": "Reset North",
+    "directions": "Directions",
+    "perspective": "Perspective"
   },
   "privacy": {
     "page_title": "Privacy Policy - Maps",
@@ -129,5 +149,26 @@
     "section2_text": "Maps relies on open geographic datasets (including OpenStreetMap and OpenFreeMap) and third-party cloud synchronization (Filen). We do not guarantee uninterrupted availability or accuracy of third-party map data or APIs.",
     "section3_title": "3. License & Source Code",
     "section3_text": "Maps is licensed under the GNU Affero General Public License v3.0 (AGPL-3.0). You are free to modify, redistribute, and host your own instances subject to AGPL-3.0 requirements."
+  },
+  "poi": {
+    "dropped_pin": "Dropped Pin",
+    "save_prompt": "To store this coordinate as a saved place, click the button below to assign a name, category, and description.",
+    "shop_details": "Shop Details",
+    "type": "Type:",
+    "brand": "Brand:",
+    "hours": "Hours:",
+    "cuisine": "Cuisine:",
+    "web": "Web:",
+    "phone": "Phone:",
+    "save_place": "Save Place",
+    "directions": "Directions",
+    "get_directions": "Get Directions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "highlighting": "Highlighting: {streetName}"
+  },
+  "account": {
+    "purge_cache": "Purge Local Cache",
+    "confirm_purge": "WARNING: This will permanently delete all local places on this browser. Your synchronized cloud database on Filen will not be affected. Do you want to purge local cache?"
   }
 }

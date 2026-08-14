@@ -15,12 +15,16 @@ const TILE_CACHES = {
 
 // App-shell URLs to precache on install.
 // Vite-hashed assets (JS/CSS) are fetched via index.html and cached at runtime on first load.
+// __PRECACHE_FONTS__ is replaced at build time by serviceWorkerPlugin with font assets.
+const DYNAMIC_FONT_PRECACHES = typeof __PRECACHE_FONTS__ !== 'undefined' ? __PRECACHE_FONTS__ : [];
+
 const PRECACHE_URLS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/img/icons/maps_x192.png',
   '/img/icons/maps_x512.png',
+  ...(Array.isArray(DYNAMIC_FONT_PRECACHES) ? DYNAMIC_FONT_PRECACHES : []),
 ];
 
 // ─── Tile URL matchers ────────────────────────────────────────────────────────
@@ -60,8 +64,11 @@ const TILE_ROUTES = [
   },
 ];
 
-// File extensions to cache at runtime (mirrors the old Workbox globPatterns)
-const CACHEABLE_EXTENSIONS = /\.(js|css|html|png|svg|woff|woff2|json|ico)(\?.*)?$/i;
+// File extensions for fonts (Cache-First strategy for instant loading of Material Icons, Inter, Outfit)
+const FONT_EXTENSIONS = /\.(woff|woff2|ttf|otf|eot)(\?.*)?$/i;
+
+// File extensions to cache at runtime via network-first
+const CACHEABLE_EXTENSIONS = /\.(js|css|html|png|svg|json|ico)(\?.*)?$/i;
 
 // ─── Install ──────────────────────────────────────────────────────────────────
 
@@ -109,8 +116,15 @@ self.addEventListener('fetch', (event) => {
     }
   }
 
-  // For same-origin cacheable assets: network-first with precache fallback
   const url = new URL(request.url);
+
+  // For same-origin font assets (Material Icons, web fonts): cache-first for instant 0ms load
+  if (url.origin === self.location.origin && (FONT_EXTENSIONS.test(url.pathname) || request.destination === 'font')) {
+    event.respondWith(appCacheFirst(request));
+    return;
+  }
+
+  // For same-origin cacheable assets: network-first with precache fallback
   if (url.origin === self.location.origin && CACHEABLE_EXTENSIONS.test(url.pathname)) {
     event.respondWith(appNetworkFirst(request));
     return;
@@ -134,6 +148,26 @@ async function tilesCacheFirst(request, route) {
     cache.put(request, clone).then(() => evictOldEntries(route.cacheName, route.maxEntries));
   }
   return response;
+}
+
+/**
+ * Cache-first for font assets (Material Icons, Inter, Outfit).
+ * Serves cached font files immediately. If missing, fetches over network and caches for future visits.
+ */
+async function appCacheFirst(request) {
+  const cache = await caches.open(PRECACHE_NAME);
+  const cached = await cache.match(request);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+  }
 }
 
 /**

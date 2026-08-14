@@ -31,6 +31,19 @@ describe('PWA & Caching Configuration', () => {
         expect(terrainPattern.test(terrainUrl)).toBe(true);
     });
 
+    it('correctly routes font requests (Material Icons, Inter, Outfit) to CacheFirst strategy', () => {
+        const fontPattern = /\.(woff|woff2|ttf|otf|eot)(\?.*)?$/i;
+        const materialIconsUrl = '/assets/material-icons-outlined-latin-400-normal-12345.woff2';
+        const interFontUrl = '/assets/inter-latin-400-normal-67890.woff2';
+        const outfitFontUrl = '/assets/outfit-latin-600-normal-abcdef.woff';
+        const jsBundleUrl = '/assets/app-12345.js';
+
+        expect(fontPattern.test(materialIconsUrl)).toBe(true);
+        expect(fontPattern.test(interFontUrl)).toBe(true);
+        expect(fontPattern.test(outfitFontUrl)).toBe(true);
+        expect(fontPattern.test(jsBundleUrl)).toBe(false);
+    });
+
     describe('initPWA()', () => {
         let originalServiceWorker;
         let eventListeners;
@@ -42,6 +55,7 @@ describe('PWA & Caching Configuration', () => {
             Object.defineProperty(navigator, 'serviceWorker', {
                 writable: true,
                 value: {
+                    register: vi.fn().mockResolvedValue({ scope: '/' }),
                     addEventListener: vi.fn((event, cb) => {
                         eventListeners[event] = cb;
                     })

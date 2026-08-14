@@ -45,7 +45,8 @@
   },
   "search": {
     "no_results": "未找到结果",
-    "searching": "搜索中..."
+    "searching": "搜索中...",
+    "matching_locations": "找到匹配的位置"
   },
   "routing": {
     "title": "路线规划",
@@ -57,7 +58,11 @@
     "calculate": "计算路线",
     "clear": "清除路线",
     "distance": "距离",
-    "duration": "预计时间"
+    "duration": "预计时间",
+    "fastest_route": "最快路线",
+    "prompt_instructions": "设置起点和终点以查看路线指引",
+    "swap": "互换起点和终点",
+    "head_on": "朝 {modifier} 方向前往"
   },
   "measurement": {
     "title": "距离测量",
@@ -75,7 +80,14 @@
     "description": "描述",
     "save": "保存标记",
     "cancel": "取消",
-    "no_markers": "暂无保存的标记。"
+    "no_markers": "暂无保存的标记。",
+    "category_poi": "兴趣点",
+    "category_home": "住宅",
+    "category_food": "餐饮",
+    "category_lodging": "住宿",
+    "category_nature": "自然 / 景观",
+    "save_location": "保存位置",
+    "no_notes": "未保存任何备注或描述。"
   },
   "login": {
     "title": "Filen 云同步",
@@ -87,7 +99,11 @@
     "signing_in": "登录中...",
     "sign_out": "退出登录",
     "status_logged_in": "登录身份",
-    "status_logged_out": "未登录"
+    "status_logged_out": "未登录",
+    "verifying": "正在登录并验证凭据...",
+    "err_enter_both": "请输入电子邮箱和密码。",
+    "err_failed": "登录失败，请检查您的凭据。",
+    "confirm_signout": "确定要退出登录吗？同步功能将被禁用，但您的本地地点将保留。"
   },
   "layers": {
     "title": "地图图层",
@@ -95,13 +111,17 @@
     "dark": "深色地图",
     "satellite": "卫星图像",
     "osm": "OpenStreetMap 标准",
-    "bike": "自行车道"
+    "bike": "自行车道",
+    "switch_map_type": "切换地图类型",
+    "labels": "标签"
   },
   "controls": {
     "zoom_in": "放大",
     "zoom_out": "缩小",
     "my_location": "我的位置",
-    "reset_north": "重置正北"
+    "reset_north": "重置正北",
+    "directions": "路线指引",
+    "perspective": "视角"
   },
   "privacy": {
     "page_title": "隐私政策 - 地图",
@@ -129,5 +149,26 @@
     "section2_text": "基于开放地理数据。",
     "section3_title": "3. 许可证",
     "section3_text": "GNU AGPL-3.0 许可证。"
+  },
+  "poi": {
+    "dropped_pin": "已放置大头针",
+    "save_prompt": "要将此坐标保存为地点，请点击下方按钮分配名称、类别和描述。",
+    "shop_details": "店铺详情",
+    "type": "类型：",
+    "brand": "品牌：",
+    "hours": "营业时间：",
+    "cuisine": "菜系：",
+    "web": "网站：",
+    "phone": "电话：",
+    "save_place": "保存地点",
+    "directions": "路线指引",
+    "get_directions": "获取路线",
+    "edit": "编辑",
+    "delete": "删除",
+    "highlighting": "高亮显示：{streetName}"
+  },
+  "account": {
+    "purge_cache": "清除本地缓存",
+    "confirm_purge": "警告：这将永久删除此浏览器上的所有本地地点。Filen 上的云端同步数据库不受影响。是否清除本地缓存？"
   }
 }

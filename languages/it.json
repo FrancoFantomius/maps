@@ -45,7 +45,8 @@
   },
   "search": {
     "no_results": "Nessun risultato trovato",
-    "searching": "Ricerca in corso..."
+    "searching": "Ricerca in corso...",
+    "matching_locations": "Trovati luoghi corrispondenti"
   },
   "routing": {
     "title": "Calcola Percorso",
@@ -57,7 +58,11 @@
     "calculate": "Calcola Percorso",
     "clear": "Cancella Percorso",
     "distance": "Distanza",
-    "duration": "Tempo stimato"
+    "duration": "Tempo stimato",
+    "fastest_route": "Percorso più veloce",
+    "prompt_instructions": "Imposta partenza e destinazione per vedere le indicazioni del percorso",
+    "swap": "Inverti partenza e destinazione",
+    "head_on": "Procedi {modifier} su"
   },
   "measurement": {
     "title": "Misurazione Distanza",
@@ -75,7 +80,14 @@
     "description": "Descrizione",
     "save": "Salva Segnaposto",
     "cancel": "Annulla",
-    "no_markers": "Nessun segnaposto salvato."
+    "no_markers": "Nessun segnaposto salvato.",
+    "category_poi": "Punto di interesse",
+    "category_home": "Casa",
+    "category_food": "Cibo e bevande",
+    "category_lodging": "Alloggio",
+    "category_nature": "Natura / Panoramico",
+    "save_location": "Salva posizione",
+    "no_notes": "Nessuna nota o descrizione salvata."
   },
   "login": {
     "title": "Sincronizzazione Cloud Filen",
@@ -87,7 +99,11 @@
     "signing_in": "Accesso in corso...",
     "sign_out": "Disconnetti",
     "status_logged_in": "Connesso come",
-    "status_logged_out": "Non connesso"
+    "status_logged_out": "Non connesso",
+    "verifying": "Accesso in corso e verifica credenziali...",
+    "err_enter_both": "Inserisci sia l'email che la password.",
+    "err_failed": "Accesso non riuscito. Controlla le tue credenziali.",
+    "confirm_signout": "Sei sicuro di voler uscire? La sincronizzazione verrà disattivata, ma i tuoi luoghi locali rimarranno."
   },
   "layers": {
     "title": "Livelli Mappa",
@@ -95,13 +111,17 @@
     "dark": "Mappa Scura",
     "satellite": "Immagini Satellitari",
     "osm": "OpenStreetMap Standard",
-    "bike": "Piste Ciclabili"
+    "bike": "Piste Ciclabili",
+    "switch_map_type": "Cambia tipo di mappa",
+    "labels": "Etichette"
   },
   "controls": {
     "zoom_in": "Ingrandisci",
     "zoom_out": "Riduci",
     "my_location": "La mia Posizione",
-    "reset_north": "Reimposta Nord"
+    "reset_north": "Reimposta Nord",
+    "directions": "Indicazioni",
+    "perspective": "Prospettiva"
   },
   "privacy": {
     "page_title": "Informativa sulla Privacy - Mappe",
@@ -129,5 +149,26 @@
     "section2_text": "Mappe si basa su dati geografici aperti (OpenStreetMap e OpenFreeMap) e servizi terzi.",
     "section3_title": "3. Licenza e Codice Sorgente",
     "section3_text": "Mappe è rilasciata sotto licenza GNU Affero General Public License v3.0 (AGPL-3.0)."
+  },
+  "poi": {
+    "dropped_pin": "Segnalino posizionato",
+    "save_prompt": "Per salvare questa coordinata come luogo memorizzato, fai clic sul pulsante in basso per assegnare un nome, una categoria e una descrizione.",
+    "shop_details": "Dettagli negozio",
+    "type": "Tipo:",
+    "brand": "Marca:",
+    "hours": "Orari:",
+    "cuisine": "Cucina:",
+    "web": "Sito web:",
+    "phone": "Telefono:",
+    "save_place": "Salva luogo",
+    "directions": "Indicazioni",
+    "get_directions": "Ottieni indicazioni",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "highlighting": "In evidenza: {streetName}"
+  },
+  "account": {
+    "purge_cache": "Svuota cache locale",
+    "confirm_purge": "ATTENZIONE: Questo eliminerà permanentemente tutti i luoghi locali su questo browser. Il tuo database cloud sincronizzato su Filen non verrà influenzato. Vuoi svuotare la cache locale?"
   }
 }
