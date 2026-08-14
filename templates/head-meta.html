@@ -48,6 +48,13 @@
     }
 </script>
 {{#if include_app_js}}
+<script type="importmap">
+    {
+        "imports": {
+            "maplibre-gl": "/assets/maplibre-gl.mjs"
+        }
+    }
+</script>
 <script type="module" src="/js/app.js"></script>
 {{else}}
 <link rel="stylesheet" href="/css/style.css">

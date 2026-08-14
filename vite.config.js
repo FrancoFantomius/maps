@@ -76,6 +76,29 @@ const serviceWorkerPlugin = () => ({
   },
 });
 
+const maplibrePlugin = () => ({
+  name: 'serve-and-bundle-maplibre',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      const rawUrl = req.url ? req.url.split('?')[0] : '';
+      if (rawUrl === '/assets/maplibre-gl.mjs') {
+        res.setHeader('Content-Type', 'application/javascript');
+        return fs.createReadStream(path.join(__dirname, 'node_modules/maplibre-gl/dist/maplibre-gl.mjs')).pipe(res);
+      }
+      next();
+    });
+  },
+  generateBundle() {
+    // Ship the minified maplibre-gl as a standalone asset so the built app can
+    // load it via the import map instead of bundling it into main-*.js.
+    this.emitFile({
+      type: 'asset',
+      fileName: 'assets/maplibre-gl.mjs',
+      source: fs.readFileSync(path.join(__dirname, 'node_modules/maplibre-gl/dist/maplibre-gl.mjs')),
+    });
+  },
+});
+
 const manifestPlugin = () => ({
   name: 'serve-and-bundle',
   configureServer(server) {
@@ -160,6 +183,7 @@ export default defineConfig({
     languagesPlugin(),
     serviceWorkerPlugin(),
     manifestPlugin(),
+    maplibrePlugin(),
     handlebars({
       partialDirectory: path.resolve(__dirname, 'templates'),
     }),
@@ -175,6 +199,7 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
+      external: ['maplibre-gl'],
       input: {
         main: path.resolve(__dirname, 'index.html'),
         privacy: path.resolve(__dirname, 'privacy.html'),

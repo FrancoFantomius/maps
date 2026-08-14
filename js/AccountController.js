@@ -26,6 +26,7 @@ export const AccountController = {
       btnDropdownSignout: document.getElementById('btn-dropdown-signout'),
       btnDropdownPurge: document.getElementById('btn-dropdown-purge'),
       loginModal: document.getElementById('login-modal'),
+      loginForm: document.getElementById('login-form'),
       btnLoginClose: document.getElementById('btn-login-close'),
       btnLoginCancel: document.getElementById('btn-login-cancel'),
       btnSaveSync: document.getElementById('btn-save-sync'),
@@ -65,7 +66,12 @@ export const AccountController = {
       });
     }
 
-    if (elements.btnSaveSync) {
+    if (elements.loginForm) {
+      elements.loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleLogin();
+      });
+    } else if (elements.btnSaveSync) {
       elements.btnSaveSync.addEventListener('click', (e) => {
         e.preventDefault();
         this.handleLogin();
@@ -122,10 +128,9 @@ export const AccountController = {
       elements.syncStatusMsg.textContent = '';
       elements.syncStatusMsg.className = 'status-message text-slate-500 dark:text-slate-400 text-xs';
     }
-    // Clean fields
-    if (elements.syncEmail) elements.syncEmail.value = '';
-    if (elements.syncPassword) elements.syncPassword.value = '';
-    if (elements.syncTwoFactor) elements.syncTwoFactor.value = '';
+    if (elements.syncEmail) {
+      setTimeout(() => elements.syncEmail.focus(), 50);
+    }
   },
 
   hideLoginModal() {
