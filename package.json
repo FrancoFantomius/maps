@@ -28,7 +28,7 @@
     "vite": "^8.2.1",
     "vite-plugin-handlebars": "^2.0.3",
     "vite-plugin-node-polyfills": "^0.28.0",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "allowScripts": {
     "leveldown@5.6.0": true,
