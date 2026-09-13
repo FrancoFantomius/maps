@@ -7,7 +7,7 @@
 @import "@fontsource/roboto/400.css";
 @import "@fontsource/roboto/500.css";
 @import "@fontsource/roboto/700.css";
-@import "@fontsource-variable/material-symbols-outlined/index.css";
+@import "./fonts.css";
 @import "maplibre-gl/dist/maplibre-gl.css";
 
 /* ─── CSS Theme Tokens ─── */

@@ -164,6 +164,9 @@ try {
 }
 
 export default defineConfig({
+  optimizeDeps: {
+    exclude: ['maplibre-gl'],
+  },
   resolve: {
     alias: {
       'fs-extra': path.resolve(__dirname, 'js/mocks/fs-extra.js'),
