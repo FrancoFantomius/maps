@@ -190,7 +190,15 @@ export async function deletePlaceFromDB(id) {
 export async function startSync(settings) {
   stopSync();
 
-  if (!settings.enabled || (!settings.email && !settings.apiKey)) {
+  if (!settings) {
+    try {
+      settings = await getSyncSettings();
+    } catch (e) {
+      settings = null;
+    }
+  }
+
+  if (!settings || !settings.enabled || (!settings.email && !settings.apiKey)) {
     updateSyncStatus('offline');
     return;
   }
@@ -286,6 +294,89 @@ function updateSyncStatus(status) {
   window.dispatchEvent(new CustomEvent('maps-sync-status', { detail: status }));
 }
 
+/**
+ * Fetch latest profile, quota, and storage usage from Filen SDK.
+ */
+async function fetchFilenAccountInfo() {
+  if (!filenClient) return null;
+
+  let storageTotal = undefined;
+  let storageUsed = undefined;
+  let nickname = undefined;
+  let avatarURL = undefined;
+
+  try {
+    const accountInfo = await filenClient.user().account();
+    if (accountInfo) {
+      nickname = accountInfo.nickName || accountInfo.displayName;
+      avatarURL = accountInfo.avatarURL || '';
+      if (typeof accountInfo.maxStorage === 'number') {
+        storageTotal = accountInfo.maxStorage;
+      }
+      if (typeof accountInfo.storage === 'number') {
+        storageUsed = accountInfo.storage;
+      } else if (typeof accountInfo.storageUsed === 'number') {
+        storageUsed = accountInfo.storageUsed;
+      }
+    }
+  } catch (e) {
+    console.warn("[Sync] Failed to fetch account info:", e);
+  }
+
+  try {
+    const userInfo = await filenClient.user().info();
+    if (userInfo) {
+      if (typeof userInfo.maxStorage === 'number' && (storageTotal === undefined || storageTotal <= 0)) {
+        storageTotal = userInfo.maxStorage;
+      }
+      if (typeof userInfo.storageUsed === 'number') {
+        storageUsed = userInfo.storageUsed;
+      }
+      if (userInfo.avatarURL && !avatarURL) {
+        avatarURL = userInfo.avatarURL;
+      }
+    }
+  } catch (e) {
+    console.warn("[Sync] Failed to fetch user info:", e);
+  }
+
+  return { storageTotal, storageUsed, nickname, avatarURL };
+}
+
+/**
+ * Manually or programmatically refresh Filen storage information.
+ */
+export async function refreshFilenStorage() {
+  if (!filenClient || !filenClient.isLoggedIn()) return null;
+  const info = await fetchFilenAccountInfo();
+  if (info) {
+    const settings = await getSyncSettings();
+    let changed = false;
+    if (info.storageTotal !== undefined && info.storageTotal !== settings.storageTotal) {
+      settings.storageTotal = info.storageTotal;
+      changed = true;
+    }
+    if (info.storageUsed !== undefined && info.storageUsed !== settings.storageUsed) {
+      settings.storageUsed = info.storageUsed;
+      changed = true;
+    }
+    if (info.nickname && info.nickname !== settings.username) {
+      settings.username = info.nickname;
+      changed = true;
+    }
+    if (info.avatarURL !== undefined && info.avatarURL !== settings.avatarURL) {
+      settings.avatarURL = info.avatarURL;
+      changed = true;
+    }
+    if (changed) {
+      await saveSyncSettings(settings);
+      window.dispatchEvent(new CustomEvent('maps-sync-settings-updated', { detail: settings }));
+    }
+    return settings;
+  }
+  return null;
+}
+
 async function initFilenAndSync(settings) {
   try {
     filenClient = new FilenSDK({
@@ -304,23 +395,30 @@ async function initFilenAndSync(settings) {
         metadataCache: true
       });
 
-      // Update profile info in background
+      // Update profile & storage info in background
       try {
-        const accountInfo = await filenClient.user().account();
-        if (accountInfo) {
-          const nickname = accountInfo.nickName || accountInfo.displayName;
-          const avatarURL = accountInfo.avatarURL || '';
+        const info = await fetchFilenAccountInfo();
+        if (info) {
           let changed = false;
-          if (nickname && nickname !== settings.username) {
-            settings.username = nickname;
+          if (info.nickname && info.nickname !== settings.username) {
+            settings.username = info.nickname;
             changed = true;
           }
-          if (avatarURL !== settings.avatarURL) {
-            settings.avatarURL = avatarURL;
+          if (info.avatarURL !== undefined && info.avatarURL !== settings.avatarURL) {
+            settings.avatarURL = info.avatarURL;
+            changed = true;
+          }
+          if (info.storageTotal !== undefined && info.storageTotal !== settings.storageTotal) {
+            settings.storageTotal = info.storageTotal;
+            changed = true;
+          }
+          if (info.storageUsed !== undefined && info.storageUsed !== settings.storageUsed) {
+            settings.storageUsed = info.storageUsed;
             changed = true;
           }
           if (changed) {
             await saveSyncSettings(settings);
+            window.dispatchEvent(new CustomEvent('maps-sync-settings-updated', { detail: settings }));
           }
         }
       } catch (e) {
@@ -335,12 +433,16 @@ async function initFilenAndSync(settings) {
 
       let nickname = settings.email.split('@')[0];
       let avatarURL = '';
+      let storageTotal = undefined;
+      let storageUsed = undefined;
+
       try {
-        const accountInfo = await filenClient.user().account();
-        if (accountInfo) {
-          if (accountInfo.nickName) nickname = accountInfo.nickName;
-          else if (accountInfo.displayName) nickname = accountInfo.displayName;
-          if (accountInfo.avatarURL) avatarURL = accountInfo.avatarURL;
+        const info = await fetchFilenAccountInfo();
+        if (info) {
+          if (info.nickname) nickname = info.nickname;
+          if (info.avatarURL) avatarURL = info.avatarURL;
+          if (info.storageTotal !== undefined) storageTotal = info.storageTotal;
+          if (info.storageUsed !== undefined) storageUsed = info.storageUsed;
         }
       } catch (e) {
         console.warn("[Sync] Failed to fetch profile info during login:", e);
@@ -350,6 +452,8 @@ async function initFilenAndSync(settings) {
         enabled: true,
         username: nickname,
         avatarURL: avatarURL,
+        storageTotal: storageTotal,
+        storageUsed: storageUsed,
         email: settings.email,
         apiKey: filenClient.config.apiKey,
         masterKeys: filenClient.config.masterKeys,
@@ -635,6 +739,29 @@ async function runSync() {
           updatedAny = true;
         }
       }
+    }
+
+    // Refresh storage stats from Filen after sync
+    try {
+      const info = await fetchFilenAccountInfo();
+      if (info && (info.storageTotal !== undefined || info.storageUsed !== undefined)) {
+        const curSettings = await getSyncSettings();
+        let changed = false;
+        if (info.storageTotal !== undefined && info.storageTotal !== curSettings.storageTotal) {
+          curSettings.storageTotal = info.storageTotal;
+          changed = true;
+        }
+        if (info.storageUsed !== undefined && info.storageUsed !== curSettings.storageUsed) {
+          curSettings.storageUsed = info.storageUsed;
+          changed = true;
+        }
+        if (changed) {
+          await saveSyncSettings(curSettings);
+          window.dispatchEvent(new CustomEvent('maps-sync-settings-updated', { detail: curSettings }));
+        }
+      }
+    } catch (e) {
+      console.warn("[Sync] Failed to refresh storage stats during sync:", e);
     }
 
     updateSyncStatus('online');

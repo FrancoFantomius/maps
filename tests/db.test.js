@@ -22,15 +22,19 @@ describe('db module', () => {
       expect(settings.email).toBeDefined();
     });
 
-    it('saves and retrieves sync settings', async () => {
+    it('saves and retrieves sync settings with storage quota', async () => {
       await saveSyncSettings({
         email: 'test@example.com',
         homeAddress: { lat: 45.438, lng: 10.993, address: 'Verona' },
+        storageTotal: 50 * 1024 * 1024 * 1024,
+        storageUsed: 5 * 1024 * 1024 * 1024
       });
 
       const updated = await getSyncSettings();
       expect(updated.email).toBe('test@example.com');
       expect(updated.homeAddress).toEqual({ lat: 45.438, lng: 10.993, address: 'Verona' });
+      expect(updated.storageTotal).toBe(50 * 1024 * 1024 * 1024);
+      expect(updated.storageUsed).toBe(5 * 1024 * 1024 * 1024);
     });
   });
 

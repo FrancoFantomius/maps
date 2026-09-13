@@ -3,8 +3,14 @@
 
 import '../css/style.css';
 import '@francofantomius/material-components/button';
+import '@francofantomius/material-components/icon-button';
+import '@francofantomius/material-components/text-field';
 import '@francofantomius/material-components/fab';
 import '@francofantomius/material-components/tooltip';
+import '@francofantomius/material-components/icon';
+import '@francofantomius/material-components/app-drawer';
+import '@francofantomius/material-components/account-menu';
+import { css } from 'lit';
 
 // Add breathing space between md-tooltip and anchor buttons
 const tooltipClass = customElements.get('md-tooltip');
@@ -31,6 +37,17 @@ if (tooltipClass && !tooltipClass.prototype._spacingPatched) {
     };
 }
 
+// Remove duplicate horizontal line above footer in md-account-menu
+const accountMenuClass = customElements.get('md-account-menu');
+if (accountMenuClass && accountMenuClass.elementStyles && !accountMenuClass._borderPatched) {
+    accountMenuClass._borderPatched = true;
+    accountMenuClass.elementStyles.push(css`
+        .popover-footer {
+            border-top: none !important;
+        }
+    `);
+}
+
 import { MapService } from './MapService.js';
 import { ApiService } from './ApiService.js';
 import { HUDController } from './HUDController.js';
@@ -40,7 +57,8 @@ import { RoutingController } from './RoutingController.js';
 import { SearchController } from './SearchController.js';
 import { GPSController } from './GPSController.js';
 import { ThemeController } from './ThemeController.js';
-import { AccountController } from './AccountController.js';
+import { AccountController } from './account/account.js';
+import { LoginController } from './account/login.js';
 import { TranslationController } from './TranslationController.js';
 import { initPWA } from './pwa.js';
 

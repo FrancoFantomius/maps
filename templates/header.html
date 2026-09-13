@@ -1,0 +1,172 @@
+<link rel="stylesheet" href="/css/header-search.css">
+<link rel="stylesheet" href="/css/login-modal.css">
+
+<!-- Floating HUD Top Bar (z-10) -->
+<div class="hud-top-bar">
+    <!-- Floating HUD Stack (Top-Left area) -->
+    <div class="hud-top-stack">
+        <!-- Floating Search pill -->
+        <div class="header-search-pill">
+            <!-- Bookmarks / My Places Toggle Button -->
+            <button type="button" id="btn-toggle-places" class="btn-toggle-places" title="My Places" data-i18n-title="hud.markers">
+                <span class="material-icons-outlined select-none" style="font-size: 1.25rem;">bookmarks</span>
+            </button>
+
+            <div class="search-form-wrapper">
+                <!-- Search input form -->
+                <form id="search-form" class="header-search-form">
+                    <input type="text" id="search-input" placeholder="Search" data-i18n-placeholder="hud.search_placeholder"
+                        class="header-search-input">
+                    <button type="button" id="btn-clear-search" class="btn-clear-search hidden">
+                        <span class="material-icons-outlined" style="font-size: 1rem;">clear</span>
+                    </button>
+                    <button type="submit" class="btn-search-submit">
+                        <span class="material-icons-outlined" style="font-size: 1.125rem;">search</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Account Controls (Top-Right area) -->
+    <div class="header-account-area">
+        <!-- M3 Sign In Button (shown when logged out) -->
+        <md-button id="btn-sync-login" variant="filled">
+            <span data-i18n="login.sign_in">Sign In</span>
+        </md-button>
+
+        <!-- App Drawer (shown when logged in) -->
+        <md-app-drawer id="app-drawer" headline="My Apps" data-i18n-headline="header.apps" alignment="end" style="display: none;">
+          <md-app-drawer-item label="Calculator" href="https://francofantomius.com/calculator/" target="_blank" src="https://francofantomius.com/calculator/img/calculator_x128.png"></md-app-drawer-item>
+          <md-app-drawer-item label="Melo" href="https://melo.francofantomius.com/" target="_blank" src="https://melo.francofantomius.com/img/icons/icon.svg"></md-app-drawer-item>
+          <md-app-drawer-item label="Noten" href="https://noten.francofantomius.com/" target="_blank" src="https://noten.francofantomius.com/noten_x512.png"></md-app-drawer-item>
+          <md-app-drawer-item label="Scriben" href="https://scriben.francofantomius.com/" target="_blank" src="https://scriben.francofantomius.com/icons/icon.svg"></md-app-drawer-item>
+          <md-app-drawer-item label="Maps" href="https://maps.francofantomius.com/" target="_blank" src="https://maps.francofantomius.com/img/icons/maps.png"></md-app-drawer-item>
+        </md-app-drawer>
+
+        <!-- Account Menu (shown when logged in) -->
+        <md-account-menu
+          id="account-menu"
+          name="Connected"
+          email=""
+          initials="U"
+          headline="Account"
+          manage-url="https://app.filen.io/#/settings/account"
+          manage-text="Manage your Filen Account"
+          alignment="end"
+          style="display: none;"
+        >
+          <div slot="overview" class="account-menu-actions">
+            <!-- Account Storage Widget -->
+            <div class="account-storage-widget">
+              <div class="account-storage-header">
+                <div class="account-storage-title">
+                  <md-icon name="cloud"></md-icon>
+                  <span data-i18n="storage_title">Account Storage</span>
+                </div>
+                <span id="account-storage-meta" class="account-storage-meta">0 B of 10 GB used</span>
+              </div>
+              
+              <div class="account-storage-bar-track">
+                <div id="account-storage-bar-notes" class="account-storage-bar-segment segment-notes" style="width: 0%;"></div>
+                <div id="account-storage-bar-other" class="account-storage-bar-segment segment-other" style="width: 0%;"></div>
+              </div>
+
+              <div class="account-storage-breakdown">
+                <div class="account-storage-item">
+                  <span class="account-storage-dot dot-notes"></span>
+                  <span id="account-storage-notes-text">Places: 0 B</span>
+                </div>
+                <div class="account-storage-item">
+                  <span class="account-storage-dot dot-other"></span>
+                  <span id="account-storage-other-text">Other files: 0 B</span>
+                </div>
+                <div class="account-storage-item">
+                  <span class="account-storage-dot dot-free"></span>
+                  <span id="account-storage-free-text">Free: 10 GB</span>
+                </div>
+              </div>
+            </div>
+
+            <md-button id="btn-dropdown-settings" variant="tonal" icon="settings" style="width: 100%;">
+              <span data-i18n="settings_header">Settings</span>
+            </md-button>
+            <md-button id="btn-dropdown-signout" variant="tonal" icon="logout" style="width: 100%;">
+              <span data-i18n="btn_signout">Sign out</span>
+            </md-button>
+          </div>
+
+          <div slot="footer" class="dropdown-footer">
+            <a href="./privacy.html" target="_blank" data-i18n="privacy_policy">Privacy Policy</a>
+            <span>•</span>
+            <a href="./terms.html" target="_blank" data-i18n="terms_of_service">Terms of Service</a>
+          </div>
+        </md-account-menu>
+    </div>
+</div>
+
+<!-- Dedicated Sign-in Modal -->
+<div id="login-modal" class="modal-overlay login-modal-backdrop hidden">
+    <div class="modal-card login-modal-card">
+        <div class="modal-header login-modal-header">
+            <div class="login-modal-title-wrapper">
+                <h2>
+                    <span data-i18n="login.sign_in">Sign in</span>
+                </h2>
+            </div>
+            <md-icon-button id="btn-login-close" icon="close" aria-label="Close modal" title="Close" data-i18n-title="nav.close" data-i18n-aria-label="nav.close"></md-icon-button>
+        </div>
+
+        <div class="modal-body login-modal-body">
+            <p class="section-help login-modal-desc" data-i18n="login.subtitle">
+                A Filen account is required to sync your saved places. All data is end-to-end encrypted client-side; neither this app nor Filen can see your password or plaintext places.
+            </p>
+
+            <div id="sync-credentials-container" class="login-credentials-container">
+                <md-text-field
+                    id="sync-email"
+                    variant="outlined"
+                    label="Email Address"
+                    type="email"
+                    leading-icon="mail"
+                    data-i18n-label="login.email"
+                ></md-text-field>
+
+                <md-text-field
+                    id="sync-password"
+                    variant="outlined"
+                    label="Password"
+                    type="password"
+                    leading-icon="lock"
+                    data-i18n-label="login.password"
+                ></md-text-field>
+
+                <md-text-field
+                    id="sync-twofactor"
+                    variant="outlined"
+                    label="Two-Factor Auth Code (Optional)"
+                    type="text"
+                    leading-icon="security"
+                    data-i18n-label="login.two_factor"
+                ></md-text-field>
+            </div>
+
+            <p class="login-modal-terms">
+                By using this service and enabling sync, you agree to our <a href="terms.html" target="_blank" data-i18n="nav.terms">Terms of Service</a> and <a
+                    href="privacy.html" target="_blank" data-i18n="nav.privacy">Privacy Policy</a>.
+            </p>
+
+            <span id="sync-settings-status" class="status-message"></span>
+
+            <div class="login-modal-actions">
+                <md-button id="btn-login-cancel" variant="text">
+                    <span data-i18n="markers.cancel">Cancel</span>
+                </md-button>
+                <md-button id="btn-save-sync" variant="filled">
+                    <span data-i18n="login.sign_in">Sign in</span>
+                </md-button>
+            </div>
+        </div>
+    </div>
+</div>
+

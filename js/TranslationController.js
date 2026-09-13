@@ -231,6 +231,14 @@ export const TranslationController = {
                 el.setAttribute('aria-label', this.t(key, {}, el.getAttribute('aria-label')));
             }
         });
+
+        // label (e.g. for md-text-field)
+        root.querySelectorAll('[data-i18n-label]').forEach(el => {
+            const key = el.getAttribute('data-i18n-label');
+            if (key) {
+                el.setAttribute('label', this.t(key, {}, el.getAttribute('label')));
+            }
+        });
     },
 
     updateSettingsUI() {

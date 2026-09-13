@@ -79,7 +79,7 @@
   },
   "login": {
     "title": "Filen Cloud Sync",
-    "subtitle": "Sign in to sync your saved places encrypted end-to-end",
+    "subtitle": "A Filen account is required to sync your saved places. All data is end-to-end encrypted client-side; neither this app nor Filen can see your password or plaintext places.",
     "email": "Email Address",
     "password": "Password",
     "two_factor": "2FA Code (if enabled)",

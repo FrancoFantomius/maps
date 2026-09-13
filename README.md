@@ -36,7 +36,9 @@ maps/
 │   ├── account.css        # Settings, account, and cloud sync modal styles
 │   └── style.css          # Core design system and Tailwind imports
 ├── js/
-│   ├── AccountController.js    # User settings and Filen cloud sync integration
+│   ├── account/
+│   │   ├── account.js          # User settings, profile UI, and Filen cloud sync integration
+│   │   └── login.js            # Login modal authentication and credentials handling
 │   ├── ApiService.js           # External API calls (geocoding, routing)
 │   ├── GPSController.js        # Geolocation tracking and heading updates
 │   ├── HUDController.js        # Navigation HUD state and speed calculations

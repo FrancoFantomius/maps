@@ -8,9 +8,16 @@ vi.mock('../js/MapService.js', () => ({
   MapService: {
     createMarker: vi.fn(() => ({
       setLngLat: vi.fn().mockReturnThis(),
+      setPopup: vi.fn().mockReturnThis(),
       addTo: vi.fn().mockReturnThis(),
       remove: vi.fn(),
     })),
+    createPopup: vi.fn(() => ({
+      setHTML: vi.fn().mockReturnThis(),
+      addTo: vi.fn().mockReturnThis(),
+      remove: vi.fn(),
+    })),
+    getHomeAddress: vi.fn().mockReturnValue(null),
     map: {},
   },
 }));
@@ -94,6 +101,32 @@ describe('MarkerController', () => {
       expect(document.getElementById('modal-category').value).toBe('food');
       expect(document.getElementById('modal-desc').value).toBe('Delicious pizza');
       expect(document.getElementById('modal-title').innerText).toBe('Edit Marker');
+    });
+  });
+
+  describe('renderAll', () => {
+    it('handles renderAll gracefully even when markers-count or saved-markers-list are missing or present', () => {
+      expect(() => MarkerController.renderAll()).not.toThrow();
+
+      document.body.innerHTML += `
+        <div id="saved-markers-list"></div>
+        <span id="place-count-badge">0</span>
+        <template id="template-marker-list-item">
+          <div class="marker-item">
+            <span class="marker-color-dot"></span>
+            <span class="marker-name"></span>
+            <button class="marker-focus"></button>
+            <button class="btn-delete-marker"></button>
+          </div>
+        </template>
+      `;
+
+      MarkerController.customMarkers = [
+        { id: 'm1', name: 'Place 1', category: 'poi', lat: 10, lng: 20 }
+      ];
+
+      expect(() => MarkerController.renderAll()).not.toThrow();
+      expect(String(document.getElementById('place-count-badge').innerText)).toBe('1');
     });
   });
 });

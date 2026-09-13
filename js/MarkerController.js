@@ -212,19 +212,25 @@ export const MarkerController = {
 
     renderAll() {
         const savedMarkersList = document.getElementById('saved-markers-list');
-        const markersCount = document.getElementById('markers-count');
+        const markersCount = document.getElementById('place-count-badge') || document.getElementById('markers-count');
 
         if (this.markerInstances) {
             this.markerInstances.forEach(m => m.remove());
         }
         this.markerInstances = [];
-        savedMarkersList.innerHTML = '';
-        markersCount.innerText = this.customMarkers.length;
+        if (savedMarkersList) {
+            savedMarkersList.innerHTML = '';
+        }
+        if (markersCount) {
+            markersCount.innerText = String(this.customMarkers.length);
+        }
 
         this.renderHomeMarker();
 
         if (this.customMarkers.length === 0) {
-            savedMarkersList.innerHTML = `<div class="text-center py-6 text-slate-400 dark:text-slate-500">No custom places saved yet.</div>`;
+            if (savedMarkersList) {
+                savedMarkersList.innerHTML = `<div class="text-center py-6 text-slate-400 dark:text-slate-500">No custom places saved yet.</div>`;
+            }
             return;
         }
 
@@ -279,6 +285,7 @@ export const MarkerController = {
     },
 
     renderListItem(m, container) {
+        if (!container) return;
         const template = document.getElementById('template-marker-list-item');
         if (!template) return;
         const clone = template.content.cloneNode(true);
