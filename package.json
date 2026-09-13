@@ -1,7 +1,7 @@
 {
   "name": "maps",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.5.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "clean": "git clean -fdX"
   },
   "dependencies": {
     "@filen/sdk": "^0.4.2",
@@ -21,18 +21,12 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
-    "@vitest/coverage-v8": "^4.1.10",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.1",
     "pouchdb-adapter-memory": "^9.0.0",
     "tailwindcss": "^4.0.0",
-    "vite": "^8.2.1",
+    "vite": "^8.3.0",
     "vite-plugin-handlebars": "^2.0.3",
     "vite-plugin-node-polyfills": "^0.28.0",
-    "vitest": "^4.1.10"
-  },
-  "allowScripts": {
-    "leveldown@5.6.0": true,
-    "leveldown@6.1.1": true,
-    "esbuild@0.25.12": true
+    "vitest": "^5.0.0"
   }
 }
