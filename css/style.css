@@ -1,24 +1,130 @@
-@import "@fontsource/inter/300.css";
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
+/* ==========================================================================
+   maps - Main Stylesheet (css/style.css)
+   Pure CSS Design System & Theme Variables
+   ========================================================================== */
 
-@import "@fontsource/outfit/400.css";
-@import "@fontsource/outfit/500.css";
-@import "@fontsource/outfit/600.css";
-@import "@fontsource/outfit/700.css";
-@import "@fontsource/outfit/800.css";
-
-@import "@fontsource/material-icons-outlined";
-
-@import "tailwindcss";
+@import "@fontsource/roboto/300.css";
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+@import "@fontsource-variable/material-symbols-outlined/index.css";
 @import "maplibre-gl/dist/maplibre-gl.css";
-@import "./account.css";
-@import "./HUD.css";
 
+/* ─── CSS Theme Tokens ─── */
+:root {
+  --font-sans: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-display: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  /* Surfaces & Backgrounds */
+  --bg-body: #f8fafc;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-solid: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --bg-hover: #e2e8f0;
+
+  /* Typography */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(226, 232, 240, 0.8);
+  --border-card: rgba(226, 232, 240, 0.6);
+  --border-strong: #cbd5e1;
+
+  /* Accent Colors */
+  --color-indigo: #4f46e5;
+  --color-indigo-hover: #4338ca;
+  --color-indigo-subtle: #eef2ff;
+  --color-indigo-text: #4338ca;
+
+  --color-blue: #2563eb;
+  --color-blue-hover: #1d4ed8;
+  --color-blue-subtle: #eff6ff;
+
+  --color-teal: #0d9488;
+  --color-teal-hover: #0f766e;
+  --color-teal-subtle: #f0fdfa;
+
+  --color-emerald: #059669;
+  --color-emerald-hover: #047857;
+  --color-emerald-subtle: #ecfdf5;
+
+  --color-red: #ef4444;
+  --color-red-hover: #dc2626;
+  --color-red-subtle: #fef2f2;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+html.dark, .dark {
+  --bg-body: #0b0f19;
+  --bg-card: rgba(15, 23, 42, 0.9);
+  --bg-card-solid: #111827;
+  --bg-subtle: #1e293b;
+  --bg-hover: #334155;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-card: rgba(255, 255, 255, 0.08);
+  --border-strong: #334155;
+
+  --color-indigo: #6366f1;
+  --color-indigo-hover: #4f46e5;
+  --color-indigo-subtle: rgba(99, 102, 241, 0.15);
+  --color-indigo-text: #818cf8;
+
+  --color-blue: #3b82f6;
+  --color-blue-hover: #2563eb;
+  --color-blue-subtle: rgba(59, 130, 246, 0.15);
+
+  --color-teal: #14b8a6;
+  --color-teal-hover: #0d9488;
+  --color-teal-subtle: rgba(20, 184, 166, 0.15);
+
+  --color-emerald: #10b981;
+  --color-emerald-hover: #059669;
+  --color-emerald-subtle: rgba(16, 185, 129, 0.15);
+
+  --color-red: #f87171;
+  --color-red-hover: #ef4444;
+  --color-red-subtle: rgba(239, 68, 68, 0.15);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Global Reset & Base Typography ─── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+/* Material Symbols Outlined (@fontsource-variable/material-symbols-outlined) */
+.material-symbols-outlined,
 .material-icons-outlined {
-  font-family: 'Material Icons Outlined';
+  font-family: 'Material Symbols Outlined Variable', 'Material Symbols Outlined', sans-serif;
   font-weight: normal;
   font-style: normal;
   font-size: 24px;
@@ -33,390 +139,181 @@
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: 'liga';
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-@theme {
-  --color-slate-950: #0b0f19;
-  --color-slate-900: #111827;
-  --color-slate-800: #1f2937;
-  --color-slate-700: #374151;
-  --color-slate-600: #4b5563;
+/* Utility: Hidden */
+.hidden {
+  display: none !important;
 }
 
-@custom-variant dark (&:where(.dark, .dark *));
-
-/* Custom maps Stylesheet */
-
+/* Map Canvas */
 #map {
-    height: 100%;
-    width: 100%;
-    background-color: #0b0f19;
-    /* Matches dark-slate fallback background */
+  height: 100%;
+  width: 100%;
+  background-color: #0b0f19;
 }
 
-/* Custom Scrollbar Styles for Left HUD list */
+/* ─── Custom Scrollbar Styles ─── */
 .custom-scrollbar::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+  width: 5px;
+  height: 5px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.3);
-    /* Slate-400 with opacity */
-    border-radius: 9999px;
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(148, 163, 184, 0.6);
+  background: rgba(148, 163, 184, 0.6);
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(71, 85, 105, 0.4);
-    /* Slate-600 with opacity */
+  background: rgba(71, 85, 105, 0.4);
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(71, 85, 105, 0.7);
+  background: rgba(71, 85, 105, 0.7);
 }
 
-/* ─── Navigation Panel Styles ─── */
-
-/* Autocomplete dropdown */
-.nav-autocomplete {
-    backdrop-filter: blur(8px);
-    animation: navDropdownIn 0.15s ease-out;
-}
-
-@keyframes navDropdownIn {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.nav-autocomplete-item:first-child {
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-}
-
-.nav-autocomplete-item:last-child {
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
-}
-
-/* Step items */
-.nav-step-item {
-    position: relative;
-}
-
-.nav-step-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    border-radius: 0 3px 3px 0;
-    background: transparent;
-    transition: background 0.2s ease;
-}
-
-.nav-step-item:hover::before {
-    background: #4285F4;
-}
-
-/* Navigation markers */
-.nav-origin-marker,
-.nav-dest-marker {
-    background: transparent !important;
-    border: none !important;
-}
-
-/* Route line pulse animation on hover */
-.route-line-hover {
-    animation: routePulse 1.5s ease-in-out infinite;
-}
-
-@keyframes routePulse {
-
-    0%,
-    100% {
-        opacity: 0.9;
-    }
-
-    50% {
-        opacity: 0.6;
-    }
-}
-
-/* ─── Layer Switcher ─── */
-
-.layer-switcher-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-}
-
-.layer-toggle-btn {
-    position: relative;
-    width: 72px;
-    height: 72px;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 3px solid rgba(255, 255, 255, 0.95);
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.25),
-        0 0 0 1px rgba(0, 0, 0, 0.08);
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    outline: none;
-    background: #1a1a2e;
-}
-
-.layer-toggle-btn:hover {
-    transform: scale(1.06);
-    box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.35),
-        0 0 0 1px rgba(0, 0, 0, 0.12);
-}
-
-.layer-toggle-btn:active {
-    transform: scale(0.97);
-}
-
-.layer-toggle-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.layer-toggle-label {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 2px 0;
-    font-size: 10px;
-    font-weight: 700;
-    text-align: center;
-    color: #ffffff;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.0));
-    letter-spacing: 0.01em;
-    pointer-events: none;
-    line-height: 1.3;
-    font-family: 'Inter', sans-serif;
-}
-
-/* Labels sub-button */
-.layer-labels-btn {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 5px 10px;
-    border-radius: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.9);
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(8px);
-    color: #475569;
-    cursor: pointer;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    outline: none;
-    font-family: 'Inter', sans-serif;
-}
-
-.layer-labels-btn:hover {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-    transform: scale(1.04);
-}
-
-.layer-labels-btn.active {
-    background: #4f46e5;
-    border-color: #4f46e5;
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.4);
-}
-
-.layer-labels-btn.active:hover {
-    background: #4338ca;
-    border-color: #4338ca;
-}
-
-/* Dark mode layer switcher */
-.dark .layer-toggle-btn {
-    border-color: rgba(30, 41, 59, 0.95);
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(0, 0, 0, 0.3);
-}
-
-.dark .layer-toggle-btn:hover {
-    box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.6),
-        0 0 0 1px rgba(0, 0, 0, 0.4);
-}
-
-.dark .layer-labels-btn {
-    background: rgba(17, 24, 39, 0.92);
-    border-color: rgba(30, 41, 59, 0.9);
-    color: #94a3b8;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-}
-
-.dark .layer-labels-btn:hover {
-    background: rgba(17, 24, 39, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
-}
-
-.dark .layer-labels-btn.active {
-    background: #6366f1;
-    border-color: #6366f1;
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
-}
-
-.dark .layer-labels-btn.active:hover {
-    background: #4f46e5;
-    border-color: #4f46e5;
-}
-
-/* Hidden utility for layer-labels-btn */
-.layer-labels-btn.hidden {
-    display: none;
-}
-
-/* ─── Settings Bottom Sheet ─── */
-
-.settings-bottom-sheet {
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
-}
-
-.settings-bottom-sheet.translate-y-full {
-    transform: translateY(100%);
-    pointer-events: none;
-}
-
-.settings-bottom-sheet.settings-open {
-    transform: translateY(0);
-    pointer-events: auto;
-}
-
-/* Bottom UI elements slide up with the settings panel */
-.bottom-ui-element {
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.maplibregl-ctrl-bottom-left {
-    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Mobile view adjustments for map control buttons */
-@media (max-width: 767px), (max-height: 767px) {
-  #btn-perspective,
-  #btn-rotate-left,
-  #btn-rotate-right {
-    display: none !important;
-  }
-
-  #map-controls-stack {
-    right: 1rem !important;
-  }
-}
-
-/* ─── MapLibre Navigation Control (Zoom In/Out Buttons) ─── */
+/* ─── MapLibre Navigation & Controls Overrides ─── */
 .maplibregl-ctrl-group {
-    background-color: rgba(255, 255, 255, 0.9) !important;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(226, 232, 240, 0.8) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
-    overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+  overflow: hidden;
 }
 
 .maplibregl-ctrl-group button {
-    width: 38px !important;
-    height: 38px !important;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+  width: 38px !important;
+  height: 38px !important;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .maplibregl-ctrl-group button:hover {
-    background-color: rgba(241, 245, 249, 0.9) !important;
+  background-color: rgba(241, 245, 249, 0.9) !important;
 }
 
 .maplibregl-ctrl-group button:active {
-    background-color: rgba(226, 232, 240, 0.9) !important;
+  background-color: rgba(226, 232, 240, 0.9) !important;
 }
 
 .maplibregl-ctrl-group button + button {
-    border-top: 1px solid rgba(226, 232, 240, 0.8) !important;
+  border-top: 1px solid rgba(226, 232, 240, 0.8) !important;
 }
 
-/* Dark mode zoom buttons styling */
 .dark .maplibregl-ctrl-group {
-    background-color: rgba(15, 23, 42, 0.9) !important;
-    border-color: rgba(30, 41, 59, 0.8) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+  background-color: rgba(15, 23, 42, 0.9) !important;
+  border-color: rgba(30, 41, 59, 0.8) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
 }
 
 .dark .maplibregl-ctrl-group button:hover {
-    background-color: rgba(30, 41, 59, 0.8) !important;
+  background-color: rgba(30, 41, 59, 0.8) !important;
 }
 
 .dark .maplibregl-ctrl-group button:active {
-    background-color: rgba(51, 65, 85, 0.8) !important;
+  background-color: rgba(51, 65, 85, 0.8) !important;
 }
 
 .dark .maplibregl-ctrl-group button + button {
-    border-top-color: rgba(30, 41, 59, 0.8) !important;
+  border-top-color: rgba(30, 41, 59, 0.8) !important;
 }
 
 .dark .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
-    filter: invert(1) brightness(1.8);
+  filter: invert(1) brightness(1.8);
 }
 
-/* Dark mode map attribution control styling */
 .dark .maplibregl-ctrl-attrib {
-    background-color: rgba(15, 23, 42, 0.75) !important;
-    color: #94a3b8 !important;
-    border-radius: 6px 0 0 0;
+  background-color: rgba(15, 23, 42, 0.75) !important;
+  color: #94a3b8 !important;
+  border-radius: 6px 0 0 0;
 }
 
 .dark .maplibregl-ctrl-attrib a {
-    color: #cbd5e1 !important;
+  color: #cbd5e1 !important;
 }
 
-/* ─── GPS Button Locating Animation ─── */
-.gps-center-dot {
-    display: none;
-    transform-origin: center;
-    transition: opacity 0.3s ease;
+/* ─── Map Markers ─── */
+.custom-map-pin-div {
+  cursor: pointer;
+  transform: translate(-50%, -100%);
 }
 
-#btn-gps.is-locating .gps-center-dot {
-    display: flex;
-    animation: gpsDotPulse 1.2s ease-in-out infinite;
+.search-result-pin-div {
+  cursor: pointer;
 }
 
-@keyframes gpsDotPulse {
-    0%, 100% {
-        opacity: 0.15;
-        transform: scale(0.3);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.1);
-    }
-}
+.measure-node-marker {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #14b8a6;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.3);
+}
+
+.gps-pulse-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: #10b981;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+}
+
+/* ─── Global Animation & Transitions ─── */
+.bottom-ui-element,
+.maplibregl-ctrl-bottom-left {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dynamic State Utility Classes (Used in Controllers & Tests) */
+.bg-emerald-600 {
+  background-color: #059669 !important;
+}
+
+.text-white {
+  color: #ffffff !important;
+}
+
+.text-emerald-600 {
+  color: #059669 !important;
+}
+
+.bg-indigo-600 {
+  background-color: #4f46e5 !important;
+}
+
+.text-indigo-600 {
+  color: #4f46e5 !important;
+}
+
+.text-red-500 {
+  color: #ef4444 !important;
+}
+
+.text-blue-500 {
+  color: #3b82f6 !important;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}

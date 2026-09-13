@@ -1,0 +1,180 @@
+/* css/map-controls.css - Floating Action Button Stack */
+
+#map-controls-stack {
+  position: fixed;
+  bottom: 3rem;
+  right: 4rem;
+  z-index: 10;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.map-control-btn {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-secondary);
+}
+
+.map-control-btn:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-1px);
+}
+
+.map-control-btn.btn-teal {
+  color: var(--color-teal);
+}
+.map-control-btn.btn-teal:hover {
+  background-color: var(--color-teal-subtle);
+}
+
+.map-control-btn.btn-blue {
+  color: var(--color-blue);
+}
+.map-control-btn.btn-blue:hover {
+  background-color: var(--color-blue-subtle);
+}
+
+.map-control-btn.btn-indigo {
+  color: var(--color-indigo);
+}
+.map-control-btn.btn-indigo:hover {
+  background-color: var(--color-indigo-subtle);
+}
+
+.map-control-btn.btn-emerald {
+  color: var(--color-emerald);
+}
+.map-control-btn.btn-emerald:hover {
+  background-color: var(--color-emerald-subtle);
+}
+
+/* Tooltips */
+.map-control-tooltip {
+  position: absolute;
+  right: 3.5rem;
+  transform: scale(0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: rgba(15, 23, 42, 0.95);
+  color: #ffffff;
+  font-size: 0.65625rem;
+  font-weight: 700;
+  padding: 0.375rem 0.625rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-md);
+  white-space: nowrap;
+}
+
+.dark .map-control-tooltip {
+  background: rgba(2, 6, 23, 0.95);
+}
+
+.map-control-btn:hover .map-control-tooltip,
+.compass-wrapper:hover .map-control-tooltip {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Compass & Flanking buttons */
+.compass-wrapper {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compass-rotate-btn {
+  position: absolute;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background-color: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.compass-rotate-btn:hover {
+  box-shadow: var(--shadow-lg);
+  color: var(--color-indigo);
+  background-color: var(--color-indigo-subtle);
+}
+
+.compass-rotate-btn:active {
+  transform: scale(0.95);
+}
+
+.compass-rotate-btn.btn-rot-left {
+  right: 3.5rem;
+}
+
+.compass-rotate-btn.btn-rot-right {
+  left: 3.5rem;
+}
+
+#compass-needle {
+  width: 1.75rem;
+  height: 1.75rem;
+  transition: transform 0.2s ease-out;
+}
+
+/* GPS Button animation */
+.gps-center-dot {
+  display: none;
+  transform-origin: center;
+  transition: opacity 0.3s ease;
+}
+
+#btn-gps.is-locating .gps-center-dot {
+  display: flex;
+  animation: gpsDotPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes gpsDotPulse {
+  0%, 100% {
+    opacity: 0.15;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 767px), (max-height: 767px) {
+  #btn-perspective,
+  #btn-rotate-left,
+  #btn-rotate-right {
+    display: none !important;
+  }
+
+  #map-controls-stack {
+    right: 1rem !important;
+  }
+}
+

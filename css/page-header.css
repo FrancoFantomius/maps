@@ -1,0 +1,29 @@
+/* css/page-header.css - Static Documentation Header */
+
+.page-header {
+  padding: 2rem;
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--bg-card);
+}
+
+.page-header-logo-wrapper {
+  margin-bottom: 0.75rem;
+}
+
+.page-header-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.page-header-updated {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+

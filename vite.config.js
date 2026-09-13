@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import tailwindcss from '@tailwindcss/vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import path from 'path';
 import fs from 'fs';
@@ -188,7 +187,6 @@ export default defineConfig({
     handlebars({
       partialDirectory: path.resolve(__dirname, 'templates'),
     }),
-    tailwindcss(),
     nodePolyfills({
       globals: {
         Buffer: true,

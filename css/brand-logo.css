@@ -1,0 +1,22 @@
+/* css/brand-logo.css - Brand Logo Component */
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-logo-icon {
+  color: var(--color-indigo);
+  font-size: 1.875rem;
+  line-height: 1;
+}
+
+.brand-logo-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+

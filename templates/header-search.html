@@ -1,39 +1,34 @@
+<link rel="stylesheet" href="/css/header-search.css">
 <!-- Floating HUD Stack (Top-Left area, z-10) -->
-<div class="fixed top-4 left-4 right-4 md:right-auto md:w-96 z-10 pointer-events-none flex flex-col gap-3">
+<div class="hud-top-stack">
     <!-- Floating Search pill -->
-    <div
-        class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-1.5 flex items-center gap-2 pointer-events-auto">
+    <div class="header-search-pill">
         <!-- Bookmarks / My Places Toggle Button -->
-        <button type="button" id="btn-toggle-places"
-            class="w-7 h-7 flex items-center justify-center flex-shrink-0 text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors cursor-pointer"
-            title="My Places" data-i18n-title="hud.markers">
-            <span class="material-icons-outlined text-xl select-none">bookmarks</span>
+        <button type="button" id="btn-toggle-places" class="btn-toggle-places" title="My Places" data-i18n-title="hud.markers">
+            <span class="material-icons-outlined select-none" style="font-size: 1.25rem;">bookmarks</span>
         </button>
 
-        <div class="flex-1 min-w-0">
+        <div class="search-form-wrapper">
             <!-- Search input form -->
-            <form id="search-form" class="relative flex items-center">
+            <form id="search-form" class="header-search-form">
                 <input type="text" id="search-input" placeholder="Search" data-i18n-placeholder="hud.search_placeholder"
-                    class="w-full bg-transparent pl-1 pr-7 py-1 text-sm font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500">
-                <button type="button" id="btn-clear-search"
-                    class="hidden absolute right-7 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center">
-                    <span class="material-icons-outlined text-base">clear</span>
+                    class="header-search-input">
+                <button type="button" id="btn-clear-search" class="btn-clear-search hidden">
+                    <span class="material-icons-outlined" style="font-size: 1rem;">clear</span>
                 </button>
-                <button type="submit"
-                    class="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors flex-shrink-0 flex items-center justify-center">
-                    <span class="material-icons-outlined text-lg leading-none">search</span>
+                <button type="submit" class="btn-search-submit">
+                    <span class="material-icons-outlined" style="font-size: 1.125rem;">search</span>
                 </button>
             </form>
         </div>
 
         <!-- Vertical Divider -->
-        <div class="h-6 w-[1px] bg-slate-200 dark:bg-slate-800 flex-shrink-0 mx-1"></div>
+        <div class="header-search-divider"></div>
 
         <!-- Floating Account Controls (z-10) -->
-        <div class="relative flex-shrink-0 flex items-center">
+        <div class="header-account-area">
             <!-- Sign In Button (shown when logged out) -->
-            <button id="btn-sync-login" data-i18n="hud.login"
-                class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 dark:bg-indigo-750 dark:hover:bg-indigo-650 text-white text-xs font-bold rounded-full shadow-md transition-all cursor-pointer whitespace-nowrap">
+            <button id="btn-sync-login" data-i18n="hud.login" class="btn-sync-login">
                 Sign in
             </button>
 
@@ -69,10 +64,10 @@
                     </button>
                 </div>
 
-                <div class="dropdown-footer flex justify-center gap-2">
-                    <a href="privacy.html" target="_blank" class="hover:underline" data-i18n="nav.privacy">Privacy Policy</a>
+                <div class="dropdown-footer">
+                    <a href="privacy.html" target="_blank" data-i18n="nav.privacy">Privacy Policy</a>
                     <span>•</span>
-                    <a href="terms.html" target="_blank" class="hover:underline" data-i18n="nav.terms">Terms of Service</a>
+                    <a href="terms.html" target="_blank" data-i18n="nav.terms">Terms of Service</a>
                 </div>
             </div>
         </div>

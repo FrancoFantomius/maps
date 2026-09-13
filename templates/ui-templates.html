@@ -1,21 +1,19 @@
+<link rel="stylesheet" href="/css/ui-templates.css">
 <!-- HTML Templates for Decoupled UI Rendering -->
 <template id="template-place-details-loading">
-    <div class="p-4 h-full flex flex-col">
-        <div class="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-2">
-            <span
-                class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900 font-display">Searching...</span>
-            <button type="button"
-                class="btn-close text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-semibold transition-colors">✕
-                Close</button>
+    <div style="padding: 1rem; height: 100%; display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem;">
+            <span style="padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 9px; font-weight: 700; text-transform: uppercase; border: 1px solid var(--border-subtle); color: var(--text-muted); background-color: var(--bg-subtle);">Searching...</span>
+            <button type="button" class="btn-close" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; border: none; background: transparent; cursor: pointer;">✕ Close</button>
         </div>
-        <div class="space-y-4 flex-1 overflow-y-auto pr-1 flex flex-col justify-between h-full animate-pulse">
-            <div class="space-y-3">
-                <div class="h-4 bg-slate-200 dark:bg-slate-800 rounded w-2/3"></div>
-                <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-1/3 mt-2"></div>
-                <div class="space-y-2 mt-4">
-                    <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-full"></div>
-                    <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-5/6"></div>
-                    <div class="h-3 bg-slate-200 dark:bg-slate-800 rounded w-4/5"></div>
+        <div class="animate-pulse" style="display: flex; flex-direction: column; justify-content: space-between; flex: 1; overflow-y: auto;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="height: 1rem; background-color: var(--bg-subtle); border-radius: 0.25rem; width: 66%;"></div>
+                <div style="height: 0.75rem; background-color: var(--bg-subtle); border-radius: 0.25rem; width: 33%; margin-top: 0.5rem;"></div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1rem;">
+                    <div style="height: 0.75rem; background-color: var(--bg-subtle); border-radius: 0.25rem; width: 100%;"></div>
+                    <div style="height: 0.75rem; background-color: var(--bg-subtle); border-radius: 0.25rem; width: 83%;"></div>
+                    <div style="height: 0.75rem; background-color: var(--bg-subtle); border-radius: 0.25rem; width: 80%;"></div>
                 </div>
             </div>
         </div>
@@ -23,226 +21,190 @@
 </template>
 
 <template id="template-place-details-temp">
-    <div class="flex flex-col h-full overflow-hidden">
+    <div style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
         <!-- Cover Header Image/Gradient Card -->
-        <div
-            class="wiki-image-container relative h-48 w-full overflow-hidden group flex-shrink-0 bg-gradient-to-br from-violet-600 via-indigo-700 to-slate-900 dark:from-violet-950 dark:via-indigo-950 dark:to-slate-950">
-            <img class="wiki-image hidden w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                src="" alt="Place Image">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
-
-            <!-- Glow shapes for default cover -->
-            <div class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-400/30 rounded-full blur-2xl pointer-events-none"></div>
-            <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="wiki-image-container">
+            <img class="wiki-image hidden" src="" alt="Place Image">
+            <div class="wiki-image-overlay"></div>
 
             <!-- Absolute Overlay Contents -->
-            <div class="absolute bottom-4 left-4 right-4 text-white">
-                <h3 class="place-name text-xl font-black tracking-tight drop-shadow-md leading-tight text-white">Dropped Pin
-                </h3>
+            <div class="wiki-image-title-box">
+                <h3 class="place-name">Dropped Pin</h3>
             </div>
 
             <!-- Floating Close button -->
-            <button type="button"
-                class="btn-close absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-200 active:scale-90 z-10 cursor-pointer">
-                <span class="material-icons-outlined text-sm leading-none">close</span>
+            <button type="button" class="btn-close wiki-btn-close">
+                <span class="material-icons-outlined" style="font-size: 0.875rem;">close</span>
             </button>
         </div>
 
         <!-- Padded content area below image -->
-        <div class="flex flex-col flex-1 min-h-0 px-4 pb-4 pt-4">
+        <div class="place-details-body">
             <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto custom-scrollbar pr-0.5 space-y-3 min-h-0">
+            <div class="place-details-content custom-scrollbar">
                 <!-- Coordinates Badge -->
-                <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
-                    <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
+                <div class="coords-badge">
+                    <span class="material-icons-outlined">pin_drop</span>
                     <span class="place-coords"></span>
                 </div>
 
                 <div class="street-highlight-container hidden">
-                    <div
-                        class="flex items-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50/60 dark:bg-indigo-950/30 px-3 py-2 rounded-xl border border-indigo-100 dark:border-indigo-900/40 shadow-sm">
-                        <span class="material-icons-outlined text-base">directions_bike</span>
+                    <div class="street-highlight-card">
+                        <span class="material-icons-outlined" style="font-size: 1rem;">directions_bike</span>
                         <span class="street-name"></span>
                     </div>
                 </div>
 
-                <div
-                    class="wiki-summary-container hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-600 dark:text-slate-300 leading-relaxed shadow-sm relative overflow-hidden">
-                    <div class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500"></div>
+                <div class="wiki-summary-container wiki-summary-card hidden">
+                    <div class="wiki-summary-bar"></div>
                 </div>
 
-                <p class="place-address hidden text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/50 leading-relaxed"></p>
+                <p class="place-address hidden" style="font-size: 0.75rem; color: var(--text-secondary); background: var(--bg-subtle); padding: 0.75rem; border-radius: 0.75rem; border: 1px solid var(--border-subtle); line-height: 1.5; margin: 0;"></p>
 
-                <div
-                    class="place-default-prompt hidden bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 text-xs text-slate-500 dark:text-slate-400 leading-relaxed shadow-sm">
+                <div class="place-default-prompt hidden">
                     To store this coordinate as a saved place, click the button below to assign a name, category, and description.
                 </div>
 
-                <div
-                    class="shop-info-container hidden bg-slate-50/80 dark:bg-slate-900/70 border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-3.5 text-xs text-slate-600 dark:text-slate-300 space-y-1.5 shadow-sm">
-                    <div class="font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-1.5 pb-1 border-b border-slate-200/50 dark:border-slate-800/50">
-                        <span class="material-icons-outlined text-xs text-indigo-500">storefront</span>
+                <div class="shop-info-container shop-info-card hidden">
+                    <div class="shop-info-title">
+                        <span class="material-icons-outlined">storefront</span>
                         <span>Shop Details</span>
                     </div>
-                    <div class="shop-type hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Type:</span> <span class="shop-type-val font-semibold text-slate-700 dark:text-slate-200 capitalize"></span></div>
-                    <div class="shop-brand hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Brand:</span> <span class="shop-brand-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
-                    <div class="shop-hours hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Hours:</span> <span class="shop-hours-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
-                    <div class="shop-cuisine hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Cuisine:</span> <span class="shop-cuisine-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
-                    <div class="shop-web hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Web:</span> <a href="" target="_blank" class="shop-web-link text-indigo-600 dark:text-indigo-400 font-semibold hover:underline truncate max-w-[180px]"></a></div>
-                    <div class="shop-phone hidden flex justify-between py-0.5"><span class="font-medium text-slate-400">Phone:</span> <span class="shop-phone-val font-semibold text-slate-700 dark:text-slate-200"></span></div>
+                    <div class="shop-type hidden shop-row"><span class="shop-row-label">Type:</span> <span class="shop-type-val shop-row-val"></span></div>
+                    <div class="shop-brand hidden shop-row"><span class="shop-row-label">Brand:</span> <span class="shop-brand-val shop-row-val"></span></div>
+                    <div class="shop-hours hidden shop-row"><span class="shop-row-label">Hours:</span> <span class="shop-hours-val shop-row-val"></span></div>
+                    <div class="shop-cuisine hidden shop-row"><span class="shop-row-label">Cuisine:</span> <span class="shop-cuisine-val shop-row-val"></span></div>
+                    <div class="shop-web hidden shop-row"><span class="shop-row-label">Web:</span> <a href="" target="_blank" class="shop-web-link" style="color: var(--color-indigo); font-weight: 600; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;"></a></div>
+                    <div class="shop-phone hidden shop-row"><span class="shop-row-label">Phone:</span> <span class="shop-phone-val shop-row-val"></span></div>
                 </div>
             </div>
 
             <!-- Details Action Bar -->
-            <div
-                class="flex items-center gap-2 pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex-shrink-0">
-                <button
-                    class="btn-save flex-1 py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                    <span class="material-icons-outlined text-sm">bookmark_add</span>
+            <div class="place-actions-bar">
+                <button class="btn-save btn-action-primary">
+                    <span class="material-icons-outlined" style="font-size: 0.875rem;">bookmark_add</span>
                     <span>Save Place</span>
                 </button>
-                <button
-                    class="btn-directions flex-1 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                    <span class="material-icons-outlined text-sm">directions</span>
+                <button class="btn-directions btn-action-blue">
+                    <span class="material-icons-outlined" style="font-size: 0.875rem;">directions</span>
                     <span>Directions</span>
                 </button>
             </div>
 
             <!-- FOOTER CREDITS -->
-            <div
-                class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-[9px] text-slate-400 dark:text-slate-500 flex items-center flex-shrink-0 leading-none gap-1.5">
-                <a href="https://nominatim.openstreetmap.org/" target="_blank" class="hover:text-indigo-500 transition-colors">Nominatim</a>
+            <div class="details-footer-credits">
+                <a href="https://nominatim.openstreetmap.org/" target="_blank">Nominatim</a>
                 <span class="wiki-credit hidden">·</span>
-                <a href="" target="_blank" class="wiki-credit wiki-link hidden hover:text-indigo-500 transition-colors">Wikipedia</a>
+                <a href="" target="_blank" class="wiki-credit wiki-link hidden">Wikipedia</a>
             </div>
         </div>
     </div>
 </template>
 
 <template id="template-place-details-saved">
-    <div class="flex flex-col h-full overflow-hidden">
+    <div style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
         <!-- Cover Header Image/Gradient Card -->
-        <div
-            class="wiki-image-container relative h-48 w-full overflow-hidden group flex-shrink-0 bg-gradient-to-br from-violet-600 via-indigo-700 to-slate-900 dark:from-violet-950 dark:via-indigo-950 dark:to-slate-950">
-            <img class="wiki-image hidden w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                src="" alt="Place Image">
-            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
-
-            <!-- Glow shapes for default cover -->
-            <div class="absolute -top-10 -left-10 w-32 h-32 bg-indigo-400/30 rounded-full blur-2xl pointer-events-none"></div>
-            <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-blue-400/30 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="wiki-image-container">
+            <img class="wiki-image hidden" src="" alt="Place Image">
+            <div class="wiki-image-overlay"></div>
 
             <!-- Absolute Overlay Contents -->
-            <div class="absolute bottom-4 left-4 right-4 text-white">
-                <span
-                    class="place-badge inline-flex items-center gap-1 px-2.5 py-0.5 text-[9px] font-extrabold tracking-wider uppercase bg-white/20 dark:bg-white/10 text-white rounded-full mb-1.5 backdrop-blur-md border border-white/25 shadow-sm">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <div class="wiki-image-title-box">
+                <span class="place-badge">
+                    <span class="place-badge-dot"></span>
                     SAVED LOCATION
                 </span>
-                <h3 class="place-name text-xl font-black tracking-tight drop-shadow-md leading-tight text-white"></h3>
+                <h3 class="place-name"></h3>
             </div>
 
             <!-- Floating Close button -->
-            <button type="button"
-                class="btn-close absolute top-3.5 right-3.5 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-200 active:scale-90 z-10 cursor-pointer">
-                <span class="material-icons-outlined text-sm leading-none">close</span>
+            <button type="button" class="btn-close wiki-btn-close">
+                <span class="material-icons-outlined" style="font-size: 0.875rem;">close</span>
             </button>
         </div>
 
         <!-- Padded content area below image -->
-        <div class="flex flex-col flex-1 min-h-0 px-4 pb-4 pt-4">
+        <div class="place-details-body">
             <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto custom-scrollbar pr-0.5 space-y-3 min-h-0">
-                <div class="flex items-center gap-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 bg-slate-100/80 dark:bg-slate-850/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200/60 dark:border-slate-800/60">
-                    <span class="material-icons-outlined text-xs text-indigo-500">pin_drop</span>
+            <div class="place-details-content custom-scrollbar">
+                <div class="coords-badge">
+                    <span class="material-icons-outlined">pin_drop</span>
                     <span class="place-coords"></span>
                 </div>
-                <div
-                    class="place-desc-container bg-gradient-to-br from-indigo-50/50 via-white to-slate-50 dark:from-slate-850 dark:via-slate-900 dark:to-slate-900 border border-indigo-100/80 dark:border-indigo-900/30 rounded-2xl p-4 shadow-sm relative overflow-hidden">
-                    <div class="w-1 absolute left-0 top-0 bottom-0 bg-gradient-to-b from-indigo-500 to-violet-500"></div>
-                    <p class="place-desc-text text-xs text-slate-700 dark:text-slate-300 leading-relaxed"></p>
+                <div class="place-desc-container">
+                    <div class="wiki-summary-bar"></div>
+                    <p class="place-desc-text" style="font-size: 0.75rem; color: var(--text-primary); line-height: 1.5; margin: 0;"></p>
                 </div>
             </div>
 
             <!-- Details Action Bar -->
-            <div class="flex flex-col gap-2 pt-3 mt-3 border-t border-slate-100 dark:border-slate-800/80 flex-shrink-0">
-                <button
-                    class="btn-directions w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer">
-                    <span class="material-icons-outlined text-sm">directions</span>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); flex-shrink: 0;">
+                <button class="btn-directions btn-action-blue" style="width: 100%;">
+                    <span class="material-icons-outlined" style="font-size: 0.875rem;">directions</span>
                     <span>Get Directions</span>
                 </button>
-                <div class="flex items-center gap-2">
-                    <button
-                        class="btn-edit flex-1 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 font-semibold text-xs transition-colors border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-center gap-1.5 cursor-pointer">
-                        <span class="material-icons-outlined text-xs">edit</span>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <button class="btn-edit btn-action-secondary">
+                        <span class="material-icons-outlined" style="font-size: 0.75rem;">edit</span>
                         <span>Edit</span>
                     </button>
-                    <button
-                        class="btn-delete flex-1 py-2 rounded-xl bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 font-semibold text-xs transition-colors border border-red-200/60 dark:border-red-900/40 flex items-center justify-center gap-1.5 cursor-pointer">
-                        <span class="material-icons-outlined text-xs">delete</span>
+                    <button class="btn-delete btn-action-danger">
+                        <span class="material-icons-outlined" style="font-size: 0.75rem;">delete</span>
                         <span>Delete</span>
                     </button>
                 </div>
             </div>
 
             <!-- FOOTER CREDITS -->
-            <div
-                class="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800/80 text-[9px] text-slate-400 dark:text-slate-500 flex items-center flex-shrink-0 leading-none gap-1.5">
-                <a href="https://nominatim.openstreetmap.org/" target="_blank" class="hover:text-indigo-500 transition-colors">Nominatim</a>
+            <div class="details-footer-credits">
+                <a href="https://nominatim.openstreetmap.org/" target="_blank">Nominatim</a>
                 <span class="wiki-credit hidden">·</span>
-                <a href="" target="_blank" class="wiki-credit wiki-link hidden hover:text-indigo-500 transition-colors">Wikipedia</a>
+                <a href="" target="_blank" class="wiki-credit wiki-link hidden">Wikipedia</a>
             </div>
         </div>
     </div>
 </template>
 
 <template id="template-marker-list-item">
-    <div
-        class="marker-item p-3 bg-white dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800/40 rounded-xl flex items-center justify-between hover:border-indigo-500/50 dark:hover:border-indigo-400/50 cursor-pointer text-xs transition-all">
-        <div class="marker-focus flex items-center gap-2.5 overflow-hidden flex-1">
-            <span
-                class="marker-color-dot w-3 h-3 rounded-full flex-shrink-0 border border-white dark:border-slate-800 shadow-sm"></span>
-            <div class="marker-name truncate font-semibold text-slate-800 dark:text-slate-200"></div>
+    <div class="marker-item">
+        <div class="marker-focus">
+            <span class="marker-color-dot"></span>
+            <div class="marker-name"></div>
         </div>
-        <button class="btn-delete-marker text-slate-400 hover:text-red-500 ml-2 text-sm leading-none">✕</button>
+        <button class="btn-delete-marker">✕</button>
     </div>
 </template>
 
 <template id="template-autocomplete-item">
-    <div
-        class="nav-autocomplete-item px-3 py-2.5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-b-0">
-        <div class="flex items-start gap-2">
-            <span class="material-icons-outlined text-sm text-slate-400 mt-0.5 flex-shrink-0">location_on</span>
-            <div class="min-w-0">
-                <div class="item-name text-xs font-semibold text-slate-800 dark:text-slate-100 truncate"></div>
-                <div class="item-address text-[10px] text-slate-400 dark:text-slate-500 truncate"></div>
+    <div class="nav-autocomplete-item">
+        <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+            <span class="material-icons-outlined" style="font-size: 0.875rem; color: var(--text-muted); margin-top: 2px; flex-shrink: 0;">location_on</span>
+            <div style="min-width: 0;">
+                <div class="item-name"></div>
+                <div class="item-address"></div>
             </div>
         </div>
     </div>
 </template>
 
 <template id="template-routing-step-item">
-    <div
-        class="nav-step-item flex items-start gap-3 px-2 py-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors rounded-lg group">
-        <div class="flex flex-col items-center flex-shrink-0 w-8">
-            <div
-                class="step-icon-container w-8 h-8 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span class="step-icon material-icons-outlined text-base"></span>
+    <div class="nav-step-item">
+        <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 2rem;">
+            <div class="step-icon-container">
+                <span class="step-icon material-icons-outlined" style="font-size: 1rem;"></span>
             </div>
-            <div class="step-line w-0.5 flex-1 bg-slate-200 dark:bg-slate-700 mt-1 min-h-[8px]"></div>
+            <div class="step-line"></div>
         </div>
-        <div class="flex-1 min-w-0 pt-1">
-            <div class="step-instruction text-xs font-semibold text-slate-800 dark:text-slate-100 leading-snug">
-            </div>
-            <div class="step-distance text-[10px] text-slate-400 dark:text-slate-500 mt-0.5"></div>
+        <div style="flex: 1; min-width: 0; padding-top: 0.25rem;">
+            <div class="step-instruction"></div>
+            <div class="step-distance"></div>
         </div>
     </div>
 </template>
 
 <template id="template-search-result-item">
-    <div
-        class="search-result-item p-3 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-850 cursor-pointer transition-colors text-slate-700 dark:text-slate-350">
-        <div class="result-name font-bold truncate text-slate-800 dark:text-slate-100 text-xs"></div>
-        <div class="result-address text-slate-400 dark:text-slate-500 truncate text-[10px] mt-0.5"></div>
+    <div class="search-result-item">
+        <div class="result-name"></div>
+        <div class="result-address"></div>
     </div>
 </template>

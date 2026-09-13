@@ -3,25 +3,26 @@
 
 <head>
     {{> head-meta page_title="Privacy Policy - Maps"}}
+    <link rel="stylesheet" href="/css/privacy.css">
 </head>
 
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen py-12 px-4 selection:bg-indigo-500/30">
-    <div class="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 rounded-2xl shadow-xl overflow-hidden">
+<body class="legal-page">
+    <div class="legal-container">
         
         <!-- Header -->
         {{> page-header title="Privacy Policy" last_updated="July 2026"}}
 
         <!-- Content -->
-        <div class="p-8 space-y-6 text-sm leading-relaxed text-slate-655 dark:text-slate-350">
-            <p class="text-base text-slate-700 dark:text-slate-200 font-medium">
+        <div class="legal-content">
+            <p class="legal-lead">
                 At Maps, your privacy is our core value. Maps is designed as a local-first, client-side application. We do not operate server infrastructure to collect, store, track, or sell your personal details or saved place markers.
             </p>
 
-            <hr class="border-slate-100 dark:border-slate-800">
+            <hr class="legal-divider">
 
-            <section class="space-y-3">
-                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">dns</span>
+            <section class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="material-icons-outlined">dns</span>
                     <span>1. Local Storage & Database Security</span>
                 </h2>
                 <p>
@@ -29,9 +30,9 @@
                 </p>
             </section>
 
-            <section class="space-y-3">
-                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">vpn_key</span>
+            <section class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="material-icons-outlined">vpn_key</span>
                     <span>2. End-to-End Encrypted Cloud Sync</span>
                 </h2>
                 <p>
@@ -42,9 +43,9 @@
                 </p>
             </section>
 
-            <section class="space-y-3">
-                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">analytics</span>
+            <section class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="material-icons-outlined">analytics</span>
                     <span>3. Analytics and Data Collection</span>
                 </h2>
                 <p>
@@ -52,9 +53,9 @@
                 </p>
             </section>
 
-            <section class="space-y-3">
-                <h2 class="font-display font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                    <span class="material-icons-outlined text-indigo-500 text-xl leading-none">code</span>
+            <section class="legal-section">
+                <h2 class="legal-section-title">
+                    <span class="material-icons-outlined">code</span>
                     <span>4. Open Source Transparency</span>
                 </h2>
                 <p>

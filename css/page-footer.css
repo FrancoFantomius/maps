@@ -1,0 +1,36 @@
+/* css/page-footer.css - Static Documentation Footer */
+
+.page-footer {
+  padding: 2rem;
+  border-top: 1px solid var(--border-subtle);
+  background-color: var(--bg-card);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-footer-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-footer-back-btn:hover {
+  background-color: var(--bg-hover);
+}
+
+.page-footer-sync-tag {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+

@@ -1,33 +1,29 @@
+<link rel="stylesheet" href="/css/login-modal.css">
 <!-- Dedicated Sign-in Modal -->
-<div id="login-modal"
-    class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[1000] hidden flex items-center justify-center p-4">
-    <div
-        class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-sm w-full p-5 shadow-2xl transform scale-95 transition-all">
-        <div class="flex justify-between items-center mb-4 border-b border-slate-100 dark:border-slate-800 pb-2">
-            <h2
-                class="font-display text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
-                <span class="material-icons-outlined text-indigo-600 dark:text-indigo-400">cloud</span>
+<div id="login-modal" class="login-modal-backdrop hidden">
+    <div class="login-modal-card">
+        <div class="login-modal-header">
+            <h2 class="login-modal-title">
+                <span class="material-icons-outlined">cloud</span>
                 <span data-i18n="login.title">Sign in to secure sync</span>
             </h2>
             <button id="btn-login-close"
-                class="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center justify-center rounded">
-                <span class="material-icons-outlined text-lg leading-none">close</span>
+                style="padding: 0.25rem; background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 0.25rem;">
+                <span class="material-icons-outlined" style="font-size: 1.125rem;">close</span>
             </button>
         </div>
 
-        <div class="space-y-4">
-            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed" data-i18n="login.subtitle">
+        <div class="login-modal-body">
+            <p class="login-modal-desc" data-i18n="login.subtitle">
                 Configure synchronization with your personal Filen account. All places synced will be fully
                 encrypted client-side; Filen will never see your password or plaintext places.
             </p>
-            <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                By using this service and enabling sync, you agree to our <a href="terms.html" target="_blank" data-i18n="nav.terms"
-                    class="text-indigo-600 dark:text-indigo-400 hover:underline">Terms of Service</a> and <a
-                    href="privacy.html" target="_blank" data-i18n="nav.privacy"
-                    class="text-indigo-600 dark:text-indigo-400 hover:underline">Privacy Policy</a>.
+            <p class="login-modal-terms">
+                By using this service and enabling sync, you agree to our <a href="terms.html" target="_blank" data-i18n="nav.terms">Terms of Service</a> and <a
+                    href="privacy.html" target="_blank" data-i18n="nav.privacy">Privacy Policy</a>.
             </p>
 
-            <div class="space-y-3">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <div class="input-group">
                     <label for="sync-email" data-i18n="login.email">Filen Email</label>
                     <input type="email" id="sync-email" placeholder="your-email@example.com">
@@ -43,15 +39,16 @@
             </div>
 
             <div id="sync-settings-status"
-                class="status-message text-slate-500 dark:text-slate-400 text-xs text-center min-h-[16px] w-full">
+                style="color: var(--text-secondary); font-size: 0.75rem; text-align: center; min-height: 1rem; width: 100%;">
             </div>
 
-            <div class="flex flex-col gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <button id="btn-save-sync" data-i18n="login.sign_in"
-                    class="btn-primary w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full font-semibold text-xs transition-colors cursor-pointer">Save
-                    & Enable Sync</button>
-                <button id="btn-login-cancel" data-i18n="markers.cancel"
-                    class="btn-secondary w-full py-2 border border-slate-200 dark:border-slate-800 rounded-full font-semibold text-xs transition-colors cursor-pointer">Cancel</button>
+            <div class="login-actions-group">
+                <button id="btn-save-sync" data-i18n="login.sign_in" class="btn-login-save">
+                    Save & Enable Sync
+                </button>
+                <button id="btn-login-cancel" data-i18n="markers.cancel" class="btn-login-cancel">
+                    Cancel
+                </button>
             </div>
         </div>
     </div>
