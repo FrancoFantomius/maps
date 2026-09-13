@@ -101,7 +101,8 @@
     "zoom_in": "تكبير",
     "zoom_out": "تصغير",
     "my_location": "موقعي",
-    "reset_north": "إعادة الضبط للشمال"
+    "reset_north": "إعادة الضبط للشمال",
+    "tilt": "إمالة"
   },
   "privacy": {
     "page_title": "سياسة الخصوصية - خرائط",

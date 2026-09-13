@@ -8,6 +8,7 @@ export const GPSController = {
     gpsAccuracy: null,
     watchId: null,
     isFollowing: false,
+    isLocating: false,
     eventsBound: false,
 
     locateUser() {
@@ -34,6 +35,7 @@ export const GPSController = {
 
     startTracking() {
         this.isFollowing = true;
+        this.isLocating = true;
         this.updateUI();
 
         // Bind user interaction events once to disable follow-mode when panning
@@ -52,6 +54,7 @@ export const GPSController = {
 
         this.watchId = navigator.geolocation.watchPosition(
             (position) => {
+                this.isLocating = false;
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
                 const accuracy = position.coords.accuracy;
@@ -75,8 +78,11 @@ export const GPSController = {
             },
             (error) => {
                 console.error("GPS watchPosition failed", error);
+                this.isLocating = false;
                 if (error.code === 1) { // Permission Denied
                     this.stopTracking();
+                } else {
+                    this.updateUI();
                 }
             },
             {
@@ -92,6 +98,7 @@ export const GPSController = {
             navigator.geolocation.clearWatch(this.watchId);
             this.watchId = null;
         }
+        this.isLocating = false;
         this.isFollowing = false;
         this.gpsCoords = null;
         this.gpsAccuracy = null;
@@ -187,24 +194,24 @@ export const GPSController = {
         const btn = document.getElementById('btn-gps');
         if (!btn) return;
 
-        const iconSpan = btn.querySelector('.gps-icon-main') || btn.querySelector('.material-icons-outlined');
-        const isLocating = this.watchId !== null && !this.gpsCoords;
+        const iconSpan = btn.querySelector('.gps-icon-main') || btn.querySelector('.material-symbols-outlined') || btn.querySelector('.material-icons-outlined');
+        const isLocating = this.isLocating || (this.watchId !== null && !this.gpsCoords);
 
-        if (this.watchId === null) {
+        if (this.watchId === null && !this.isLocating) {
             // State 1: Inactive (not tracking)
-            btn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300 relative';
+            btn.className = 'map-control-fab text-emerald-600';
             if (iconSpan) iconSpan.textContent = 'my_location';
         } else if (isLocating) {
             // State 2: Locating (acquiring initial location fix)
-            btn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-emerald-500 dark:border-emerald-400 rounded-full shadow-lg hover:shadow-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300 relative is-locating';
+            btn.className = 'map-control-fab text-emerald-600 is-locating';
             if (iconSpan) iconSpan.textContent = 'location_searching';
         } else if (this.isFollowing) {
             // State 3: Position found & following
-            btn.className = 'group flex items-center justify-center w-12 h-12 bg-emerald-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-emerald-500 transition-all duration-300 relative border border-emerald-500';
+            btn.className = 'map-control-fab is-active bg-emerald-600 text-white';
             if (iconSpan) iconSpan.textContent = 'gps_fixed';
         } else {
             // State 4: Position found, tracking but not following
-            btn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-emerald-500 dark:border-emerald-400 rounded-full shadow-lg hover:shadow-xl text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all duration-300 relative';
+            btn.className = 'map-control-fab is-active text-emerald-600';
             if (iconSpan) iconSpan.textContent = 'my_location';
         }
     }

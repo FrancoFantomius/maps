@@ -39,7 +39,7 @@
     "measure": "Measure",
     "layers": "Layers",
     "markers": "Markers",
-    "login": "Login",
+    "login": "Sign In",
     "account": "Account",
     "offline_notice": "Offline Mode Active"
   },
@@ -101,7 +101,8 @@
     "zoom_in": "Zoom In",
     "zoom_out": "Zoom Out",
     "my_location": "My Location",
-    "reset_north": "Reset North"
+    "reset_north": "Reset North",
+    "tilt": "Tilt"
   },
   "privacy": {
     "page_title": "Privacy Policy - Maps",

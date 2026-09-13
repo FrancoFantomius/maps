@@ -101,7 +101,8 @@
     "zoom_in": "放大",
     "zoom_out": "缩小",
     "my_location": "我的位置",
-    "reset_north": "重置正北"
+    "reset_north": "重置正北",
+    "tilt": "倾斜"
   },
   "privacy": {
     "page_title": "隐私政策 - 地图",

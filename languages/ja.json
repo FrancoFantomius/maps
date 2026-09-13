@@ -101,7 +101,8 @@
     "zoom_in": "拡大",
     "zoom_out": "縮小",
     "my_location": "現在地",
-    "reset_north": "北を上にリセット"
+    "reset_north": "北を上にリセット",
+    "tilt": "傾き"
   },
   "privacy": {
     "page_title": "プライバシーポリシー - Maps",

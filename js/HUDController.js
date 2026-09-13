@@ -84,8 +84,8 @@ export const HUDController = {
         const drawBtn = document.getElementById('btn-draw');
         const routeBtn = document.getElementById('btn-route');
 
-        if (drawBtn) drawBtn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-950/30 transition-all duration-300 relative';
-        if (routeBtn) routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all duration-300 relative';
+        if (drawBtn) drawBtn.classList.remove('is-active');
+        if (routeBtn) routeBtn.classList.remove('is-active');
 
         if (hudState === 'places') {
             this.close();
@@ -97,9 +97,9 @@ export const HUDController = {
                 if (activePanel) activePanel.classList.remove('hidden');
             }
             if (hudState === 'measure' && drawBtn) {
-                drawBtn.className = 'group flex items-center justify-center w-12 h-12 bg-teal-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-teal-500 transition-all duration-300 relative border border-teal-500';
+                drawBtn.classList.add('is-active');
             } else if (hudState === 'route' && routeBtn) {
-                routeBtn.className = 'group flex items-center justify-center w-12 h-12 bg-blue-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-blue-500 transition-all duration-300 relative border border-blue-500';
+                routeBtn.classList.add('is-active');
             } else if (hudState === 'place-details') {
                 this.renderPlaceDetails(data);
             }

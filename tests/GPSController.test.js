@@ -29,6 +29,7 @@ describe('GPSController', () => {
     GPSController.gpsAccuracy = null;
     GPSController.watchId = null;
     GPSController.isFollowing = false;
+    GPSController.isLocating = false;
 
     mockGeolocation = {
       watchPosition: vi.fn((success) => {
@@ -50,6 +51,15 @@ describe('GPSController', () => {
   });
 
   describe('locateUser', () => {
+    it('sets locating state immediately when locateUser is invoked and awaiting position', () => {
+      mockGeolocation.watchPosition = vi.fn(() => 101);
+      GPSController.locateUser();
+
+      const btn = document.getElementById('btn-gps');
+      expect(GPSController.isLocating).toBe(true);
+      expect(btn.className).toContain('is-locating');
+    });
+
     it('starts tracking when watchId is null', () => {
       GPSController.locateUser();
 

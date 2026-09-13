@@ -2,6 +2,35 @@
 // Core JavaScript Orchestrator (ES Module) - js/app.js
 
 import '../css/style.css';
+import '@francofantomius/material-components/button';
+import '@francofantomius/material-components/fab';
+import '@francofantomius/material-components/tooltip';
+
+// Add breathing space between md-tooltip and anchor buttons
+const tooltipClass = customElements.get('md-tooltip');
+if (tooltipClass && !tooltipClass.prototype._spacingPatched) {
+    tooltipClass.prototype._spacingPatched = true;
+    const originalUpdatePosition = tooltipClass.prototype.updatePosition;
+    tooltipClass.prototype.updatePosition = function() {
+        originalUpdatePosition.call(this);
+        if (!this.tooltipPanel) return;
+        const extraGap = 10; // Extra spacing (10px + 4px default = 14px total spacing)
+        if (this.position === 'left') {
+            const currentLeft = parseFloat(this.tooltipPanel.style.left) || 0;
+            this.tooltipPanel.style.left = `${currentLeft - extraGap}px`;
+        } else if (this.position === 'right') {
+            const currentLeft = parseFloat(this.tooltipPanel.style.left) || 0;
+            this.tooltipPanel.style.left = `${currentLeft + extraGap}px`;
+        } else if (this.position === 'top') {
+            const currentTop = parseFloat(this.tooltipPanel.style.top) || 0;
+            this.tooltipPanel.style.top = `${currentTop - extraGap}px`;
+        } else if (this.position === 'bottom') {
+            const currentTop = parseFloat(this.tooltipPanel.style.top) || 0;
+            this.tooltipPanel.style.top = `${currentTop + extraGap}px`;
+        }
+    };
+}
+
 import { MapService } from './MapService.js';
 import { ApiService } from './ApiService.js';
 import { HUDController } from './HUDController.js';

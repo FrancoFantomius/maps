@@ -1,35 +1,34 @@
 <link rel="stylesheet" href="/css/map-controls.css">
 <!-- Floating Action Button Stack (Bottom-Right area, z-10) -->
-<div id="map-controls-stack" class="bottom-ui-element">
+<div id="map-controls-stack" class="bottom-ui-element" role="toolbar" aria-label="Map Controls">
     <!-- Distance Measure Button -->
-    <button id="btn-draw" class="map-control-btn btn-teal">
-        <span class="material-icons-outlined" style="font-size: 1.125rem;">straighten</span>
-        <span data-i18n="hud.measure" class="map-control-tooltip">Measure Distance</span>
-    </button>
+    <div class="map-control-item">
+        <md-fab id="btn-draw" class="map-control-fab" icon="straighten" aria-label="Measure Distance" data-i18n-aria-label="hud.measure"></md-fab>
+        <md-tooltip for="btn-draw" position="top"><span data-i18n="hud.measure">Measure Distance</span></md-tooltip>
+    </div>
 
     <!-- Routes Toggle Button -->
-    <button id="btn-route" class="map-control-btn btn-blue">
-        <span class="material-icons-outlined" style="font-size: 1.125rem;">directions</span>
-        <span data-i18n="hud.route" class="map-control-tooltip">Directions</span>
-    </button>
+    <div class="map-control-item">
+        <md-fab id="btn-route" class="map-control-fab" icon="directions" aria-label="Directions" data-i18n-aria-label="hud.route"></md-fab>
+        <md-tooltip for="btn-route" position="top"><span data-i18n="hud.route">Directions</span></md-tooltip>
+    </div>
 
-    <!-- Perspective Toggle Button -->
-    <button id="btn-perspective" class="map-control-btn btn-indigo">
-        <span class="material-icons-outlined" style="font-size: 1.125rem;">3d_rotation</span>
-        <span data-i18n="settings.buildings" class="map-control-tooltip">Perspective</span>
-    </button>
+    <!-- Perspective / Tilt Toggle Button -->
+    <div class="map-control-item">
+        <md-fab id="btn-perspective" class="map-control-fab" icon="tilt_arrow_up" aria-label="Tilt" data-i18n-aria-label="controls.tilt"></md-fab>
+        <md-tooltip for="btn-perspective" position="top"><span data-i18n="controls.tilt">Tilt</span></md-tooltip>
+    </div>
 
     <!-- Compass & Flanking Rotate Buttons -->
     <div class="compass-wrapper">
         <!-- Rotate Left Button -->
-        <button id="btn-rotate-left" class="compass-rotate-btn btn-rot-left"
-            title="Rotate Left" data-i18n-title="settings.rotate_ccw">
-            <span class="material-icons-outlined" style="font-size: 1rem;">rotate_right</span>
-        </button>
+        <md-fab id="btn-rotate-left" size="small" class="compass-rotate-btn btn-rot-left" icon="rotate_right"
+            title="Rotate Left" data-i18n-title="settings.rotate_ccw" aria-label="Rotate Left" data-i18n-aria-label="settings.rotate_ccw"></md-fab>
+        <md-tooltip for="btn-rotate-left" position="top"><span data-i18n="settings.rotate_ccw">Rotate Left</span></md-tooltip>
 
         <!-- Compass Rotate Button -->
-        <button id="btn-compass" class="map-control-btn">
-            <div id="compass-needle" style="transform: rotate(0deg);">
+        <md-fab id="btn-compass" class="map-control-fab" aria-label="Reset North" data-i18n-aria-label="controls.reset_north">
+            <div slot="icon" id="compass-needle" style="transform: rotate(0deg);">
                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
                     <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 2"
                         opacity="0.4" />
@@ -38,22 +37,23 @@
                     <circle cx="12" cy="12" r="1.5" fill="currentColor" />
                 </svg>
             </div>
-            <span data-i18n="controls.reset_north" class="map-control-tooltip">Reset North</span>
-        </button>
+        </md-fab>
+        <md-tooltip for="btn-compass" position="top"><span data-i18n="controls.reset_north">Reset North</span></md-tooltip>
 
         <!-- Rotate Right Button -->
-        <button id="btn-rotate-right" class="compass-rotate-btn btn-rot-right"
-            title="Rotate Right" data-i18n-title="settings.rotate_cw">
-            <span class="material-icons-outlined" style="font-size: 1rem;">rotate_left</span>
-        </button>
+        <md-fab id="btn-rotate-right" size="small" class="compass-rotate-btn btn-rot-right" icon="rotate_left"
+            title="Rotate Right" data-i18n-title="settings.rotate_cw" aria-label="Rotate Right" data-i18n-aria-label="settings.rotate_cw"></md-fab>
+        <md-tooltip for="btn-rotate-right" position="top"><span data-i18n="settings.rotate_cw">Rotate Right</span></md-tooltip>
     </div>
 
     <!-- GPS Geolocation Button -->
-    <button id="btn-gps" class="map-control-btn btn-emerald">
-        <span style="position: relative; display: flex; align-items: center; justify-content: center; pointer-events: none;">
-            <span class="material-icons-outlined gps-icon-main" style="font-size: 1.125rem;">location_searching</span>
-            <span class="material-icons-outlined gps-center-dot" style="font-size: 6px; position: absolute; inset: 0; align-items: center; justify-content: center;">circle</span>
-        </span>
-        <span data-i18n="controls.my_location" class="map-control-tooltip">GPS Locate</span>
-    </button>
+    <div class="map-control-item">
+        <md-fab id="btn-gps" class="map-control-fab text-emerald-600" aria-label="GPS Locate" data-i18n-aria-label="controls.my_location">
+            <span slot="icon" class="gps-icon-slot">
+                <span class="material-symbols-outlined gps-icon-main">my_location</span>
+                <span class="material-symbols-outlined gps-center-dot">circle</span>
+            </span>
+        </md-fab>
+        <md-tooltip for="btn-gps" position="top"><span data-i18n="controls.my_location">GPS Locate</span></md-tooltip>
+    </div>
 </div>

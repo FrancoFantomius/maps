@@ -101,7 +101,8 @@
     "zoom_in": "Vergrößern",
     "zoom_out": "Verkleinern",
     "my_location": "Mein Standort",
-    "reset_north": "Nord ausrichten"
+    "reset_north": "Nord ausrichten",
+    "tilt": "Neigen"
   },
   "privacy": {
     "page_title": "Datenschutzerklärung - Karten",

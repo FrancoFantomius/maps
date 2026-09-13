@@ -101,7 +101,8 @@
     "zoom_in": "Ingrandisci",
     "zoom_out": "Riduci",
     "my_location": "La mia Posizione",
-    "reset_north": "Reimposta Nord"
+    "reset_north": "Reimposta Nord",
+    "tilt": "Inclinazione"
   },
   "privacy": {
     "page_title": "Informativa sulla Privacy - Mappe",

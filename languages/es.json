@@ -101,7 +101,8 @@
     "zoom_in": "Acercar",
     "zoom_out": "Alejar",
     "my_location": "Mi Ubicación",
-    "reset_north": "Restablecer Norte"
+    "reset_north": "Restablecer Norte",
+    "tilt": "Inclinación"
   },
   "privacy": {
     "page_title": "Política de Privacidad - Mapas",

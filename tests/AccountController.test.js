@@ -60,4 +60,16 @@ describe('AccountController', () => {
     AccountController.toggleDropdown();
     expect(document.getElementById('account-dropdown').style.display).toBe('none');
   });
+
+  it('opens login modal when btn-sync-login is clicked and shows btn-sync-login when logged out', async () => {
+    AccountController.init();
+    const btnLogin = document.getElementById('btn-sync-login');
+    btnLogin.click();
+    expect(document.getElementById('login-modal').classList.contains('hidden')).toBe(false);
+
+    // When logged out:
+    AccountController.updateProfileUI({ enabled: false });
+    expect(btnLogin.style.display).toBe('inline-flex');
+    expect(document.getElementById('btn-sync-profile').style.display).toBe('none');
+  });
 });

@@ -86,11 +86,9 @@ export const MapService = {
             const btnCompass = document.getElementById('btn-compass');
             if (btnCompass) {
                 if (Math.round(bearing) !== 0) {
-                    btnCompass.classList.add('border-indigo-500', 'text-indigo-600', 'dark:text-indigo-400');
-                    btnCompass.classList.remove('border-slate-200/50', 'dark:border-slate-800/50', 'text-slate-700', 'dark:text-slate-350');
+                    btnCompass.classList.add('is-active');
                 } else {
-                    btnCompass.classList.remove('border-indigo-500', 'text-indigo-600', 'dark:text-indigo-400');
-                    btnCompass.classList.add('border-slate-200/50', 'dark:border-slate-800/50', 'text-slate-700', 'dark:text-slate-350');
+                    btnCompass.classList.remove('is-active');
                 }
             }
 
@@ -663,9 +661,9 @@ export const MapService = {
         if (!btn) return;
         const isActive = this.activeOverlays.perspective;
         if (isActive) {
-            btn.className = 'group flex items-center justify-center w-12 h-12 bg-indigo-600 text-white rounded-full shadow-lg hover:shadow-xl hover:bg-indigo-500 transition-all duration-300 relative border border-indigo-500';
+            btn.classList.add('is-active');
         } else {
-            btn.className = 'group flex items-center justify-center w-12 h-12 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/50 dark:border-slate-800/50 rounded-full shadow-lg hover:shadow-xl text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all duration-300 relative';
+            btn.classList.remove('is-active');
         }
     },
 

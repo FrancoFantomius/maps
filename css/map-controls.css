@@ -1,4 +1,4 @@
-/* css/map-controls.css - Floating Action Button Stack */
+/* css/map-controls.css - Material Design 3 Floating Action Button Stack */
 
 #map-controls-stack {
   position: fixed;
@@ -8,93 +8,62 @@
   pointer-events: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.map-control-btn {
+.map-control-item {
   position: relative;
-  width: 3rem;
-  height: 3rem;
-  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-lg);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: var(--text-secondary);
 }
 
-.map-control-btn:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-1px);
+/* Material Design 3 Unified FAB Base */
+.map-control-fab {
+  --md-sys-color-primary-container: var(--bg-card-solid, #ffffff);
+  --md-sys-color-on-primary-container: var(--text-primary, #0f172a);
+  --md-sys-elevation-level3: 0 4px 10px rgba(0, 0, 0, 0.12);
+  --md-sys-elevation-level4: 0 6px 14px rgba(0, 0, 0, 0.18);
+  border-radius: var(--md-sys-shape-corner-large, 16px);
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1),
+              box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
+  display: inline-flex;
 }
 
-.map-control-btn.btn-teal {
-  color: var(--color-teal);
-}
-.map-control-btn.btn-teal:hover {
-  background-color: var(--color-teal-subtle);
-}
-
-.map-control-btn.btn-blue {
-  color: var(--color-blue);
-}
-.map-control-btn.btn-blue:hover {
-  background-color: var(--color-blue-subtle);
+.dark .map-control-fab {
+  --md-sys-color-primary-container: var(--bg-card-solid, #1e293b);
+  --md-sys-color-on-primary-container: var(--text-primary, #f8fafc);
+  --md-sys-elevation-level3: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --md-sys-elevation-level4: 0 6px 16px rgba(0, 0, 0, 0.55);
 }
 
-.map-control-btn.btn-indigo {
-  color: var(--color-indigo);
-}
-.map-control-btn.btn-indigo:hover {
-  background-color: var(--color-indigo-subtle);
+.map-control-fab:hover {
+  transform: translateY(-2px) scale(1.02);
 }
 
-.map-control-btn.btn-emerald {
-  color: var(--color-emerald);
-}
-.map-control-btn.btn-emerald:hover {
-  background-color: var(--color-emerald-subtle);
+.map-control-fab:active {
+  transform: scale(0.96);
 }
 
-/* Tooltips */
-.map-control-tooltip {
-  position: absolute;
-  right: 3.5rem;
-  transform: scale(0.95);
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.2s ease;
-  background: rgba(15, 23, 42, 0.95);
-  color: #ffffff;
-  font-size: 0.65625rem;
-  font-weight: 700;
-  padding: 0.375rem 0.625rem;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-md);
-  white-space: nowrap;
+/* Unified Active State (M3 Primary Container Accent) */
+.map-control-fab.is-active,
+.map-control-fab[active] {
+  --md-sys-color-primary-container: var(--color-indigo, #4f46e5);
+  --md-sys-color-on-primary-container: #ffffff;
 }
 
-.dark .map-control-tooltip {
-  background: rgba(2, 6, 23, 0.95);
-}
-
-.map-control-btn:hover .map-control-tooltip,
-.compass-wrapper:hover .map-control-tooltip {
-  transform: scale(1);
-  opacity: 1;
+.dark .map-control-fab.is-active,
+.dark .map-control-fab[active] {
+  --md-sys-color-primary-container: var(--color-indigo, #6366f1);
+  --md-sys-color-on-primary-container: #ffffff;
 }
 
 /* Compass & Flanking buttons */
 .compass-wrapper {
   position: relative;
-  width: 3rem;
-  height: 3rem;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -102,49 +71,70 @@
 
 .compass-rotate-btn {
   position: absolute;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 9999px;
-  background-color: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-md);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  --md-sys-color-primary-container: var(--bg-card-solid, #ffffff);
+  --md-sys-color-on-primary-container: var(--text-secondary, #475569);
+  --md-sys-elevation-level3: 0 2px 6px rgba(0, 0, 0, 0.1);
+  --md-sys-elevation-level4: 0 4px 10px rgba(0, 0, 0, 0.16);
+  border-radius: var(--md-sys-shape-corner-medium, 12px);
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1),
+              box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.dark .compass-rotate-btn {
+  --md-sys-color-primary-container: var(--bg-card-solid, #1e293b);
+  --md-sys-color-on-primary-container: var(--text-secondary, #cbd5e1);
+  --md-sys-elevation-level3: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --md-sys-elevation-level4: 0 4px 10px rgba(0, 0, 0, 0.45);
 }
 
 .compass-rotate-btn:hover {
-  box-shadow: var(--shadow-lg);
-  color: var(--color-indigo);
-  background-color: var(--color-indigo-subtle);
+  transform: scale(1.06);
+  --md-sys-color-on-primary-container: var(--color-indigo, #4f46e5);
+}
+
+.dark .compass-rotate-btn:hover {
+  --md-sys-color-on-primary-container: var(--color-indigo, #818cf8);
 }
 
 .compass-rotate-btn:active {
-  transform: scale(0.95);
+  transform: scale(0.94);
 }
 
 .compass-rotate-btn.btn-rot-left {
-  right: 3.5rem;
+  right: 4.25rem;
 }
 
 .compass-rotate-btn.btn-rot-right {
-  left: 3.5rem;
+  left: 4.25rem;
 }
 
 #compass-needle {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.2s ease-out;
 }
 
-/* GPS Button animation */
+/* GPS Button & Locating Animation */
+.gps-icon-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+
 .gps-center-dot {
   display: none;
+  font-size: 8px !important;
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
   transform-origin: center;
   transition: opacity 0.3s ease;
 }
@@ -175,6 +165,6 @@
 
   #map-controls-stack {
     right: 1rem !important;
+    bottom: 2rem !important;
   }
 }
-

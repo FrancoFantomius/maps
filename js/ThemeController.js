@@ -29,9 +29,11 @@ export const ThemeController = {
 
         if (isDark) {
             document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
             MapService.setStyle(DarkMapStyle);
         } else {
             document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
             MapService.setStyle('https://tiles.openfreemap.org/styles/liberty');
         }
 

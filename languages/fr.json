@@ -101,7 +101,8 @@
     "zoom_in": "Zoom Avant",
     "zoom_out": "Zoom Arrière",
     "my_location": "Ma Position",
-    "reset_north": "Réinitialiser Nord"
+    "reset_north": "Réinitialiser Nord",
+    "tilt": "Inclinaison"
   },
   "privacy": {
     "page_title": "Politique de Confidentialité - Cartes",
