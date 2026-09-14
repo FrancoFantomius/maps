@@ -36,22 +36,21 @@ maps/
 │   ├── account.css        # Settings, account, and cloud sync modal styles
 │   └── style.css          # Core design system and Tailwind imports
 ├── js/
-│   ├── account/
-│   │   ├── account.js          # User settings, profile UI, and Filen cloud sync integration
-│   │   └── login.js            # Login modal authentication and credentials handling
-│   ├── ApiService.js           # External API calls (geocoding, routing)
-│   ├── GPSController.js        # Geolocation tracking and heading updates
-│   ├── HUDController.js        # Navigation HUD state and speed calculations
-│   ├── MapService.js           # MapLibre initialization, layer control, and camera management
-│   ├── MarkerController.js     # Saved places, custom pins, and marker interactions
-│   ├── MeasurementController.js# Distance measurement tools
-│   ├── RoutingController.js    # Route calculation, profiles, and path display
-│   ├── SearchController.js     # Geocoding UI and search result handling
-│   ├── ThemeController.js      # Dark/light theme switcher
-│   ├── TranslationController.js# Dynamic i18n controller, language switcher, and fallback chains
-│   ├── app.js                  # Main application orchestrator & initialization
-│   ├── db.js                   # Local database storage wrapper (PouchDB)
-│   └── pwa.js                  # Service Worker lifecycle registration and update reloader
+│   ├── account/                # Settings, profile UI, and Filen cloud sync
+│   ├── api/                    # External API calls (geocoding, routing)
+│   ├── db/                     # Local database storage wrapper (PouchDB + Filen replication)
+│   ├── gps/                    # Geolocation tracking and heading updates
+│   ├── hud/                    # Navigation HUD state and speed calculations
+│   ├── index.js                # Main application entry point & orchestrator
+│   ├── map/                    # MapLibre initialization, dark style, and camera management
+│   ├── markers/                # Saved places, custom pins, and marker modal UI
+│   ├── measurement/            # Distance measurement tools and UI
+│   ├── pwa/                    # Service Worker lifecycle registration and update reloader
+│   ├── routing/                # Route calculation, profiles, and path display UI
+│   ├── search/                 # Geocoding UI, search result handling, and history
+│   ├── settings/               # Settings sheet and dialog UI
+│   ├── theme/                  # Dark/light theme switcher
+│   └── translation/            # Dynamic i18n controller and language switcher
 ├── languages/                  # i18n translation JSON files (11 main languages)
 ├── templates/                  # Modular Handlebars HTML partial templates
 ├── img/                        # App icons and static images

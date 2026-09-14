@@ -5,27 +5,38 @@
 <div class="hud-top-bar">
     <!-- Floating HUD Stack (Top-Left area) -->
     <div class="hud-top-stack">
-        <!-- Floating Search pill -->
-        <div class="header-search-pill">
-            <!-- Bookmarks / My Places Toggle Button -->
-            <button type="button" id="btn-toggle-places" class="btn-toggle-places" title="My Places" data-i18n-title="hud.markers">
-                <span class="material-icons-outlined select-none" style="font-size: 1.25rem;">bookmarks</span>
-            </button>
+        <!-- Floating M3 Search Bar -->
+        <md-search-bar
+            id="search-bar"
+            leading-icon="menu"
+            search-icon-position="right"
+            placeholder="Search"
+            data-i18n-placeholder="hud.search_placeholder"
+            responsive="false"
+            collapse-on-mobile="false"
+            show-back-button="false"
+        >
+            <div slot="suggestions" id="search-suggestions-container" class="search-suggestions-container">
+                <!-- Base Suggestions: Saved Places & Home Address Pills -->
+                <div id="search-pills-section" class="search-suggestions-section">
+                    <div class="search-suggestions-header">
+                        <span>Saved Places</span>
+                    </div>
+                    <md-chip-set id="search-pills-chips" class="search-pills-chip-set"></md-chip-set>
+                </div>
 
-            <div class="search-form-wrapper">
-                <!-- Search input form -->
-                <form id="search-form" class="header-search-form">
-                    <input type="text" id="search-input" placeholder="Search" data-i18n-placeholder="hud.search_placeholder"
-                        class="header-search-input">
-                    <button type="button" id="btn-clear-search" class="btn-clear-search hidden">
-                        <span class="material-icons-outlined" style="font-size: 1rem;">clear</span>
-                    </button>
-                    <button type="submit" class="btn-search-submit">
-                        <span class="material-icons-outlined" style="font-size: 1.125rem;">search</span>
-                    </button>
-                </form>
+                <div id="search-suggestions-divider" class="search-suggestions-divider"></div>
+
+                <!-- Previous Searches Section Underneath -->
+                <div id="search-history-section" class="search-suggestions-section">
+                    <div class="search-suggestions-header">
+                        <span>Recent Searches</span>
+                        <button type="button" id="btn-clear-search-history" class="search-history-clear-all-btn">Clear</button>
+                    </div>
+                    <div id="search-history-list" class="search-history-list" role="listbox"></div>
+                </div>
             </div>
-        </div>
+        </md-search-bar>
     </div>
 
     <!-- Floating Account Controls (Top-Right area) -->

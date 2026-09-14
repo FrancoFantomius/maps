@@ -1,6 +1,6 @@
 // tests/db.test.js
 import { describe, it, expect, beforeEach } from 'vitest';
-import { saveSyncSettings, getSyncSettings, savePlace, loadAllPlaces, deletePlaceFromDB, startSync, stopSync, FILEN_SYNC_DIR, FILEN_SYNC_FILE } from '../js/db.js';
+import { saveSyncSettings, getSyncSettings, savePlace, loadAllPlaces, deletePlaceFromDB, startSync, stopSync, FILEN_SYNC_DIR, FILEN_SYNC_FILE } from '../js/db/index.js';
 
 describe('db module', () => {
   beforeEach(async () => {

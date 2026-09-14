@@ -1,0 +1,584 @@
+/**
+ * Maps - Filen Cloud Synchronization Module
+ */
+
+import { FilenSDK } from "@filen/sdk";
+import { Buffer } from "buffer";
+import { Readable } from "stream";
+import { MapService } from '../map/index.js';
+import { db } from './index.js';
+import { getSyncSettings, saveSyncSettings } from './IO.js';
+import { loadAllPlaces, getDeletedPlacesQueue, removeFromDeletedPlacesQueue } from './places.js';
+
+// Polyfill Readable.from in the browser stream polyfill
+if (Readable) {
+  Readable.from = function (iterable, options) {
+    const opt = Object.assign({ objectMode: true }, options);
+    const readable = new Readable({
+      ...opt,
+      read() { }
+    });
+
+    (async () => {
+      try {
+        for await (const chunk of iterable) {
+          readable.push(chunk);
+        }
+        readable.push(null);
+      } catch (err) {
+        readable.destroy(err);
+      }
+    })();
+
+    return readable;
+  };
+}
+
+// State variables for Filen Sync
+export const FILEN_SYNC_DIR = '/Apps/maps';
+export const FILEN_SYNC_FILE = '/Apps/maps/places.json';
+
+let filenClient = null;
+let syncPromise = Promise.resolve();
+let syncInterval = null;
+let currentSyncStatus = 'offline'; // 'offline', 'syncing', 'online', 'error'
+let isSyncInProgress = false;
+
+/**
+ * Configure and start subscription and synchronization with Filen.
+ */
+export async function startSync(settings) {
+  stopSync();
+
+  if (!settings) {
+    try {
+      settings = await getSyncSettings();
+    } catch (e) {
+      settings = null;
+    }
+  }
+
+  if (!settings || !settings.enabled || (!settings.email && !settings.apiKey)) {
+    updateSyncStatus('offline');
+    return;
+  }
+
+  updateSyncStatus('syncing');
+  await initFilenAndSync(settings);
+}
+
+/**
+ * Stop any active synchronization.
+ */
+export function stopSync() {
+  if (syncInterval) {
+    clearInterval(syncInterval);
+    syncInterval = null;
+  }
+  filenClient = null;
+  updateSyncStatus('offline');
+}
+
+export function triggerSyncReconciliation() {
+  if (!filenClient) return;
+  queueSync();
+}
+
+function queueSync() {
+  syncPromise = syncPromise.then(() => runSync()).catch(err => {
+    console.error("[Sync] Error in sync queue:", err);
+  });
+}
+
+function updateSyncStatus(status) {
+  if (currentSyncStatus === status) return;
+  currentSyncStatus = status;
+  console.log(`[Sync] Status: ${status}`);
+  // Dispatch custom event to notify UI
+  window.dispatchEvent(new CustomEvent('maps-sync-status', { detail: status }));
+}
+
+/**
+ * Fetch latest profile, quota, and storage usage from Filen SDK.
+ */
+async function fetchFilenAccountInfo() {
+  if (!filenClient) return null;
+
+  let storageTotal = undefined;
+  let storageUsed = undefined;
+  let nickname = undefined;
+  let avatarURL = undefined;
+
+  try {
+    const accountInfo = await filenClient.user().account();
+    if (accountInfo) {
+      nickname = accountInfo.nickName || accountInfo.displayName;
+      avatarURL = accountInfo.avatarURL || '';
+      if (typeof accountInfo.maxStorage === 'number') {
+        storageTotal = accountInfo.maxStorage;
+      }
+      if (typeof accountInfo.storage === 'number') {
+        storageUsed = accountInfo.storage;
+      } else if (typeof accountInfo.storageUsed === 'number') {
+        storageUsed = accountInfo.storageUsed;
+      }
+    }
+  } catch (e) {
+    console.warn("[Sync] Failed to fetch account info:", e);
+  }
+
+  try {
+    const userInfo = await filenClient.user().info();
+    if (userInfo) {
+      if (typeof userInfo.maxStorage === 'number' && (storageTotal === undefined || storageTotal <= 0)) {
+        storageTotal = userInfo.maxStorage;
+      }
+      if (typeof userInfo.storageUsed === 'number') {
+        storageUsed = userInfo.storageUsed;
+      }
+      if (userInfo.avatarURL && !avatarURL) {
+        avatarURL = userInfo.avatarURL;
+      }
+    }
+  } catch (e) {
+    console.warn("[Sync] Failed to fetch user info:", e);
+  }
+
+  return { storageTotal, storageUsed, nickname, avatarURL };
+}
+
+/**
+ * Manually or programmatically refresh Filen storage information.
+ */
+export async function refreshFilenStorage() {
+  if (!filenClient || !filenClient.isLoggedIn()) return null;
+  const info = await fetchFilenAccountInfo();
+  if (info) {
+    const settings = await getSyncSettings();
+    let changed = false;
+    if (info.storageTotal !== undefined && info.storageTotal !== settings.storageTotal) {
+      settings.storageTotal = info.storageTotal;
+      changed = true;
+    }
+    if (info.storageUsed !== undefined && info.storageUsed !== settings.storageUsed) {
+      settings.storageUsed = info.storageUsed;
+      changed = true;
+    }
+    if (info.nickname && info.nickname !== settings.username) {
+      settings.username = info.nickname;
+      changed = true;
+    }
+    if (info.avatarURL !== undefined && info.avatarURL !== settings.avatarURL) {
+      settings.avatarURL = info.avatarURL;
+      changed = true;
+    }
+    if (changed) {
+      await saveSyncSettings(settings);
+      window.dispatchEvent(new CustomEvent('maps-sync-settings-updated', { detail: settings }));
+    }
+    return settings;
+  }
+  return null;
+}
+
+async function initFilenAndSync(settings) {
+  try {
+    filenClient = new FilenSDK({
+      metadataCache: true
+    });
+
+    if (settings.apiKey && settings.masterKeys) {
+      filenClient.init({
+        apiKey: settings.apiKey,
+        masterKeys: settings.masterKeys,
+        publicKey: settings.publicKey,
+        privateKey: settings.privateKey,
+        baseFolderUUID: settings.baseFolderUUID,
+        userId: settings.userId,
+        authVersion: settings.authVersion,
+        metadataCache: true
+      });
+
+      // Update profile & storage info in background
+      try {
+        const info = await fetchFilenAccountInfo();
+        if (info) {
+          let changed = false;
+          if (info.nickname && info.nickname !== settings.username) {
+            settings.username = info.nickname;
+            changed = true;
+          }
+          if (info.avatarURL !== undefined && info.avatarURL !== settings.avatarURL) {
+            settings.avatarURL = info.avatarURL;
+            changed = true;
+          }
+          if (info.storageTotal !== undefined && info.storageTotal !== settings.storageTotal) {
+            settings.storageTotal = info.storageTotal;
+            changed = true;
+          }
+          if (info.storageUsed !== undefined && info.storageUsed !== settings.storageUsed) {
+            settings.storageUsed = info.storageUsed;
+            changed = true;
+          }
+          if (changed) {
+            await saveSyncSettings(settings);
+            window.dispatchEvent(new CustomEvent('maps-sync-settings-updated', { detail: settings }));
+          }
+        }
+      } catch (e) {
+        console.warn("[Sync] Failed to update profile info in background:", e);
+      }
+    } else if (settings.email && settings.password) {
+      await filenClient.login({
+        email: settings.email,
+        password: settings.password,
+        twoFactorCode: settings.twoFactorCode || undefined
+      });
+
+      let nickname = settings.email.split('@')[0];
+      let avatarURL = '';
+      let storageTotal = undefined;
+      let storageUsed = undefined;
+
+      try {
+        const info = await fetchFilenAccountInfo();
+        if (info) {
+          if (info.nickname) nickname = info.nickname;
+          if (info.avatarURL) avatarURL = info.avatarURL;
+          if (info.storageTotal !== undefined) storageTotal = info.storageTotal;
+          if (info.storageUsed !== undefined) storageUsed = info.storageUsed;
+        }
+      } catch (e) {
+        console.warn("[Sync] Failed to fetch profile info during login:", e);
+      }
+
+      const sessionSettings = {
+        enabled: true,
+        username: nickname,
+        avatarURL: avatarURL,
+        storageTotal: storageTotal,
+        storageUsed: storageUsed,
+        email: settings.email,
+        apiKey: filenClient.config.apiKey,
+        masterKeys: filenClient.config.masterKeys,
+        publicKey: filenClient.config.publicKey,
+        privateKey: filenClient.config.privateKey,
+        baseFolderUUID: filenClient.config.baseFolderUUID,
+        userId: filenClient.config.userId,
+        authVersion: filenClient.config.authVersion
+      };
+
+      await saveSyncSettings(sessionSettings);
+    } else {
+      throw new Error("No credentials or active session keys available");
+    }
+
+    // Ensure remote directory structures exist (/Apps and /Apps/maps)
+    try {
+      await filenClient.fs().mkdir({ path: '/Apps' });
+    } catch (e) { }
+    try {
+      await filenClient.fs().mkdir({ path: FILEN_SYNC_DIR });
+    } catch (e) { }
+
+    queueSync();
+
+    syncInterval = setInterval(() => {
+      queueSync();
+    }, 30000);
+
+  } catch (err) {
+    console.error("[Sync] Failed to initialize Filen SDK client:", err);
+    updateSyncStatus('error');
+    throw err;
+  }
+}
+
+async function runSync() {
+  if (!filenClient || isSyncInProgress) return;
+  const settings = await getSyncSettings();
+  if (!settings.enabled || !filenClient.isLoggedIn()) return;
+
+  isSyncInProgress = true;
+
+  try {
+    // Resolve the parent directory UUID on Filen
+    let parentUUID = await filenClient.fs().pathToItemUUID({
+      path: FILEN_SYNC_DIR,
+      type: 'directory'
+    });
+
+    if (!parentUUID) {
+      try {
+        await filenClient.fs().mkdir({ path: '/Apps' });
+      } catch (e) { }
+      try {
+        await filenClient.fs().mkdir({ path: FILEN_SYNC_DIR });
+      } catch (e) { }
+      parentUUID = await filenClient.fs().pathToItemUUID({
+        path: FILEN_SYNC_DIR,
+        type: 'directory'
+      });
+    }
+
+    if (!parentUUID) {
+      throw new Error(`Could not resolve directory UUID for ${FILEN_SYNC_DIR}.`);
+    }
+
+    // Fetch list of files in /Apps/maps
+    let remoteFiles = [];
+    try {
+      remoteFiles = await filenClient.fs().readdir({ path: FILEN_SYNC_DIR });
+    } catch (err) {
+      if (err.message && err.message.includes('not found')) {
+        await filenClient.fs().mkdir({ path: '/Apps' });
+        await filenClient.fs().mkdir({ path: FILEN_SYNC_DIR });
+        remoteFiles = [];
+      } else {
+        throw err;
+      }
+    }
+
+    const placesFile = remoteFiles.find(name => name === 'places.json');
+    let remoteStats = null;
+    let remoteContent = null;
+
+    if (placesFile) {
+      try {
+        remoteStats = await filenClient.fs().stat({ path: FILEN_SYNC_FILE });
+        const dataBuffer = await filenClient.fs().readFile({ path: FILEN_SYNC_FILE });
+        remoteContent = JSON.parse(dataBuffer.toString('utf-8'));
+      } catch (err) {
+        console.error(`[Sync] Error reading remote ${FILEN_SYNC_FILE}:`, err);
+      }
+    }
+
+    // Load all local places from PouchDB
+    const localPlaces = await loadAllPlaces();
+    const deletedQueue = await getDeletedPlacesQueue();
+
+    // Determine modified timestamps
+    let localMaxUpdated = 0;
+    localPlaces.forEach(p => {
+      if (p.updatedAt > localMaxUpdated) localMaxUpdated = p.updatedAt;
+    });
+
+    const localHome = MapService.getHomeAddress();
+    if (localHome && localHome.updatedAt && localHome.updatedAt > localMaxUpdated) {
+      localMaxUpdated = localHome.updatedAt;
+    }
+
+    const remoteMaxUpdated = (remoteContent && typeof remoteContent.updatedAt === 'number')
+      ? remoteContent.updatedAt
+      : (remoteStats ? remoteStats.mtimeMs : 0);
+
+    const uploadLocal = async () => {
+      const payloadUpdatedAt = Math.max(localMaxUpdated, 1);
+      const placesPayload = {
+        updatedAt: payloadUpdatedAt,
+        homeAddress: MapService.getHomeAddress() || null,
+        places: localPlaces.map(p => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          desc: p.desc,
+          lat: p.lat,
+          lng: p.lng,
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt
+        }))
+      };
+
+      const jsonStr = JSON.stringify(placesPayload);
+      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const file = new File([blob], 'places.json', {
+        type: 'application/json',
+        lastModified: placesPayload.updatedAt
+      });
+
+      // If remote places.json exists, remove it first to overwrite it correctly
+      if (placesFile) {
+        try {
+          await filenClient.fs().rm({ path: FILEN_SYNC_FILE, permanent: true });
+        } catch (e) {
+          console.warn("[Sync] Failed to remove old places.json before upload:", e);
+        }
+      }
+
+      const item = await filenClient.cloud().uploadWebFile({
+        file,
+        parent: parentUUID,
+        name: 'places.json'
+      });
+
+      // Mark all local places as synced
+      for (const p of localPlaces) {
+        const doc = await db.get(p.id);
+        doc.synced = true;
+        doc.lastSynced = Date.now();
+        await db.put(doc);
+      }
+
+      // Clear local deleted queue since we uploaded the state
+      for (const delId of deletedQueue) {
+        await removeFromDeletedPlacesQueue(delId);
+      }
+    };
+
+    const downloadRemote = async (remoteData) => {
+      const remotePlaces = remoteData ? (remoteData.places || []) : [];
+      
+      // Update home address from remote if present
+      if (remoteData && remoteData.homeAddress !== undefined) {
+        const currentHome = MapService.getHomeAddress();
+        if (remoteData.homeAddress) {
+          if (!currentHome || (remoteData.homeAddress.updatedAt && (!currentHome.updatedAt || remoteData.homeAddress.updatedAt >= currentHome.updatedAt))) {
+            MapService.setHomeAddress(remoteData.homeAddress, true);
+          }
+        } else if (currentHome && remoteMaxUpdated > (currentHome.updatedAt || 0)) {
+          MapService.clearHomeAddress(true);
+        }
+      } else if (remotePlaces.length > 0) {
+        const homePlace = remotePlaces.find(rp => rp.category === 'home');
+        if (homePlace) {
+          MapService.setHomeAddress({
+            address: homePlace.name || `${homePlace.lat.toFixed(4)}, ${homePlace.lng.toFixed(4)}`,
+            lat: homePlace.lat,
+            lng: homePlace.lng,
+            updatedAt: homePlace.updatedAt || Date.now()
+          }, true);
+        }
+      }
+
+      // Update local PouchDB with remote places
+      const localMap = new Map(localPlaces.map(p => [p.id, p]));
+
+      // 1. Process deletions based on what's missing in remote but was synced locally before
+      for (const localP of localPlaces) {
+        const inRemote = remotePlaces.some(rp => rp.id === localP.id);
+        if (!inRemote && localP.lastSynced) {
+          // Place was synced to remote before but is now gone from remote. Delete locally!
+          const doc = await db.get(localP.id);
+          await db.remove(doc);
+        }
+      }
+
+      // 2. Add/update remote places locally
+      for (const rp of remotePlaces) {
+        // Skip if locally deleted and synced
+        if (deletedQueue.includes(rp.id)) {
+          continue;
+        }
+
+        const localP = localMap.get(rp.id);
+        if (!localP || rp.updatedAt > localP.updatedAt) {
+          // Remote is new or newer. Save locally
+          let existingDoc = null;
+          try {
+            existingDoc = await db.get(rp.id);
+          } catch (e) { }
+
+          const doc = {
+            _id: rp.id,
+            type: 'place',
+            name: rp.name,
+            category: rp.category,
+            desc: rp.desc,
+            lat: rp.lat,
+            lng: rp.lng,
+            createdAt: rp.createdAt,
+            updatedAt: rp.updatedAt,
+            synced: true,
+            lastSynced: Date.now()
+          };
+
+          if (existingDoc) {
+            doc._rev = existingDoc._rev;
+          }
+
+          await db.put(doc);
+        }
+      }
+
+      // 3. Clear local deleted queue for IDs that are not present in remote anyway
+      for (const delId of deletedQueue) {
+        const inRemote = remotePlaces.some(rp => rp.id === delId);
+        if (!inRemote) {
+          await removeFromDeletedPlacesQueue(delId);
+        }
+      }
+
+      // Dispatch custom events to notify UI and markers
+      window.dispatchEvent(new CustomEvent('maps-home-updated', { detail: { _fromSync: true } }));
+      window.dispatchEvent(new CustomEvent('maps-places-updated'));
+    };
+
+    if (deletedQueue.length > 0) {
+      // Local deletions occurred, always upload to overwrite remote file
+      updateSyncStatus('syncing');
+      await uploadLocal();
+    } else if (!placesFile) {
+      // Remote file does not exist, upload local data
+      if (localPlaces.length > 0 || localHome) {
+        updateSyncStatus('syncing');
+        await uploadLocal();
+      }
+    } else if (localMaxUpdated > remoteMaxUpdated) {
+      // Local changes are newer, upload
+      updateSyncStatus('syncing');
+      await uploadLocal();
+    } else if (remoteMaxUpdated > localMaxUpdated) {
+      // Remote changes are newer, download
+      updateSyncStatus('syncing');
+      await downloadRemote(remoteContent);
+    } else {
+      // Timestamps equal, ensure local markers are marked synced
+      let updatedAny = false;
+      for (const p of localPlaces) {
+        if (!p.synced) {
+          const doc = await db.get(p.id);
+          doc.synced = true;
+          doc.lastSynced = Date.now();
+          await db.put(doc);
+          updatedAny = true;
+        }
+      }
+    }
+
+    // Refresh storage stats from Filen after sync
+    try {
+      const info = await fetchFilenAccountInfo();
+      if (info && (info.storageTotal !== undefined || info.storageUsed !== undefined)) {
+        const curSettings = await getSyncSettings();
+        let changed = false;
+        if (info.storageTotal !== undefined && info.storageTotal !== curSettings.storageTotal) {
+          curSettings.storageTotal = info.storageTotal;
+          changed = true;
+        }
+        if (info.storageUsed !== undefined && info.storageUsed !== curSettings.storageUsed) {
+          curSettings.storageUsed = info.storageUsed;
+          changed = true;
+        }
+        if (changed) {
+          await saveSyncSettings(curSettings);
+          window.dispatchEvent(new CustomEvent('maps-sync-settings-updated', { detail: curSettings }));
+        }
+      }
+    } catch (e) {
+      console.warn("[Sync] Failed to refresh storage stats during sync:", e);
+    }
+
+    updateSyncStatus('online');
+  } catch (err) {
+    console.error("[Sync] Error during sync reconciliation:", err);
+    updateSyncStatus('error');
+  } finally {
+    isSyncInProgress = false;
+  }
+}
+
+window.addEventListener('maps-home-updated', (e) => {
+  if (e.detail && e.detail._fromSync) return;
+  triggerSyncReconciliation();
+});
+

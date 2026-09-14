@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import pkg from '../package.json';
-import { initPWA } from '../js/pwa.js';
+import { initPWA } from '../js/pwa/index.js';
 
 describe('PWA & Caching Configuration', () => {
     it('manifest version matches version in package.json', () => {
