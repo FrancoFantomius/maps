@@ -51,6 +51,18 @@ if (accountMenuClass && accountMenuClass.elementStyles && !accountMenuClass._bor
     `);
 }
 
+// Disable fixed fullscreen scrim in md-search-bar so map clicks are not intercepted
+const searchBarClass = customElements.get('md-search-bar');
+if (searchBarClass && searchBarClass.elementStyles && !searchBarClass._scrimPatched) {
+    searchBarClass._scrimPatched = true;
+    searchBarClass.elementStyles.push(css`
+        .scrim {
+            display: none !important;
+            pointer-events: none !important;
+        }
+    `);
+}
+
 // Feature Module Imports
 import { MapService, DarkMapStyle, setupMapControlsUI } from './map/index.js';
 import { ApiService } from './api/index.js';
@@ -273,6 +285,18 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
 }
 
 function onMapClick(e) {
+    const searchBar = document.getElementById('search-bar');
+    if (searchBar && !SearchController.isShowingSearchResults) {
+        if (typeof searchBar.close === 'function') {
+            searchBar.close();
+        } else {
+            searchBar.active = false;
+        }
+        if (searchBar.inputElement && typeof searchBar.inputElement.blur === 'function') {
+            searchBar.inputElement.blur();
+        }
+    }
+
     const latlng = { lat: e.lngLat.lat, lng: e.lngLat.lng };
 
     if (RoutingController.isRouteMode) {

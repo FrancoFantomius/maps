@@ -8,14 +8,28 @@
         <!-- Floating M3 Search Bar -->
         <md-search-bar
             id="search-bar"
-            leading-icon="menu"
-            search-icon-position="right"
             placeholder="Search"
             data-i18n-placeholder="hud.search_placeholder"
             responsive="false"
             collapse-on-mobile="false"
             show-back-button="false"
         >
+            <md-icon-button
+                slot="leading"
+                id="btn-search-menu"
+                icon="menu"
+                aria-label="Saved Places"
+                data-i18n-aria-label="markers.title"
+            ></md-icon-button>
+
+            <md-icon-button
+                slot="trailing"
+                id="btn-search-submit"
+                icon="search"
+                aria-label="Search"
+                data-i18n-aria-label="hud.search_placeholder"
+            ></md-icon-button>
+
             <div slot="suggestions" id="search-suggestions-container" class="search-suggestions-container">
                 <!-- Base Suggestions: Saved Places & Home Address Pills -->
                 <div id="search-pills-section" class="search-suggestions-section">
@@ -27,16 +41,46 @@
 
                 <div id="search-suggestions-divider" class="search-suggestions-divider"></div>
 
+                <!-- Live Places Suggestions / Search Results Section -->
+                <div id="search-places-section" class="search-suggestions-section" style="display: none;">
+                    <div class="search-suggestions-header">
+                        <span id="search-places-header-title" data-i18n="hud.search_suggestions">Places</span>
+                    </div>
+                    <div id="search-places-list" class="search-places-list" role="listbox"></div>
+                </div>
+
+                <div id="search-suggestions-divider-2" class="search-suggestions-divider" style="display: none;"></div>
+
                 <!-- Previous Searches Section Underneath -->
                 <div id="search-history-section" class="search-suggestions-section">
                     <div class="search-suggestions-header">
                         <span>Recent Searches</span>
                         <button type="button" id="btn-clear-search-history" class="search-history-clear-all-btn">Clear</button>
                     </div>
+                    <md-tooltip for="btn-clear-search-history" position="top">
+                        <span>Clear recent searches</span>
+                    </md-tooltip>
                     <div id="search-history-list" class="search-history-list" role="listbox"></div>
+                </div>
+
+                <!-- Empty State Message when searching with no matches -->
+                <div id="search-empty-section" class="search-suggestions-empty" style="display: none;">
+                    <span>No suggestions found</span>
                 </div>
             </div>
         </md-search-bar>
+
+        <md-tooltip for="btn-search-menu" position="bottom">
+            <span data-i18n="markers.title">Saved Places</span>
+        </md-tooltip>
+
+        <md-tooltip for="btn-search-submit" position="bottom">
+            <span data-i18n="hud.search_placeholder">Search</span>
+        </md-tooltip>
+
+        <md-tooltip id="search-clear-tooltip" position="bottom">
+            <span>Clear search</span>
+        </md-tooltip>
     </div>
 
     <!-- Floating Account Controls (Top-Right area) -->

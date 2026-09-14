@@ -12,6 +12,7 @@ import {
     removeRecentSearch,
     clearRecentSearches
 } from './recentSearches.js';
+import { fetchPlaceSuggestions, getPlaceIcon } from './fetchPlaceSuggestions.js';
 import {
     uiState,
     clearSearchMarkers,
@@ -34,6 +35,12 @@ export const SearchController = {
     set searchResults(val) {
         uiState.searchResults = val;
     },
+    get isShowingSearchResults() {
+        return uiState.isShowingSearchResults;
+    },
+    set isShowingSearchResults(val) {
+        uiState.isShowingSearchResults = val;
+    },
 
     getUserLocation,
     calculateDistance,
@@ -48,7 +55,9 @@ export const SearchController = {
     addRecentSearch,
     removeRecentSearch,
     clearRecentSearches,
-    renderSuggestions
+    renderSuggestions,
+    fetchPlaceSuggestions,
+    getPlaceIcon
 };
 
 export {
@@ -62,6 +71,8 @@ export {
     addRecentSearch,
     removeRecentSearch,
     clearRecentSearches,
+    fetchPlaceSuggestions,
+    getPlaceIcon,
     uiState,
     clearSearchMarkers,
     createSearchPin,
