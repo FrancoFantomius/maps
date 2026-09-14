@@ -1,152 +1,58 @@
 <link rel="stylesheet" href="/css/settings-panel.css">
-<!-- Settings Toggle Button (Bottom-Left area, z-10) -->
-<div class="settings-toggle-wrapper bottom-ui-element">
-    <button id="btn-settings-toggle" class="btn-settings-toggle">
+<!-- Settings Toggle Button (Hidden: triggered via Layers button in layer switcher) -->
+<div class="settings-toggle-wrapper bottom-ui-element hidden" style="display: none;">
+    <button id="btn-settings-toggle" class="btn-settings-toggle" aria-label="Settings Toggle">
         <span class="material-icons-outlined" style="font-size: 1.125rem;">keyboard_double_arrow_up</span>
     </button>
 </div>
 
-<!-- Settings Bottom Sheet Panel (z-20, slides up from bottom) -->
-<div id="settings-panel" class="settings-bottom-sheet translate-y-full">
-    <div class="settings-sheet-content">
+<!-- Settings Bottom Sheet (M3 Bottom Sheet with 100% width and sharp corners) -->
+<md-bottom-sheet
+    id="settings-panel"
+    type="modal"
+    divider
+    style="--md-bottom-sheet-max-width: 100%; --md-bottom-sheet-shape: 0px; border-radius: 0;"
+>
+    <!-- Custom Header Title & Subtitle -->
+    <div slot="headline" style="font-family: var(--font-display, inherit); font-weight: 700; font-size: 1.125rem; color: var(--text-primary);" data-i18n="settings.title">
+        Map Settings
+    </div>
+    <div slot="subhead" style="font-size: 0.75rem; color: var(--text-muted);" data-i18n="settings.subtitle">
+        Configure map layers, overlays, and system appearance
+    </div>
 
-        <!-- Close button -->
-        <div class="settings-close-bar">
-            <button id="btn-settings-close" class="btn-settings-close">
-                <span class="material-icons-outlined" style="font-size: 1rem;">keyboard_double_arrow_down</span>
-                <span style="font-size: 10px; font-weight: 600;" data-i18n="nav.close">Close</span>
-            </button>
+    <!-- Close Button -->
+    <md-icon-button slot="close-button" id="btn-settings-close" icon="close" aria-label="Close" data-i18n-title="nav.close"></md-icon-button>
+
+    <!-- Settings Content Grid (Only core map settings: Overlays and Theme) -->
+    <div class="settings-grid">
+        <!-- Column 1: Show Details / Map Overlays -->
+        <div class="settings-col">
+            <span class="settings-section-title" data-i18n="settings.show_details">Show Details</span>
+            <div class="settings-toggle-list">
+                <div class="settings-toggle-row">
+                    <span class="settings-toggle-label" data-i18n="settings.street_names">Street Names</span>
+                    <md-switch id="toggle-overlay-labels" aria-label="Street Names"></md-switch>
+                </div>
+                <div class="settings-toggle-row">
+                    <span class="settings-toggle-label" data-i18n="settings.bike_paths">Bike Paths</span>
+                    <md-switch id="toggle-overlay-bike" aria-label="Bike Paths"></md-switch>
+                </div>
+                <div class="settings-toggle-row">
+                    <span class="settings-toggle-label" data-i18n="settings.buildings">Buildings</span>
+                    <md-switch id="toggle-overlay-perspective" aria-label="Buildings"></md-switch>
+                </div>
+            </div>
         </div>
 
-        <!-- Settings content in horizontal layout -->
-        <div class="settings-grid">
-
-            <!-- Column 1: Header + Overlays -->
-            <div class="settings-col">
-                <div style="margin-bottom: 0.75rem;">
-                    <h3 style="font-family: var(--font-display); font-weight: 700; font-size: 0.875rem; color: var(--text-primary); margin: 0;" data-i18n="settings.title">Map Settings</h3>
-                    <p style="font-size: 10px; color: var(--text-muted); margin: 0.125rem 0 0 0;" data-i18n="settings.subtitle">Configure map layers, overlays, and system appearance</p>
-                </div>
-                <div style="padding-top: 0.25rem;">
-                    <span class="settings-section-title" data-i18n="settings.show_details">Show Details</span>
-                    <div style="display: flex; flex-direction: column; gap: 0.625rem;">
-                        <label class="settings-toggle-row">
-                            <span class="settings-toggle-label" data-i18n="settings.street_names">Street Names</span>
-                            <div style="position: relative;">
-                                <input type="checkbox" id="toggle-overlay-labels" class="switch-input">
-                                <div class="switch-pill">
-                                    <div class="switch-thumb"></div>
-                                </div>
-                            </div>
-                        </label>
-                        <label class="settings-toggle-row">
-                            <span class="settings-toggle-label" data-i18n="settings.bike_paths">Bike Paths</span>
-                            <div style="position: relative;">
-                                <input type="checkbox" id="toggle-overlay-bike" class="switch-input">
-                                <div class="switch-pill">
-                                    <div class="switch-thumb"></div>
-                                </div>
-                            </div>
-                        </label>
-                        <label class="settings-toggle-row">
-                            <span class="settings-toggle-label" data-i18n="settings.buildings">Buildings</span>
-                            <div style="position: relative;">
-                                <input type="checkbox" id="toggle-overlay-perspective" class="switch-input">
-                                <div class="switch-pill">
-                                    <div class="switch-thumb"></div>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
+        <!-- Column 2: Appearance Theme -->
+        <div class="settings-col">
+            <span class="settings-section-title" data-i18n="settings.appearance_theme">Appearance Theme</span>
+            <div class="theme-btn-grid">
+                <button data-theme-btn="light" data-i18n="settings.theme_light">Light</button>
+                <button data-theme-btn="system" data-i18n="settings.theme_system">System</button>
+                <button data-theme-btn="dark" data-i18n="settings.theme_dark">Dark</button>
             </div>
-
-            <!-- Column 2: Home Location + Rotation -->
-            <div class="settings-col">
-                <div>
-                    <span class="settings-section-title" data-i18n="settings.home_location">Home Location</span>
-                    <div id="home-address-card" class="home-address-card hidden">
-                        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 0.375rem;">
-                            <div style="display: flex; align-items: center; gap: 0.375rem; color: var(--color-indigo); font-weight: 700; font-size: 0.75rem;">
-                                <span class="material-icons-outlined" style="font-size: 1rem;">home</span>
-                                <span data-i18n="settings.home_address">Home Address</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.25rem;">
-                                <button id="btn-fly-home" type="button" title="Fly to Home" data-i18n-title="settings.fly_to_home"
-                                    style="padding: 0.25rem; border: none; background: transparent; color: var(--color-indigo); cursor: pointer;">
-                                    <span class="material-icons-outlined" style="font-size: 0.875rem;">my_location</span>
-                                </button>
-                                <button id="btn-clear-home" type="button" title="Clear Home Address" data-i18n-title="settings.clear_home"
-                                    style="padding: 0.25rem; border: none; background: transparent; color: var(--color-red); cursor: pointer;">
-                                    <span class="material-icons-outlined" style="font-size: 0.875rem;">delete_outline</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div id="home-address-text" style="font-size: 11px; font-weight: 500; color: var(--text-primary); line-height: 1.3;"></div>
-                    </div>
-
-                    <!-- Address Search Input & Autocomplete -->
-                    <div style="position: relative;">
-                        <div class="home-input-wrapper">
-                            <input type="text" id="home-address-input" placeholder="Search home address..." data-i18n-placeholder="settings.search_home_placeholder"
-                                autocomplete="off" class="home-address-input">
-                            <button type="button" id="btn-save-home-input" title="Save address" class="btn-save-home">
-                                <span class="material-icons-outlined" style="font-size: 1rem;">check</span>
-                            </button>
-                        </div>
-                        <div id="home-address-autocomplete"
-                            class="custom-scrollbar hidden"
-                            style="position: absolute; left: 0; right: 0; top: 100%; margin-top: 0.25rem; z-index: 50; background: var(--bg-card-solid); border: 1px solid var(--border-subtle); border-radius: 0.75rem; box-shadow: var(--shadow-xl); max-height: 10rem; overflow-y: auto;">
-                        </div>
-                    </div>
-                </div>
-                <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-top: 0.75rem;">
-                    <span class="settings-section-title" data-i18n="settings.map_rotation">Map Rotation</span>
-                    <div class="rotation-btn-group">
-                        <button id="btn-rotate-ccw" title="Rotate Counter-Clockwise" data-i18n-title="settings.rotate_ccw" data-i18n="settings.rotate_ccw"
-                            class="btn-rotate-map">Rotate CCW</button>
-                        <button id="btn-rotate-cw" title="Rotate Clockwise" data-i18n-title="settings.rotate_cw" data-i18n="settings.rotate_cw"
-                            class="btn-rotate-map">Rotate CW</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Column 3: Language + Sliders + Theme -->
-            <div class="settings-col">
-                <div style="margin-bottom: 0.75rem;">
-                    <span class="settings-section-title" data-i18n="settings.language">Language</span>
-                    <select id="setting-language" class="settings-select">
-                        <option value="system" data-i18n="settings.language_system">System (Auto)</option>
-                    </select>
-                </div>
-
-                <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.5rem;">
-                    <div class="settings-slider-row">
-                        <div class="settings-slider-labels">
-                            <span data-i18n="settings.bearing_angle">Bearing Angle</span>
-                            <span id="bearing-value">0°</span>
-                        </div>
-                        <input type="range" id="bearing-slider" min="-180" max="180" value="0" class="settings-slider">
-                    </div>
-                    <div class="settings-slider-row">
-                        <div class="settings-slider-labels">
-                            <span data-i18n="settings.tilt_pitch">Tilt / Pitch</span>
-                            <span id="pitch-value">0°</span>
-                        </div>
-                        <input type="range" id="pitch-slider" min="0" max="60" value="0" class="settings-slider">
-                    </div>
-                </div>
-
-                <div style="border-top: 1px solid var(--border-subtle); padding-top: 0.75rem; margin-top: 0.75rem;">
-                    <span class="settings-section-title" data-i18n="settings.appearance_theme">Appearance Theme</span>
-                    <div class="theme-btn-grid">
-                        <button data-theme-btn="light" data-i18n="settings.theme_light">Light</button>
-                        <button data-theme-btn="system" data-i18n="settings.theme_system">System</button>
-                        <button data-theme-btn="dark" data-i18n="settings.theme_dark">Dark</button>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
-</div>
+</md-bottom-sheet>

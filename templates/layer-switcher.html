@@ -1,18 +1,31 @@
 <link rel="stylesheet" href="/css/layer-switcher.css">
-<!-- Floating Layer Switcher (Bottom-Left, z-10) -->
-<div id="layer-switcher" class="bottom-ui-element">
-    <!-- Main tile toggle button -->
+<!-- Floating Layer Switcher & Bottom-Left Map Controls (z-10) -->
+<div id="layer-switcher" class="bottom-ui-element" role="toolbar" aria-label="Map Navigation and Layers">
+    <!-- Main switcher container with satellite preview and layers button -->
     <div class="layer-switcher-container">
-        <button id="layer-toggle-btn" class="layer-toggle-btn" title="Switch map type">
+        <button id="layer-toggle-btn" class="layer-toggle-btn">
             <img id="layer-toggle-preview"
                 src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/13/2933/4366"
                 alt="Switch layer" class="layer-toggle-img">
             <span id="layer-toggle-label" class="layer-toggle-label">Satellite</span>
         </button>
-        <!-- Labels sub-button (visible in satellite mode) -->
-        <button id="layer-labels-btn" class="layer-labels-btn hidden" title="Toggle street names & labels">
-            <span class="material-icons-outlined" style="font-size: 15px; line-height: 1;">label</span>
-            <span style="font-size: 10px; font-weight: bold;">Labels</span>
+        <md-tooltip for="layer-toggle-btn" position="top">Switch map type</md-tooltip>
+
+        <button id="btn-layers" class="layer-switcher-layers-btn">
+            <span class="material-symbols-outlined layer-switcher-layers-icon">layers</span>
+            <span class="layer-switcher-layers-label">Layers</span>
         </button>
+        <md-tooltip for="btn-layers" position="top">Show/Hide map layers</md-tooltip>
+    </div>
+
+    <!-- Vertical Zoom Button Group (Pill-shaped) -->
+    <div class="zoom-controls-wrapper">
+        <md-button-group connected orientation="vertical" shape="pill" class="zoom-button-group">
+            <md-icon-button id="btn-zoom-in" icon="add"></md-icon-button>
+            <md-icon-button id="btn-zoom-out" icon="remove"></md-icon-button>
+        </md-button-group>
+        <md-tooltip for="btn-zoom-in" position="right">Zoom In</md-tooltip>
+        <md-tooltip for="btn-zoom-out" position="right">Zoom Out</md-tooltip>
     </div>
 </div>
+

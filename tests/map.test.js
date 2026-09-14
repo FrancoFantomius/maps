@@ -1,6 +1,6 @@
 // tests/map.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MapService } from '../js/map/index.js';
+import { MapService, setupMapControlsUI } from '../js/map/index.js';
 
 describe('MapService', () => {
   beforeEach(() => {
@@ -88,6 +88,49 @@ describe('MapService', () => {
 
       expect(MapService.getCenter()).toEqual({ lat: 45.438, lng: 10.993 });
       expect(MapService.getBounds().getWest()).toBe(10.8);
+    });
+  });
+
+  describe('Zoom controls', () => {
+    it('calls map.zoomIn when zoomIn is invoked', () => {
+      MapService.map = {
+        zoomIn: vi.fn(),
+        zoomOut: vi.fn(),
+      };
+
+      MapService.zoomIn();
+      expect(MapService.map.zoomIn).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls map.zoomOut when zoomOut is invoked', () => {
+      MapService.map = {
+        zoomIn: vi.fn(),
+        zoomOut: vi.fn(),
+      };
+
+      MapService.zoomOut();
+      expect(MapService.map.zoomOut).toHaveBeenCalledTimes(1);
+    });
+
+    it('attaches click listeners to btn-zoom-in and btn-zoom-out', () => {
+      document.body.innerHTML = `
+        <button id="btn-zoom-in"></button>
+        <button id="btn-zoom-out"></button>
+      `;
+
+      const zoomInSpy = vi.spyOn(MapService, 'zoomIn').mockImplementation(() => {});
+      const zoomOutSpy = vi.spyOn(MapService, 'zoomOut').mockImplementation(() => {});
+
+      setupMapControlsUI(MapService);
+
+      document.getElementById('btn-zoom-in').click();
+      expect(zoomInSpy).toHaveBeenCalledTimes(1);
+
+      document.getElementById('btn-zoom-out').click();
+      expect(zoomOutSpy).toHaveBeenCalledTimes(1);
+
+      zoomInSpy.mockRestore();
+      zoomOutSpy.mockRestore();
     });
   });
 });

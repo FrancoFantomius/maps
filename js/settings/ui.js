@@ -10,35 +10,102 @@ export function setupSettingsUI(MapService) {
 
     if (!settingsPanel || !btnSettingsToggle) return;
 
-    function setSettingsPanelOpen(isOpen) {
-        settingsPanel.classList.toggle('settings-open', isOpen);
-        settingsPanel.classList.toggle('translate-y-full', !isOpen);
-        const iconSpan = btnSettingsToggle.querySelector('.material-icons-outlined');
-        if (iconSpan) iconSpan.textContent = isOpen ? 'keyboard_double_arrow_down' : 'keyboard_double_arrow_up';
+    function removeScrim() {
+        if (settingsPanel.shadowRoot) {
+            const scrim = settingsPanel.shadowRoot.querySelector('.scrim');
+            if (scrim) {
+                scrim.style.setProperty('display', 'none', 'important');
+                scrim.style.setProperty('pointer-events', 'none', 'important');
+                scrim.style.setProperty('visibility', 'hidden', 'important');
+                scrim.style.setProperty('opacity', '0', 'important');
+            }
+        }
+    }
+    removeScrim();
 
+    function getPanelHeight() {
+        const sheetEl = settingsPanel.shadowRoot ? settingsPanel.shadowRoot.querySelector('.sheet') : null;
+        if (sheetEl) {
+            const h = sheetEl.offsetHeight || sheetEl.getBoundingClientRect().height;
+            if (h > 0) return h;
+        }
+        if (settingsPanel.offsetHeight > 0) {
+            return settingsPanel.offsetHeight;
+        }
+        const gridEl = settingsPanel.querySelector('.settings-grid');
+        if (gridEl) {
+            const gridH = gridEl.offsetHeight || gridEl.getBoundingClientRect().height;
+            if (gridH > 0) return gridH + 80;
+        }
+        return 220;
+    }
+
+    function updateControlPositions(isOpen) {
         if (isOpen) {
-            requestAnimationFrame(() => {
-                const panelHeight = settingsPanel.offsetHeight;
-                document.documentElement.style.setProperty('--settings-panel-height', panelHeight + 'px');
-                document.querySelectorAll('.bottom-ui-element').forEach(el => {
-                    el.style.transform = `translateY(-${panelHeight}px)`;
-                });
-                const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
-                if (mapControls) mapControls.style.transform = `translateY(-${panelHeight}px)`;
+            removeScrim();
+            const panelHeight = getPanelHeight();
+            document.documentElement.style.setProperty('--settings-panel-height', panelHeight + 'px');
+            document.querySelectorAll('.bottom-ui-element').forEach(el => {
+                el.style.transform = `translateY(-${panelHeight}px)`;
             });
+            const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
+            if (mapControls) mapControls.style.transform = `translateY(-${panelHeight}px)`;
         } else {
             document.querySelectorAll('.bottom-ui-element').forEach(el => {
                 el.style.transform = '';
             });
             const mapControls = document.querySelector('.maplibregl-ctrl-bottom-left');
             if (mapControls) mapControls.style.transform = '';
+            document.documentElement.style.setProperty('--settings-panel-height', '0px');
+        }
+    }
+
+    function setSettingsPanelOpen(isOpen) {
+        settingsPanel.classList.toggle('settings-open', isOpen);
+        settingsPanel.classList.toggle('translate-y-full', !isOpen);
+        if ('open' in settingsPanel) {
+            settingsPanel.open = isOpen;
+        }
+        if (isOpen) {
+            settingsPanel.setAttribute('open', '');
+        } else {
+            settingsPanel.removeAttribute('open');
+        }
+
+        const iconSpan = btnSettingsToggle.querySelector('.material-icons-outlined');
+        if (iconSpan) iconSpan.textContent = isOpen ? 'keyboard_double_arrow_down' : 'keyboard_double_arrow_up';
+
+        const btnLayers = document.getElementById('btn-layers');
+        if (btnLayers) {
+            btnLayers.classList.toggle('is-active', isOpen);
+        }
+
+        if (isOpen) {
+            requestAnimationFrame(() => {
+                updateControlPositions(true);
+            });
+            if (settingsPanel.updateComplete && typeof settingsPanel.updateComplete.then === 'function') {
+                settingsPanel.updateComplete.then(() => updateControlPositions(true));
+            }
+        } else {
+            updateControlPositions(false);
         }
     }
 
     btnSettingsToggle.addEventListener('click', (e) => {
         e.stopPropagation();
-        setSettingsPanelOpen(!settingsPanel.classList.contains('settings-open'));
+        const isOpen = settingsPanel.classList.contains('settings-open') || settingsPanel.hasAttribute('open');
+        setSettingsPanelOpen(!isOpen);
     });
+
+    const btnLayers = document.getElementById('btn-layers');
+    if (btnLayers) {
+        btnLayers.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = settingsPanel.classList.contains('settings-open') || settingsPanel.hasAttribute('open');
+            setSettingsPanelOpen(!isOpen);
+        });
+    }
 
     if (btnSettingsClose) {
         btnSettingsClose.addEventListener('click', (e) => {
@@ -47,31 +114,52 @@ export function setupSettingsUI(MapService) {
         });
     }
 
+    settingsPanel.addEventListener('open', () => {
+        updateControlPositions(true);
+    });
+    settingsPanel.addEventListener('close', () => {
+        setSettingsPanelOpen(false);
+    });
+    settingsPanel.addEventListener('cancel', () => {
+        setSettingsPanelOpen(false);
+    });
+    settingsPanel.addEventListener('drag-dismiss', () => {
+        setSettingsPanelOpen(false);
+    });
+
+    window.addEventListener('resize', () => {
+        if (settingsPanel.classList.contains('settings-open') || settingsPanel.hasAttribute('open')) {
+            updateControlPositions(true);
+        }
+    });
+
     document.addEventListener('click', (e) => {
-        if (!settingsPanel.contains(e.target) && !btnSettingsToggle.contains(e.target)) {
-            if (settingsPanel.classList.contains('settings-open')) {
+        const path = e.composedPath ? e.composedPath() : [];
+        const isInsidePanel = settingsPanel.contains(e.target) || path.includes(settingsPanel);
+        const isToggleBtn = btnSettingsToggle.contains(e.target) || path.includes(btnSettingsToggle);
+        const btnLayersEl = document.getElementById('btn-layers');
+        const isLayersBtn = btnLayersEl && (btnLayersEl.contains(e.target) || path.includes(btnLayersEl));
+
+        if (!isInsidePanel && !isToggleBtn && !isLayersBtn) {
+            if (settingsPanel.classList.contains('settings-open') || settingsPanel.hasAttribute('open')) {
                 setSettingsPanelOpen(false);
             }
         }
     });
 
     // Layer Overlay Checks
-    if (toggleOverlayLabels) {
-        toggleOverlayLabels.addEventListener('change', (e) => {
-            MapService.toggleOverlay('labels', e.target.checked);
+    function handleOverlayToggle(el, layerName) {
+        if (!el) return;
+        el.addEventListener('change', (e) => {
+            const isChecked = e.detail && typeof e.detail.selected === 'boolean'
+                ? e.detail.selected
+                : (typeof e.target.selected === 'boolean' ? e.target.selected : e.target.checked);
+            MapService.toggleOverlay(layerName, Boolean(isChecked));
         });
     }
 
-    if (toggleOverlayBike) {
-        toggleOverlayBike.addEventListener('change', (e) => {
-            MapService.toggleOverlay('bike', e.target.checked);
-        });
-    }
-
-    if (toggleOverlayPerspective) {
-        toggleOverlayPerspective.addEventListener('change', (e) => {
-            MapService.toggleOverlay('perspective', e.target.checked);
-        });
-    }
+    handleOverlayToggle(toggleOverlayLabels, 'labels');
+    handleOverlayToggle(toggleOverlayBike, 'bike');
+    handleOverlayToggle(toggleOverlayPerspective, 'perspective');
 }
 

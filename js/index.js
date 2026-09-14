@@ -3,6 +3,7 @@
 
 import '../css/style.css';
 import '@francofantomius/material-components/button';
+import '@francofantomius/material-components/button-group';
 import '@francofantomius/material-components/icon-button';
 import '@francofantomius/material-components/text-field';
 import '@francofantomius/material-components/fab';
@@ -14,6 +15,8 @@ import '@francofantomius/material-components/search-bar';
 import '@francofantomius/material-components/chip';
 import '@francofantomius/material-components/snackbar';
 import '@francofantomius/material-components/side-sheet';
+import '@francofantomius/material-components/bottom-sheet';
+import '@francofantomius/material-components/switch';
 import { css } from 'lit';
 
 // Add breathing space between md-tooltip and anchor buttons
@@ -74,6 +77,30 @@ if (sideSheetClass && sideSheetClass.elementStyles && !sideSheetClass._scrimPatc
             pointer-events: none !important;
         }
     `);
+}
+
+// Disable fullscreen scrim in md-bottom-sheet so map clicks and gestures are not intercepted
+const bottomSheetClass = customElements.get('md-bottom-sheet');
+if (bottomSheetClass && !bottomSheetClass._scrimPatched) {
+    bottomSheetClass._scrimPatched = true;
+    const scrimDisableRule = css`
+        .scrim {
+            display: none !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+    `;
+    if (bottomSheetClass.styles) {
+        if (Array.isArray(bottomSheetClass.styles)) {
+            bottomSheetClass.styles.push(scrimDisableRule);
+        } else {
+            bottomSheetClass.styles = [bottomSheetClass.styles, scrimDisableRule];
+        }
+    }
+    if (bottomSheetClass.elementStyles) {
+        bottomSheetClass.elementStyles.push(scrimDisableRule);
+    }
 }
 
 // Feature Module Imports

@@ -66,8 +66,6 @@ export const MapService = {
             antialias: true
         });
 
-        this.map.addControl(new maplibregl.NavigationControl({ showCompass: false, showZoom: true }), 'bottom-left');
-
         this.map.on('load', () => {
             this.setupMapLayersAndSources();
         });
@@ -821,6 +819,18 @@ export const MapService = {
 
     getZoom() {
         return this.map ? this.map.getZoom() : 0;
+    },
+
+    zoomIn() {
+        if (this.map && typeof this.map.zoomIn === 'function') {
+            this.map.zoomIn();
+        }
+    },
+
+    zoomOut() {
+        if (this.map && typeof this.map.zoomOut === 'function') {
+            this.map.zoomOut();
+        }
     },
 
     getCenter() {

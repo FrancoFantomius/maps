@@ -10,12 +10,18 @@ export function setupMapControlsUI(MapService) {
         });
     }
 
-    // Layer Switcher - Labels button
-    const layerLabelsBtn = document.getElementById('layer-labels-btn');
-    if (layerLabelsBtn) {
-        layerLabelsBtn.addEventListener('click', () => {
-            const isActive = MapService.activeOverlays.labels;
-            MapService.toggleOverlay('labels', !isActive);
+    // Zoom Controls (M3 Button Group)
+    const btnZoomIn = document.getElementById('btn-zoom-in');
+    if (btnZoomIn) {
+        btnZoomIn.addEventListener('click', () => {
+            MapService.zoomIn();
+        });
+    }
+
+    const btnZoomOut = document.getElementById('btn-zoom-out');
+    if (btnZoomOut) {
+        btnZoomOut.addEventListener('click', () => {
+            MapService.zoomOut();
         });
     }
 

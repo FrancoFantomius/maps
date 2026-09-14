@@ -103,5 +103,22 @@ describe('Settings module', () => {
     togglePerspective.dispatchEvent(new Event('change'));
     expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('perspective', false);
   });
+
+  it('toggles settings panel and active class when btn-layers is clicked', () => {
+    const btnLayers = document.createElement('button');
+    btnLayers.id = 'btn-layers';
+    document.body.appendChild(btnLayers);
+
+    setupSettingsUI(mockMapService);
+    const panel = document.getElementById('settings-panel');
+
+    btnLayers.click();
+    expect(panel.classList.contains('settings-open')).toBe(true);
+    expect(btnLayers.classList.contains('is-active')).toBe(true);
+
+    btnLayers.click();
+    expect(panel.classList.contains('settings-open')).toBe(false);
+    expect(btnLayers.classList.contains('is-active')).toBe(false);
+  });
 });
 
