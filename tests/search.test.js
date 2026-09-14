@@ -59,6 +59,8 @@ vi.mock('../js/gps/index.js', () => ({
 vi.mock('../js/markers/index.js', () => ({
   MarkerController: {
     setTempMarker: vi.fn(),
+    removeTempMarker: vi.fn(),
+    openModal: vi.fn(),
     createPin: vi.fn((category, colorOverride, content) => {
       const div = document.createElement('div');
       div.className = 'custom-map-pin-div';
@@ -833,6 +835,210 @@ describe('SearchController', () => {
       mapControls.remove();
 
       vi.useRealTimers();
+    });
+  });
+
+  describe('Place Details Full-Height Side-Sheet', () => {
+    let mockRoutingController;
+
+    beforeEach(() => {
+      mockRoutingController = {
+        enter: vi.fn(),
+        setDestination: vi.fn(),
+      };
+
+      document.body.innerHTML = `
+        <div id="hud-panel" class="hud-closed"></div>
+        <input id="search-input" value="" />
+        <md-search-bar id="search-bar"></md-search-bar>
+        <div id="search-places-section" style="display: none;">
+          <span id="search-places-header-title"></span>
+          <div id="search-places-list"></div>
+        </div>
+
+        <md-side-sheet id="place-details-sheet" side="start" type="standard" hide-close-button>
+          <div slot="header" class="sheet-top-spacer"></div>
+          <div id="sheet-image-container" class="hidden">
+            <img id="sheet-image" src="" />
+          </div>
+          <div class="sheet-actions-row">
+            <md-button id="sheet-btn-directions" variant="filled">Directions</md-button>
+            <md-button id="sheet-btn-save" variant="tonal">Save</md-button>
+          </div>
+          <div>
+            <md-chip id="sheet-coords-chip"></md-chip>
+          </div>
+          <div id="sheet-address-section" class="hidden">
+            <span id="sheet-address-text"></span>
+          </div>
+          <div id="sheet-street-section" class="hidden">
+            <span id="sheet-street-text"></span>
+          </div>
+          <div id="sheet-shop-section" class="hidden">
+            <div id="sheet-shop-type" class="hidden"><span id="sheet-shop-type-val"></span></div>
+            <div id="sheet-shop-brand" class="hidden"><span id="sheet-shop-brand-val"></span></div>
+            <div id="sheet-shop-hours" class="hidden"><span id="sheet-shop-hours-val"></span></div>
+            <div id="sheet-shop-cuisine" class="hidden"><span id="sheet-shop-cuisine-val"></span></div>
+            <div id="sheet-shop-phone" class="hidden"><a id="sheet-shop-phone-link"></a></div>
+            <div id="sheet-shop-web" class="hidden"><a id="sheet-shop-web-link"></a></div>
+          </div>
+          <div id="sheet-wiki-section" class="hidden">
+            <p id="sheet-wiki-text"></p>
+            <a id="sheet-wiki-link" class="hidden"></a>
+          </div>
+          <div class="sheet-credits">
+            <span id="sheet-wiki-credit-dot" class="hidden"></span>
+            <a id="sheet-wiki-credit-link" class="hidden"></a>
+          </div>
+        </md-side-sheet>
+      `;
+
+      const searchBar = document.getElementById('search-bar');
+      searchBar.close = vi.fn();
+
+      const sheet = document.getElementById('place-details-sheet');
+      sheet.show = vi.fn(() => { sheet.open = true; });
+      sheet.close = vi.fn(() => { sheet.open = false; });
+
+      SearchController.setupPlaceDetailsSheet(
+        SearchController,
+        HUDController,
+        MarkerController,
+        mockRoutingController
+      );
+    });
+
+    it('opens full-height side-sheet when selectResult is called and retracts searchbar', () => {
+      const sheet = document.getElementById('place-details-sheet');
+      const searchBar = document.getElementById('search-bar');
+      searchBar.active = true;
+
+      SearchController.selectResult({
+        display_name: 'Piazza Bra, Verona, Italy',
+        lat: '45.438',
+        lon: '10.993',
+      });
+
+      expect(sheet.show).toHaveBeenCalled();
+      expect(sheet.open).toBe(true);
+      expect(searchBar.value).toBe('Piazza Bra');
+      expect(searchBar.active).toBe(false);
+      expect(searchBar.close).toHaveBeenCalled();
+      expect(document.getElementById('sheet-address-text').textContent).toBe('Piazza Bra, Verona, Italy');
+      expect(document.getElementById('sheet-coords-chip').getAttribute('label')).toBe('45.43800, 10.99300');
+
+      // Old HUD panel must remain closed
+      const hudPanel = document.getElementById('hud-panel');
+      expect(hudPanel.classList.contains('hud-closed')).toBe(true);
+    });
+
+    it('populates shop details and image when available', () => {
+      const sheet = document.getElementById('place-details-sheet');
+
+      SearchController.openPlaceDetails({
+        name: 'Trattoria da Mario',
+        address: 'Via Roma 10, Florence, Italy',
+        lat: 43.77,
+        lng: 11.25,
+        wikiImage: 'https://example.com/photo.jpg',
+        wikiSummary: 'Famous historic Florentine restaurant.',
+        wikiUrl: 'https://en.wikipedia.org/wiki/Trattoria_da_Mario',
+        shopInfo: {
+          name: 'Trattoria da Mario',
+          type: 'restaurant',
+          brand: 'Mario',
+          openingHours: '12:00-23:00',
+          cuisine: 'italian',
+          phone: '+39 055 123456',
+          website: 'https://mario.example.com',
+        },
+      });
+
+      expect(sheet.show).toHaveBeenCalled();
+      expect(document.getElementById('sheet-image').src).toBe('https://example.com/photo.jpg');
+      expect(document.getElementById('sheet-image-container').classList.contains('hidden')).toBe(false);
+      expect(document.getElementById('sheet-shop-section').classList.contains('hidden')).toBe(false);
+      expect(document.getElementById('sheet-shop-type-val').textContent).toBe('restaurant');
+      expect(document.getElementById('sheet-shop-phone-link').textContent).toBe('+39 055 123456');
+      expect(document.getElementById('sheet-shop-web-link').href).toBe('https://mario.example.com/');
+      expect(document.getElementById('sheet-wiki-text').textContent).toBe('Famous historic Florentine restaurant.');
+    });
+
+    it('clearing searchbar closes side-sheet and resets HUD state', () => {
+      const sheet = document.getElementById('place-details-sheet');
+      const searchBar = document.getElementById('search-bar');
+      SearchController.openPlaceDetails({
+        name: 'Colosseum',
+        address: 'Rome, Italy',
+        lat: 41.89,
+        lng: 12.49,
+      });
+
+      expect(sheet.show).toHaveBeenCalled();
+
+      // Dispatch 'clear' event on search-bar
+      searchBar.dispatchEvent(new CustomEvent('clear'));
+
+      expect(sheet.close).toHaveBeenCalled();
+      expect(HUDController.setState).toHaveBeenCalledWith('places');
+      expect(MarkerController.removeTempMarker).toHaveBeenCalled();
+    });
+
+    it('emptying searchbar text input closes side-sheet and resets HUD state', () => {
+      const sheet = document.getElementById('place-details-sheet');
+      const searchBar = document.getElementById('search-bar');
+      HUDController.currentState = 'place-details';
+      SearchController.openPlaceDetails({
+        name: 'Colosseum',
+        address: 'Rome, Italy',
+        lat: 41.89,
+        lng: 12.49,
+      });
+
+      searchBar.value = '';
+      searchBar.dispatchEvent(new CustomEvent('input', { detail: { value: '' } }));
+
+      expect(sheet.close).toHaveBeenCalled();
+      expect(HUDController.setState).toHaveBeenCalledWith('places');
+      expect(MarkerController.removeTempMarker).toHaveBeenCalled();
+    });
+
+    it('clicking Directions button enters routing mode and sets destination', () => {
+      SearchController.openPlaceDetails({
+        name: 'Duomo di Milano',
+        address: 'Milan, Italy',
+        lat: 45.4642,
+        lng: 9.1916,
+      });
+
+      const btnDirections = document.getElementById('sheet-btn-directions');
+      btnDirections.click();
+
+      expect(mockRoutingController.enter).toHaveBeenCalled();
+      expect(mockRoutingController.setDestination).toHaveBeenCalledWith(
+        { lat: 45.4642, lng: 9.1916 },
+        'Duomo di Milano'
+      );
+    });
+
+    it('clicking Save button opens marker modal with place details', () => {
+      const placeData = {
+        name: 'Trevi Fountain',
+        address: 'Rome, Italy',
+        lat: 41.9009,
+        lng: 12.4833,
+      };
+      SearchController.openPlaceDetails(placeData);
+
+      const btnSave = document.getElementById('sheet-btn-save');
+      btnSave.click();
+
+      expect(MarkerController.openModal).toHaveBeenCalledWith(
+        41.9009,
+        12.4833,
+        null,
+        expect.objectContaining({ name: 'Trevi Fountain' })
+      );
     });
   });
 });

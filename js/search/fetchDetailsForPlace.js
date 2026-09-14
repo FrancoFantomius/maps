@@ -2,6 +2,7 @@
 
 import { ApiService } from '../api/index.js';
 import { HUDController } from '../hud/index.js';
+import { openPlaceDetails } from './place-details-sheet.js';
 
 export async function fetchDetailsForPlace(lat, lng, shortName, address, initialShopInfo = null) {
     try {
@@ -50,20 +51,23 @@ export async function fetchDetailsForPlace(lat, lng, shortName, address, initial
             }
         }
 
+        const updatedData = {
+            isTemp: true,
+            lat: lat,
+            lng: lng,
+            name: (shopInfo && shopInfo.name) || shortName,
+            address: address,
+            wikiSummary: wikiSummary,
+            wikiImage: wikiImage,
+            wikiUrl: wikiUrl,
+            shopInfo: shopInfo,
+            streetName: ''
+        };
+
         if (HUDController.currentState === 'place-details') {
-            HUDController.setState('place-details', {
-                isTemp: true,
-                lat: lat,
-                lng: lng,
-                name: (shopInfo && shopInfo.name) || shortName,
-                address: address,
-                wikiSummary: wikiSummary,
-                wikiImage: wikiImage,
-                wikiUrl: wikiUrl,
-                shopInfo: shopInfo,
-                streetName: ''
-            });
+            HUDController.setState('place-details', updatedData);
         }
+        openPlaceDetails(updatedData);
     } catch (e) {
         console.warn("Could not enrich search result details", e);
     }

@@ -13,6 +13,7 @@ import '@francofantomius/material-components/account-menu';
 import '@francofantomius/material-components/search-bar';
 import '@francofantomius/material-components/chip';
 import '@francofantomius/material-components/snackbar';
+import '@francofantomius/material-components/side-sheet';
 import { css } from 'lit';
 
 // Add breathing space between md-tooltip and anchor buttons
@@ -63,6 +64,18 @@ if (searchBarClass && searchBarClass.elementStyles && !searchBarClass._scrimPatc
     `);
 }
 
+// Disable fullscreen scrim in md-side-sheet so map clicks and gestures are not intercepted
+const sideSheetClass = customElements.get('md-side-sheet');
+if (sideSheetClass && sideSheetClass.elementStyles && !sideSheetClass._scrimPatched) {
+    sideSheetClass._scrimPatched = true;
+    sideSheetClass.elementStyles.push(css`
+        .scrim {
+            display: none !important;
+            pointer-events: none !important;
+        }
+    `);
+}
+
 // Feature Module Imports
 import { MapService, DarkMapStyle, setupMapControlsUI } from './map/index.js';
 import { ApiService } from './api/index.js';
@@ -70,7 +83,7 @@ import { HUDController, setupHUDUI } from './hud/index.js';
 import { MarkerController, setupMarkerModalUI, setupHomeAddressUI } from './markers/index.js';
 import { MeasurementController, setupMeasurementUI } from './measurement/index.js';
 import { RoutingController, setupRoutingUI } from './routing/index.js';
-import { SearchController, setupSearchUI } from './search/index.js';
+import { SearchController, setupSearchUI, setupPlaceDetailsSheet } from './search/index.js';
 import { GPSController, setupGPSUI } from './gps/index.js';
 import { ThemeController } from './theme/index.js';
 import { AccountController, LoginController, setupAccountUI } from './account/index.js';
@@ -341,6 +354,7 @@ export function initApp() {
     setupMeasurementUI(MeasurementController);
     setupRoutingUI(RoutingController, MapService);
     setupSearchUI(SearchController, HUDController, MarkerController, ApiService);
+    setupPlaceDetailsSheet(SearchController, HUDController, MarkerController, RoutingController);
 }
 
 // Auto-initialize when window loads in browser

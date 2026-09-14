@@ -89,7 +89,16 @@ export const HUDController = {
 
         if (hudState === 'places') {
             this.close();
+            if (SearchController && typeof SearchController.closePlaceDetails === 'function') {
+                SearchController.closePlaceDetails();
+            }
+        } else if (hudState === 'place-details') {
+            this.close();
+            this.renderPlaceDetails(data);
         } else {
+            if (SearchController && typeof SearchController.closePlaceDetails === 'function') {
+                SearchController.closePlaceDetails();
+            }
             this.open();
             const activeId = panelMap[hudState];
             if (activeId) {
@@ -100,8 +109,6 @@ export const HUDController = {
                 drawBtn.classList.add('is-active');
             } else if (hudState === 'route' && routeBtn) {
                 routeBtn.classList.add('is-active');
-            } else if (hudState === 'place-details') {
-                this.renderPlaceDetails(data);
             }
         }
     },
@@ -120,8 +127,14 @@ export const HUDController = {
     },
 
     renderPlaceDetails(data) {
-        const panelDetails = document.getElementById('panel-details');
         if (!data) return;
+
+        if (SearchController && typeof SearchController.openPlaceDetails === 'function') {
+            SearchController.openPlaceDetails(data);
+        }
+
+        const panelDetails = document.getElementById('panel-details');
+        if (!panelDetails) return;
 
         panelDetails.innerHTML = '';
 

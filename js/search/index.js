@@ -21,6 +21,12 @@ import {
     renderSuggestions,
     setupSearchUI
 } from './ui.js';
+import {
+    openPlaceDetails,
+    closePlaceDetails,
+    setupPlaceDetailsSheet,
+    getCurrentPlaceData
+} from './place-details-sheet.js';
 
 export const SearchController = {
     get searchMarkers() {
@@ -57,7 +63,11 @@ export const SearchController = {
     clearRecentSearches,
     renderSuggestions,
     fetchPlaceSuggestions,
-    getPlaceIcon
+    getPlaceIcon,
+    openPlaceDetails,
+    closePlaceDetails,
+    setupPlaceDetailsSheet,
+    getCurrentPlaceData
 };
 
 export {
@@ -78,7 +88,11 @@ export {
     createSearchPin,
     renderResults,
     renderSuggestions,
-    setupSearchUI
+    setupSearchUI,
+    openPlaceDetails,
+    closePlaceDetails,
+    setupPlaceDetailsSheet,
+    getCurrentPlaceData
 };
 
 export default SearchController;

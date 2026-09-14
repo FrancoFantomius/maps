@@ -6,7 +6,7 @@
   top: 1rem;
   left: 1rem;
   right: 1rem;
-  z-index: 100;
+  z-index: 1010;
   pointer-events: none;
   display: flex;
   justify-content: space-between;
@@ -271,4 +271,231 @@
 .dropdown-footer a:hover {
   text-decoration: underline;
 }
+
+/* ==========================================================================
+   Full-Height Place Details Side-Sheet (Material Design 3)
+   ========================================================================== */
+
+#place-details-sheet {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  height: 100dvh;
+  z-index: 1000;
+  pointer-events: auto;
+  --md-side-sheet-width: 400px;
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+}
+
+#place-details-sheet:not([open]) {
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  #place-details-sheet {
+    --md-side-sheet-width: 100vw;
+    max-width: 100vw;
+  }
+}
+
+.sheet-top-spacer {
+  height: 5.25rem;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* Cover Image Banner */
+.sheet-image-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+  background-color: var(--bg-subtle);
+  flex-shrink: 0;
+}
+
+.sheet-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sheet-image-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.3) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Quick Actions Row */
+.sheet-actions-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sheet-actions-row md-button {
+  flex: 1;
+  min-width: 120px;
+}
+
+/* Card Sections */
+.sheet-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  margin-bottom: 0.625rem;
+}
+
+.sheet-coords-section {
+  margin-bottom: 0.75rem;
+}
+
+.sheet-info-card {
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.sheet-info-icon {
+  color: var(--text-muted);
+  font-size: 1.125rem;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.sheet-info-text {
+  flex: 1;
+  word-break: break-word;
+}
+
+/* Shop / POI Card */
+.sheet-shop-card {
+  flex-direction: column;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  gap: 0.5rem;
+}
+
+.sheet-shop-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.5rem;
+  width: 100%;
+}
+
+.sheet-shop-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  width: 100%;
+}
+
+.sheet-shop-label {
+  font-weight: 500;
+  color: var(--text-muted);
+  min-width: 3.5rem;
+}
+
+.sheet-shop-val {
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.sheet-shop-icon {
+  font-size: 1rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.sheet-shop-link {
+  color: var(--color-indigo, #6366f1);
+  text-decoration: none;
+  word-break: break-all;
+  font-weight: 500;
+}
+
+.sheet-shop-link:hover {
+  text-decoration: underline;
+}
+
+/* Wikipedia Card */
+.sheet-wiki-card {
+  flex-direction: column;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  gap: 0.5rem;
+}
+
+.sheet-wiki-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.sheet-wiki-text {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.sheet-wiki-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-indigo, #6366f1);
+  text-decoration: none;
+  margin-top: 0.25rem;
+}
+
+.sheet-wiki-more:hover {
+  text-decoration: underline;
+}
+
+/* Credits Footer */
+.sheet-credits {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.sheet-credits a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.sheet-credits a:hover {
+  text-decoration: underline;
+}
+
 

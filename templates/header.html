@@ -160,6 +160,103 @@
     </div>
 </div>
 
+<!-- Full-Height Material Design 3 Side-Sheet for Place Details (replacing old HUD details UI) -->
+<md-side-sheet
+    id="place-details-sheet"
+    side="start"
+    type="standard"
+    hide-close-button
+>
+    <!-- Spacer for the floating search bar at the top -->
+    <div slot="header" class="sheet-top-spacer"></div>
+
+    <!-- Place Cover Image Container -->
+    <div id="sheet-image-container" class="sheet-image-container hidden">
+        <img id="sheet-image" class="sheet-image" src="" alt="Place Image">
+        <div class="sheet-image-gradient"></div>
+    </div>
+
+    <!-- Quick Actions Row -->
+    <div class="sheet-actions-row">
+        <md-button id="sheet-btn-directions" variant="filled" icon="directions">
+            <span data-i18n="routing.directions">Directions</span>
+        </md-button>
+        <md-button id="sheet-btn-save" variant="tonal" icon="bookmark_add">
+            <span data-i18n="markers.save_place">Save Place</span>
+        </md-button>
+    </div>
+
+    <!-- Coordinate Chip -->
+    <div class="sheet-section sheet-coords-section">
+        <md-chip id="sheet-coords-chip" variant="assist" icon="pin_drop" label=""></md-chip>
+    </div>
+
+    <!-- Address Row -->
+    <div id="sheet-address-section" class="sheet-section sheet-info-card hidden">
+        <md-icon name="location_on" class="sheet-info-icon"></md-icon>
+        <span id="sheet-address-text" class="sheet-info-text"></span>
+    </div>
+
+    <!-- Street Highlight Row -->
+    <div id="sheet-street-section" class="sheet-section sheet-info-card hidden">
+        <md-icon name="directions_bike" class="sheet-info-icon"></md-icon>
+        <span id="sheet-street-text" class="sheet-info-text"></span>
+    </div>
+
+    <!-- Shop / POI Details Section -->
+    <div id="sheet-shop-section" class="sheet-section sheet-shop-card hidden">
+        <div class="sheet-shop-title">
+            <md-icon name="storefront"></md-icon>
+            <span>Place Information</span>
+        </div>
+        <div id="sheet-shop-type" class="sheet-shop-row hidden">
+            <span class="sheet-shop-label">Type:</span>
+            <span id="sheet-shop-type-val" class="sheet-shop-val"></span>
+        </div>
+        <div id="sheet-shop-brand" class="sheet-shop-row hidden">
+            <span class="sheet-shop-label">Brand:</span>
+            <span id="sheet-shop-brand-val" class="sheet-shop-val"></span>
+        </div>
+        <div id="sheet-shop-hours" class="sheet-shop-row hidden">
+            <md-icon name="schedule" class="sheet-shop-icon"></md-icon>
+            <span id="sheet-shop-hours-val" class="sheet-shop-val"></span>
+        </div>
+        <div id="sheet-shop-cuisine" class="sheet-shop-row hidden">
+            <md-icon name="restaurant" class="sheet-shop-icon"></md-icon>
+            <span id="sheet-shop-cuisine-val" class="sheet-shop-val"></span>
+        </div>
+        <div id="sheet-shop-phone" class="sheet-shop-row hidden">
+            <md-icon name="call" class="sheet-shop-icon"></md-icon>
+            <a id="sheet-shop-phone-link" href="" class="sheet-shop-link"></a>
+        </div>
+        <div id="sheet-shop-web" class="sheet-shop-row hidden">
+            <md-icon name="public" class="sheet-shop-icon"></md-icon>
+            <a id="sheet-shop-web-link" href="" target="_blank" rel="noopener noreferrer" class="sheet-shop-link"></a>
+        </div>
+    </div>
+
+    <!-- Wikipedia Summary Section -->
+    <div id="sheet-wiki-section" class="sheet-section sheet-wiki-card hidden">
+        <div class="sheet-wiki-header">
+            <md-icon name="menu_book"></md-icon>
+            <span>About</span>
+        </div>
+        <p id="sheet-wiki-text" class="sheet-wiki-text"></p>
+        <a id="sheet-wiki-link" href="" target="_blank" rel="noopener noreferrer" class="sheet-wiki-more hidden">
+            <span>Read on Wikipedia</span>
+            <md-icon name="open_in_new"></md-icon>
+        </a>
+    </div>
+
+    <!-- Attribution / Credits Footer -->
+    <div class="sheet-credits">
+        <span>Data from </span>
+        <a href="https://nominatim.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+        <span id="sheet-wiki-credit-dot" class="hidden"> · </span>
+        <a id="sheet-wiki-credit-link" href="" target="_blank" rel="noopener noreferrer" class="hidden">Wikipedia</a>
+    </div>
+</md-side-sheet>
+
 <!-- Dedicated Sign-in Modal -->
 <div id="login-modal" class="modal-overlay login-modal-backdrop hidden">
     <div class="modal-card login-modal-card">
