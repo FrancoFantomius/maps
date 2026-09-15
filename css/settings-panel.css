@@ -39,23 +39,33 @@ md-bottom-sheet#settings-panel {
   width: 100%;
   margin: 0;
   padding: 0.5rem 0;
+  box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
   .settings-grid {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     align-items: flex-start;
-    justify-content: flex-start;
-    gap: 2.5rem;
+    gap: 0;
   }
 }
 
 .settings-col {
-  flex: 0 0 auto;
+  width: 100%;
   min-width: 0;
+  box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
+  .settings-col {
+    width: auto;
+  }
+
+  .settings-col:first-child {
+    padding-right: 2.5rem;
+  }
+
   .settings-col + .settings-col {
     border-left: 1px solid var(--border-subtle);
     padding-left: 2.5rem;
@@ -215,9 +225,9 @@ md-bottom-sheet#settings-panel {
   display: flex;
   flex-direction: column;
   gap: 1.125rem;
-  min-width: 280px;
+  min-width: 0;
   max-width: 520px;
-  flex: 1 1 auto;
+  width: 100%;
 }
 
 .settings-row {

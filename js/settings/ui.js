@@ -1,4 +1,28 @@
-// maps Settings Panel UI - js/settings/ui.js
+let currentSetSettingsPanelOpen = null;
+
+export function openSettingsPanel(isOpen = true) {
+    if (currentSetSettingsPanelOpen) {
+        currentSetSettingsPanelOpen(isOpen);
+        return;
+    }
+    const settingsPanel = document.getElementById('settings-panel');
+    if (settingsPanel) {
+        settingsPanel.classList.toggle('settings-open', isOpen);
+        settingsPanel.classList.toggle('translate-y-full', !isOpen);
+        if ('open' in settingsPanel) {
+            settingsPanel.open = isOpen;
+        }
+        if (isOpen) {
+            settingsPanel.setAttribute('open', '');
+        } else {
+            settingsPanel.removeAttribute('open');
+        }
+        const btnLayers = document.getElementById('btn-layers');
+        if (btnLayers) {
+            btnLayers.classList.toggle('is-active', isOpen);
+        }
+    }
+}
 
 export function setupSettingsUI(MapService) {
     const btnSettingsToggle = document.getElementById('btn-settings-toggle');
@@ -94,6 +118,15 @@ export function setupSettingsUI(MapService) {
         } else {
             updateControlPositions(false);
         }
+    }
+
+    currentSetSettingsPanelOpen = setSettingsPanelOpen;
+
+    if (typeof window !== 'undefined') {
+        window.addEventListener('maps-open-settings', (e) => {
+            const isOpen = e.detail?.open ?? true;
+            setSettingsPanelOpen(isOpen);
+        });
     }
 
     if (btnSettingsToggle) {

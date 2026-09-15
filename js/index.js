@@ -117,7 +117,7 @@ import { GPSController, setupGPSUI } from './gps/index.js';
 import { ThemeController } from './theme/index.js';
 import { AccountController, LoginController, setupAccountUI } from './account/index.js';
 import { TranslationController } from './translation/index.js';
-import { setupSettingsUI } from './settings/index.js';
+import { setupSettingsUI, openSettingsPanel } from './settings/index.js';
 import { initPWA } from './pwa/index.js';
 import * as db from './db/index.js';
 
@@ -137,6 +137,7 @@ export {
     AccountController,
     LoginController,
     TranslationController,
+    openSettingsPanel,
     initPWA,
     db
 };

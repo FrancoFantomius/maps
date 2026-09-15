@@ -107,6 +107,23 @@ describe('AccountController & UI', () => {
     expect(spy).toHaveBeenCalled();
   });
 
+  it('opens settings-panel when btn-dropdown-settings is clicked without btn-settings-toggle in DOM', () => {
+    const btnSettingsToggle = document.getElementById('btn-settings-toggle');
+    if (btnSettingsToggle) btnSettingsToggle.remove();
+
+    const panel = document.createElement('div');
+    panel.id = 'settings-panel';
+    panel.className = 'translate-y-full';
+    document.body.appendChild(panel);
+
+    setupAccountUI(AccountController);
+    const btnDropdownSettings = document.getElementById('btn-dropdown-settings');
+    btnDropdownSettings.click();
+
+    expect(panel.classList.contains('settings-open')).toBe(true);
+    expect(panel.classList.contains('translate-y-full')).toBe(false);
+  });
+
   it('sets error state on email input when attempting to login with blank email', async () => {
     LoginController.init();
     const emailInput = document.getElementById('sync-email');

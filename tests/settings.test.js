@@ -1,6 +1,6 @@
 // tests/settings.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { setupSettingsUI } from '../js/settings/index.js';
+import { setupSettingsUI, openSettingsPanel } from '../js/settings/index.js';
 
 describe('Settings module', () => {
   let mockMapService;
@@ -188,5 +188,19 @@ describe('Settings module', () => {
     btnTransport.click();
     expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('transport', true);
   });
+
+  it('opens and closes settings panel via openSettingsPanel()', () => {
+    setupSettingsUI(mockMapService);
+    const panel = document.getElementById('settings-panel');
+
+    openSettingsPanel(true);
+    expect(panel.classList.contains('settings-open')).toBe(true);
+    expect(panel.classList.contains('translate-y-full')).toBe(false);
+
+    openSettingsPanel(false);
+    expect(panel.classList.contains('settings-open')).toBe(false);
+    expect(panel.classList.contains('translate-y-full')).toBe(true);
+  });
 });
+
 

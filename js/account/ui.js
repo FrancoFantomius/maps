@@ -2,6 +2,7 @@
 
 import { AccountController } from './account-controller.js';
 import { LoginController } from './login-modal.js';
+import { openSettingsPanel } from '../settings/index.js';
 
 export function getAccountElements() {
   return {
@@ -221,11 +222,16 @@ export function setupAccountUI(controller = AccountController) {
       e.stopPropagation();
       if (elements.accountMenu) {
         elements.accountMenu.open = false;
+        elements.accountMenu.close?.();
+      }
+      if (elements.accountDropdown) {
+        elements.accountDropdown.style.display = 'none';
       }
       const btnSettings = document.getElementById('btn-settings-toggle');
       if (btnSettings) {
         btnSettings.click();
       }
+      openSettingsPanel(true);
     });
   }
 
