@@ -25,11 +25,11 @@ export function setupMapControlsUI(MapService) {
         });
     }
 
-    // Perspective / Tilt FAB Button
+    // Perspective / Tilt FAB Button (cycle tilt between 60°, 30°, 0°)
     const btnPerspective = document.getElementById('btn-perspective');
     if (btnPerspective) {
         btnPerspective.addEventListener('click', () => {
-            MapService.toggleOverlay('perspective', !MapService.activeOverlays.perspective);
+            MapService.cycleTilt();
         });
     }
 

@@ -17,6 +17,8 @@ import '@francofantomius/material-components/snackbar';
 import '@francofantomius/material-components/side-sheet';
 import '@francofantomius/material-components/bottom-sheet';
 import '@francofantomius/material-components/switch';
+import '@francofantomius/material-components/dialog';
+import '@francofantomius/material-components/radio';
 import { css } from 'lit';
 
 // Add breathing space between md-tooltip and anchor buttons
@@ -104,7 +106,7 @@ if (bottomSheetClass && !bottomSheetClass._scrimPatched) {
 }
 
 // Feature Module Imports
-import { MapService, DarkMapStyle, setupMapControlsUI } from './map/index.js';
+import { MapService, DarkMapStyle, setupMapControlsUI, TransitOverlay } from './map/index.js';
 import { ApiService } from './api/index.js';
 import { HUDController, setupHUDUI } from './hud/index.js';
 import { MarkerController, setupMarkerModalUI, setupHomeAddressUI } from './markers/index.js';
@@ -123,6 +125,7 @@ import * as db from './db/index.js';
 export {
     MapService,
     DarkMapStyle,
+    TransitOverlay,
     ApiService,
     HUDController,
     MarkerController,

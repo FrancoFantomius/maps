@@ -12,6 +12,11 @@ describe('Settings module', () => {
       </button>
       <button id="btn-settings-close"></button>
       <div id="settings-panel" class="translate-y-full">
+        <button id="btn-map-type-street" class="map-type-item is-selected"></button>
+        <button id="btn-map-type-satellite" class="map-type-item"></button>
+        <button id="btn-map-type-bike" class="map-type-item"></button>
+        <button id="btn-map-type-transport" class="map-type-item"></button>
+        <button id="btn-map-type-topo" class="map-type-item"></button>
         <input type="checkbox" id="toggle-overlay-labels" />
         <input type="checkbox" id="toggle-overlay-bike" />
         <input type="checkbox" id="toggle-overlay-perspective" />
@@ -21,7 +26,12 @@ describe('Settings module', () => {
     `;
 
     mockMapService = {
-      toggleOverlay: vi.fn(),
+      activeLayerKey: 'street',
+      activeOverlays: { labels: false, bike: false, perspective: false, transport: false },
+      setBaseLayer: vi.fn((key) => { mockMapService.activeLayerKey = key; }),
+      toggleOverlay: vi.fn((key, val) => { mockMapService.activeOverlays[key] = val; }),
+      syncSettingsSquaresUI: vi.fn(),
+      updateSettingsPreviews: vi.fn(),
     };
   });
 
@@ -30,7 +40,22 @@ describe('Settings module', () => {
     expect(() => setupSettingsUI(mockMapService)).not.toThrow();
   });
 
-  it('toggles settings panel open and closed on toggle button click', () => {
+  it('works when btn-settings-toggle is omitted from DOM', () => {
+    const toggleBtn = document.getElementById('btn-settings-toggle');
+    if (toggleBtn) toggleBtn.remove();
+
+    const btnLayers = document.createElement('button');
+    btnLayers.id = 'btn-layers';
+    document.body.appendChild(btnLayers);
+
+    expect(() => setupSettingsUI(mockMapService)).not.toThrow();
+
+    const panel = document.getElementById('settings-panel');
+    btnLayers.click();
+    expect(panel.classList.contains('settings-open')).toBe(true);
+  });
+
+  it('toggles settings panel open and closed on toggle button click if present', () => {
     setupSettingsUI(mockMapService);
 
     const toggleBtn = document.getElementById('btn-settings-toggle');
@@ -104,6 +129,19 @@ describe('Settings module', () => {
     expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('perspective', false);
   });
 
+  it('handles overlay toggle changes with custom elements using detail.selected', () => {
+    setupSettingsUI(mockMapService);
+
+    const toggleLabels = document.getElementById('toggle-overlay-labels');
+    const togglePerspective = document.getElementById('toggle-overlay-perspective');
+
+    toggleLabels.dispatchEvent(new CustomEvent('change', { detail: { selected: false } }));
+    expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('labels', false);
+
+    togglePerspective.dispatchEvent(new CustomEvent('change', { detail: { selected: true } }));
+    expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('perspective', true);
+  });
+
   it('toggles settings panel and active class when btn-layers is clicked', () => {
     const btnLayers = document.createElement('button');
     btnLayers.id = 'btn-layers';
@@ -119,6 +157,36 @@ describe('Settings module', () => {
     btnLayers.click();
     expect(panel.classList.contains('settings-open')).toBe(false);
     expect(btnLayers.classList.contains('is-active')).toBe(false);
+  });
+
+  it('handles clicks on the 5 map type and overlay squares', () => {
+    setupSettingsUI(mockMapService);
+
+    const btnStreet = document.getElementById('btn-map-type-street');
+    const btnSatellite = document.getElementById('btn-map-type-satellite');
+    const btnBike = document.getElementById('btn-map-type-bike');
+    const btnTransport = document.getElementById('btn-map-type-transport');
+    const btnTopo = document.getElementById('btn-map-type-topo');
+
+    // Select satellite base layer
+    btnSatellite.click();
+    expect(mockMapService.setBaseLayer).toHaveBeenCalledWith('satellite');
+
+    // Select topo base layer
+    btnTopo.click();
+    expect(mockMapService.setBaseLayer).toHaveBeenCalledWith('topo');
+
+    // Select street base layer
+    btnStreet.click();
+    expect(mockMapService.setBaseLayer).toHaveBeenCalledWith('street');
+
+    // Toggle bike overlay
+    btnBike.click();
+    expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('bike', true);
+
+    // Toggle transport overlay
+    btnTransport.click();
+    expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('transport', true);
   });
 });
 

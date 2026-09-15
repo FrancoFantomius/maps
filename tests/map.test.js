@@ -6,6 +6,7 @@ describe('MapService', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.clearAllMocks();
+    MapService.map = null;
   });
 
   describe('Home address management', () => {
@@ -131,6 +132,64 @@ describe('MapService', () => {
 
       zoomInSpy.mockRestore();
       zoomOutSpy.mockRestore();
+    });
+  });
+
+  describe('Overlay defaults', () => {
+    it('defaults labels and perspective to true when unconfigured in localStorage', () => {
+      MapService.initOverlays();
+      expect(MapService.activeOverlays.labels).toBe(true);
+      expect(MapService.activeOverlays.perspective).toBe(true);
+    });
+
+    it('respects explicitly disabled overlays from localStorage', () => {
+      localStorage.setItem('maps_labels_enabled', 'false');
+      localStorage.setItem('maps_perspective_enabled', 'false');
+      MapService.initOverlays();
+      expect(MapService.activeOverlays.labels).toBe(false);
+      expect(MapService.activeOverlays.perspective).toBe(false);
+    });
+  });
+
+  describe('Tilt and cycleTilt controls', () => {
+    it('cycles pitch between 60, 30, and 0 degrees', () => {
+      MapService.easeTo = vi.fn();
+
+      // Case 1: At 0 degrees, moves to 60
+      MapService.getPitch = vi.fn(() => 0);
+      let target = MapService.cycleTilt();
+      expect(target).toBe(60);
+      expect(MapService.easeTo).toHaveBeenCalledWith(undefined, 60, 300);
+
+      // Case 2: At 60 degrees, moves to 30
+      MapService.getPitch = vi.fn(() => 60);
+      target = MapService.cycleTilt();
+      expect(target).toBe(30);
+      expect(MapService.easeTo).toHaveBeenCalledWith(undefined, 30, 300);
+
+      // Case 3: At 30 degrees, moves to 0
+      MapService.getPitch = vi.fn(() => 30);
+      target = MapService.cycleTilt();
+      expect(target).toBe(0);
+      expect(MapService.easeTo).toHaveBeenCalledWith(undefined, 0, 300);
+    });
+
+    it('attaches click listener to btn-perspective calling cycleTilt and not toggling perspective overlay', () => {
+      document.body.innerHTML = `
+        <button id="btn-perspective"></button>
+      `;
+
+      const cycleTiltSpy = vi.spyOn(MapService, 'cycleTilt').mockImplementation(() => {});
+      const toggleOverlaySpy = vi.spyOn(MapService, 'toggleOverlay');
+
+      setupMapControlsUI(MapService);
+
+      document.getElementById('btn-perspective').click();
+      expect(cycleTiltSpy).toHaveBeenCalledTimes(1);
+      expect(toggleOverlaySpy).not.toHaveBeenCalled();
+
+      cycleTiltSpy.mockRestore();
+      toggleOverlaySpy.mockRestore();
     });
   });
 });

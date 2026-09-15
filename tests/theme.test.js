@@ -48,6 +48,21 @@ describe('ThemeController', () => {
       expect(darkBtn.className).toContain('bg-indigo-600');
       expect(lightBtn.className).not.toContain('bg-indigo-600');
     });
+
+    it('updates variant on md-button elements when present', () => {
+      document.body.innerHTML = `
+        <button data-theme-btn="light" variant="outlined"></button>
+        <button data-theme-btn="dark" variant="outlined"></button>
+      `;
+
+      ThemeController.apply('dark');
+
+      const darkBtn = document.querySelector('[data-theme-btn="dark"]');
+      const lightBtn = document.querySelector('[data-theme-btn="light"]');
+
+      expect(darkBtn.variant).toBe('filled');
+      expect(lightBtn.variant).toBe('outlined');
+    });
   });
 
   describe('init', () => {

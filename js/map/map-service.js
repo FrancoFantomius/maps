@@ -7,6 +7,7 @@ import { RoutingController } from '../routing/index.js';
 import { GPSController } from '../gps/index.js';
 import { ApiService } from '../api/index.js';
 import { DarkMapStyle } from './dark-style.js';
+import { TransitOverlay } from './transit-overlay.js';
 
 const STORAGE_KEY_LAYER = 'maps_active_layer';
 const STORAGE_KEY_LABELS = 'maps_labels_enabled';
@@ -14,7 +15,7 @@ const STORAGE_KEY_LABELS = 'maps_labels_enabled';
 export const MapService = {
     map: null,
     activeLayerKey: 'street',
-    activeOverlays: { labels: false, bike: false, perspective: false },
+    activeOverlays: { labels: false, bike: false, perspective: false, transport: false },
     highlightedPathCoords: null,
 
     init() {
@@ -41,11 +42,12 @@ export const MapService = {
         }
 
         const savedLayer = localStorage.getItem(STORAGE_KEY_LAYER);
-        this.activeLayerKey = (savedLayer === 'satellite') ? 'satellite' : 'street';
+        this.activeLayerKey = (savedLayer === 'satellite' || savedLayer === 'topo') ? savedLayer : 'street';
 
-        const savedPerspective = localStorage.getItem('maps_perspective_enabled') === 'true';
-        this.activeOverlays.perspective = savedPerspective;
-        const initialPitch = savedPerspective ? 45 : 0;
+        const savedPerspective = localStorage.getItem('maps_perspective_enabled');
+        this.activeOverlays.perspective = (savedPerspective === 'true' || savedPerspective === null);
+        const savedPitch = localStorage.getItem('maps_pitch');
+        const initialPitch = savedPitch ? parseFloat(savedPitch) : 0;
 
         const savedBearing = localStorage.getItem('maps_bearing');
         const initialBearing = savedBearing ? parseFloat(savedBearing) : 0;
@@ -113,6 +115,8 @@ export const MapService = {
             if (pitchSlider) {
                 pitchSlider.value = Math.round(pitch);
             }
+            localStorage.setItem('maps_pitch', pitch);
+            this.syncPerspectiveButtonState();
         });
 
         this.map.on('moveend', () => {
@@ -328,6 +332,31 @@ export const MapService = {
             }, firstLayerId);
         }
 
+        // 1b. Add topological source and layer
+        if (!this.map.getSource('topo-source')) {
+            this.map.addSource('topo-source', {
+                type: 'raster',
+                tiles: [
+                    'https://a.tile.opentopomap.org/{z}/{x}/{y}.png',
+                    'https://b.tile.opentopomap.org/{z}/{x}/{y}.png',
+                    'https://c.tile.opentopomap.org/{z}/{x}/{y}.png'
+                ],
+                tileSize: 256,
+                maxzoom: 17,
+                attribution: 'Map data &copy; OpenStreetMap contributors, SRTM | style &copy; OpenTopoMap'
+            });
+        }
+        if (!this.map.getLayer('topo-layer')) {
+            this.map.addLayer({
+                id: 'topo-layer',
+                type: 'raster',
+                source: 'topo-source',
+                layout: {
+                    visibility: this.activeLayerKey === 'topo' ? 'visible' : 'none'
+                }
+            }, firstLayerId);
+        }
+
         // 2. Add bike paths overlay
         if (!this.map.getSource('bike-source')) {
             this.map.addSource('bike-source', {
@@ -350,6 +379,9 @@ export const MapService = {
                 }
             });
         }
+
+        // 2b. Add custom OSM public transport overlay (Base + Detail)
+        TransitOverlay.setup(this.map, this.activeOverlays.transport);
 
         // 3. Add 3D buildings layer
         if (!this.map.getLayer('3d-buildings')) {
@@ -602,6 +634,15 @@ export const MapService = {
         if (layerKey === 'satellite') {
             return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${zoom}/${y}/${x}`;
         }
+        if (layerKey === 'topo') {
+            return `https://a.tile.opentopomap.org/${zoom}/${x}/${y}.png`;
+        }
+        if (layerKey === 'bike') {
+            return `https://tile.waymarkedtrails.org/cycling/${zoom}/${x}/${y}.png`;
+        }
+        if (layerKey === 'transport') {
+            return `https://tile.memomaps.de/tilegen/${zoom}/${x}/${y}.png`;
+        }
         return `https://a.tile.openstreetmap.org/${zoom}/${x}/${y}.png`;
     },
 
@@ -613,10 +654,74 @@ export const MapService = {
         const lng = center.lng;
 
         const previewImg = document.getElementById('layer-toggle-preview');
-        if (!previewImg) return;
+        if (previewImg) {
+            const otherLayer = this.activeLayerKey === 'street' ? 'satellite' : 'street';
+            previewImg.src = this.getTileUrl(otherLayer, zoom, lat, lng);
+        }
 
-        const otherLayer = this.activeLayerKey === 'street' ? 'satellite' : 'street';
-        previewImg.src = this.getTileUrl(otherLayer, zoom, lat, lng);
+        this.updateSettingsPreviews();
+    },
+
+    updateSettingsPreviews() {
+        if (!this.map) return;
+        const center = this.map.getCenter();
+        const zoom = Math.min(Math.floor(this.map.getZoom()), 15);
+        const lat = center.lat;
+        const lng = center.lng;
+
+        const streetImg = document.getElementById('preview-map-street');
+        const satelliteImg = document.getElementById('preview-map-satellite');
+        const topoImg = document.getElementById('preview-map-topo');
+        const bikeImg = document.getElementById('preview-map-bike');
+        const bikeBaseImg = document.getElementById('preview-map-bike-base');
+        const transportImg = document.getElementById('preview-map-transport');
+        const transportBaseImg = document.getElementById('preview-map-transport-base');
+
+        if (streetImg) streetImg.src = this.getTileUrl('street', zoom, lat, lng);
+        if (satelliteImg) satelliteImg.src = this.getTileUrl('satellite', zoom, lat, lng);
+        if (topoImg) topoImg.src = this.getTileUrl('topo', zoom, lat, lng);
+        if (bikeImg) bikeImg.src = this.getTileUrl('bike', zoom, lat, lng);
+        if (transportImg) transportImg.src = this.getTileUrl('transport', zoom, lat, lng);
+
+        const currentBase = (this.activeLayerKey === 'satellite') ? 'satellite' : (this.activeLayerKey === 'topo' ? 'topo' : 'street');
+        const baseTileUrl = this.getTileUrl(currentBase, zoom, lat, lng);
+        if (bikeBaseImg) bikeBaseImg.src = baseTileUrl;
+        if (transportBaseImg) transportBaseImg.src = baseTileUrl;
+    },
+
+    syncSettingsSquaresUI() {
+        const btnStreet = document.getElementById('btn-map-type-street');
+        const btnSatellite = document.getElementById('btn-map-type-satellite');
+        const btnTopo = document.getElementById('btn-map-type-topo');
+        const btnBike = document.getElementById('btn-map-type-bike');
+        const btnTransport = document.getElementById('btn-map-type-transport');
+
+        const isStreet = this.activeLayerKey === 'street';
+        const isSatellite = this.activeLayerKey === 'satellite';
+        const isTopo = this.activeLayerKey === 'topo';
+        const isBike = Boolean(this.activeOverlays?.bike);
+        const isTransport = Boolean(this.activeOverlays?.transport);
+
+        if (btnStreet) {
+            btnStreet.classList.toggle('is-selected', isStreet);
+            btnStreet.setAttribute('aria-pressed', isStreet ? 'true' : 'false');
+        }
+        if (btnSatellite) {
+            btnSatellite.classList.toggle('is-selected', isSatellite);
+            btnSatellite.setAttribute('aria-pressed', isSatellite ? 'true' : 'false');
+        }
+        if (btnTopo) {
+            btnTopo.classList.toggle('is-selected', isTopo);
+            btnTopo.setAttribute('aria-pressed', isTopo ? 'true' : 'false');
+        }
+        if (btnBike) {
+            btnBike.classList.toggle('is-selected', isBike);
+            btnBike.setAttribute('aria-pressed', isBike ? 'true' : 'false');
+        }
+        if (btnTransport) {
+            btnTransport.classList.toggle('is-selected', isTransport);
+            btnTransport.setAttribute('aria-pressed', isTransport ? 'true' : 'false');
+        }
     },
 
     syncLayerSwitcherUI() {
@@ -636,6 +741,7 @@ export const MapService = {
         }
 
         this.syncLabelsButtonState();
+        this.syncSettingsSquaresUI();
     },
 
     syncLabelsButtonState() {
@@ -650,6 +756,9 @@ export const MapService = {
         }
 
         if (overlayToggle) {
+            if ('selected' in overlayToggle) {
+                overlayToggle.selected = this.activeOverlays.labels;
+            }
             overlayToggle.checked = this.activeOverlays.labels;
         }
     },
@@ -657,12 +766,26 @@ export const MapService = {
     syncPerspectiveButtonState() {
         const btn = document.getElementById('btn-perspective');
         if (!btn) return;
-        const isActive = this.activeOverlays.perspective;
-        if (isActive) {
+        const isTilted = Math.round(this.getPitch()) > 0;
+        if (isTilted) {
             btn.classList.add('is-active');
         } else {
             btn.classList.remove('is-active');
         }
+    },
+
+    cycleTilt() {
+        const current = Math.round(this.getPitch());
+        let target;
+        if (current >= 45) {
+            target = 30;
+        } else if (current >= 15) {
+            target = 0;
+        } else {
+            target = 60;
+        }
+        this.easeTo(undefined, target, 300);
+        return target;
     },
 
     initOverlays() {
@@ -671,12 +794,30 @@ export const MapService = {
         this.setLabelsVisibility(this.activeOverlays.labels);
         this.syncLabelsButtonState();
 
+        const savedBike = localStorage.getItem('maps_bike_enabled') === 'true';
+        this.activeOverlays.bike = savedBike;
+        if (this.map && typeof this.map.getLayer === 'function' && this.map.getLayer('bike-layer')) {
+            this.map.setLayoutProperty('bike-layer', 'visibility', savedBike ? 'visible' : 'none');
+        }
+
+        const savedTransport = localStorage.getItem('maps_transport_enabled') === 'true';
+        this.activeOverlays.transport = savedTransport;
+        TransitOverlay.setVisible(savedTransport);
+
+        const savedPerspective = localStorage.getItem('maps_perspective_enabled');
+        this.activeOverlays.perspective = (savedPerspective === 'true' || savedPerspective === null);
+
         const overlayTogglePerspective = document.getElementById('toggle-overlay-perspective');
         if (overlayTogglePerspective) {
+            if ('selected' in overlayTogglePerspective) {
+                overlayTogglePerspective.selected = this.activeOverlays.perspective;
+            }
             overlayTogglePerspective.checked = this.activeOverlays.perspective;
         }
 
         this.syncPerspectiveButtonState();
+        this.syncSettingsSquaresUI();
+        this.updateSettingsPreviews();
     },
 
     setBaseLayer(layerKey) {
@@ -688,6 +829,8 @@ export const MapService = {
         this.updateStyleLayersVisibility();
         this.syncLayerSwitcherUI();
         this.updateLayerSwitcherPreview();
+        this.syncSettingsSquaresUI();
+        this.updateSettingsPreviews();
     },
 
     updateStyleLayersVisibility() {
@@ -696,6 +839,8 @@ export const MapService = {
         if (!style || !style.layers) return;
 
         const isSatellite = this.activeLayerKey === 'satellite';
+        const isTopo = this.activeLayerKey === 'topo';
+        const isRasterBase = isSatellite || isTopo;
 
         style.layers.forEach(layer => {
             if (layer.id === 'satellite-layer') {
@@ -703,10 +848,34 @@ export const MapService = {
                 return;
             }
 
-            if (layer.type === 'fill' && layer.id !== 'satellite-layer') {
-                this.map.setLayoutProperty(layer.id, 'visibility', isSatellite ? 'none' : 'visible');
+            if (layer.id === 'topo-layer') {
+                this.map.setLayoutProperty(layer.id, 'visibility', isTopo ? 'visible' : 'none');
+                return;
+            }
+
+            if (layer.id.startsWith('route-') ||
+                layer.id.startsWith('measure-') ||
+                layer.id.startsWith('gps-') ||
+                layer.id.startsWith('highlight-') ||
+                layer.id.startsWith('transit-') ||
+                layer.id === 'bike-layer' ||
+                layer.id === 'transport-layer' ||
+                layer.id === '3d-buildings') {
+                return;
+            }
+
+            if (layer.type === 'fill') {
+                this.map.setLayoutProperty(layer.id, 'visibility', isRasterBase ? 'none' : 'visible');
+            } else if (isTopo) {
+                this.map.setLayoutProperty(layer.id, 'visibility', 'none');
+            } else if (!isRasterBase) {
+                this.map.setLayoutProperty(layer.id, 'visibility', 'visible');
             }
         });
+
+        if (!isTopo) {
+            this.setLabelsVisibility(this.activeOverlays.labels);
+        }
     },
 
     toggleOverlay(key, show) {
@@ -720,10 +889,16 @@ export const MapService = {
             if (this.map && this.map.getLayer('bike-layer')) {
                 this.map.setLayoutProperty('bike-layer', 'visibility', show ? 'visible' : 'none');
             }
+            localStorage.setItem('maps_bike_enabled', show ? 'true' : 'false');
             const overlayToggleBike = document.getElementById('toggle-overlay-bike');
             if (overlayToggleBike) {
                 overlayToggleBike.checked = show;
             }
+            this.syncSettingsSquaresUI();
+        } else if (key === 'transport') {
+            TransitOverlay.setVisible(show);
+            localStorage.setItem('maps_transport_enabled', show ? 'true' : 'false');
+            this.syncSettingsSquaresUI();
         } else if (key === 'perspective') {
             if (this.map) {
                 this.setAllExtrusionsVisibility(show);
@@ -739,14 +914,16 @@ export const MapService = {
             localStorage.setItem('maps_perspective_enabled', show ? 'true' : 'false');
             const overlayTogglePerspective = document.getElementById('toggle-overlay-perspective');
             if (overlayTogglePerspective) {
+                if ('selected' in overlayTogglePerspective) {
+                    overlayTogglePerspective.selected = show;
+                }
                 overlayTogglePerspective.checked = show;
             }
-            this.syncPerspectiveButtonState();
         }
     },
 
     setLabelsVisibility(show) {
-        if (!this.map) return;
+        if (!this.map || typeof this.map.getStyle !== 'function') return;
         const style = this.map.getStyle();
         if (!style || !style.layers) return;
         style.layers.forEach(layer => {
@@ -757,7 +934,7 @@ export const MapService = {
     },
 
     setAllExtrusionsVisibility(show) {
-        if (!this.map) return;
+        if (!this.map || typeof this.map.getStyle !== 'function') return;
         const style = this.map.getStyle();
         if (!style || !style.layers) return;
         style.layers.forEach(layer => {

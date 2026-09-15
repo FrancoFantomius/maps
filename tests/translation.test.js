@@ -184,6 +184,60 @@ describe('TranslationController', () => {
             expect(options).toContainEqual({ value: 'zh', text: '中文 (Chinese)' });
             expect(options).toContainEqual({ value: 'ar', text: 'العربية (Arabic)' });
         });
+
+        it('updates current language label and radio group selection', () => {
+            document.body.innerHTML = `
+                <span id="current-language-label"></span>
+                <div id="language-radio-group">
+                    <input type="radio" value="system" />
+                    <input type="radio" value="it" />
+                </div>
+            `;
+
+            TranslationController.languagePref = 'it';
+            TranslationController.updateSettingsUI();
+
+            const labelEl = document.getElementById('current-language-label');
+            expect(labelEl.textContent).toBe('Italiano');
+
+            TranslationController.languagePref = 'system';
+            TranslationController.updateSettingsUI();
+            expect(labelEl.textContent).toBe('Auto');
+        });
+
+        it('opens modal on picker button click and changes language on confirm', async () => {
+            document.body.innerHTML = `
+                <button id="btn-language-picker"></button>
+                <div id="language-dialog"></div>
+                <div id="language-radio-group">
+                    <input type="radio" value="system" />
+                    <input type="radio" value="fr" />
+                </div>
+                <button id="btn-language-confirm"></button>
+                <button id="btn-language-cancel"></button>
+            `;
+
+            const callback = vi.fn();
+            const { setupLanguageSelectUI } = await import('../js/translation/ui.js');
+            setupLanguageSelectUI(callback);
+
+            const btnPicker = document.getElementById('btn-language-picker');
+            const dialog = document.getElementById('language-dialog');
+            const radioGroup = document.getElementById('language-radio-group');
+            const btnConfirm = document.getElementById('btn-language-confirm');
+
+            btnPicker.click();
+            expect(dialog.open).toBe(true);
+
+            // Change radio selection
+            const radioFr = document.querySelector('input[value="fr"]');
+            radioGroup.dispatchEvent(new CustomEvent('change', { detail: { value: 'fr' } }));
+            radioGroup.value = 'fr';
+
+            btnConfirm.click();
+            expect(callback).toHaveBeenCalledWith('fr');
+            expect(dialog.open).toBe(false);
+        });
     });
 });
 

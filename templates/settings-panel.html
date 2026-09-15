@@ -1,10 +1,4 @@
 <link rel="stylesheet" href="/css/settings-panel.css">
-<!-- Settings Toggle Button (Hidden: triggered via Layers button in layer switcher) -->
-<div class="settings-toggle-wrapper bottom-ui-element hidden" style="display: none;">
-    <button id="btn-settings-toggle" class="btn-settings-toggle" aria-label="Settings Toggle">
-        <span class="material-icons-outlined" style="font-size: 1.125rem;">keyboard_double_arrow_up</span>
-    </button>
-</div>
 
 <!-- Settings Bottom Sheet (M3 Bottom Sheet with 100% width and sharp corners) -->
 <md-bottom-sheet
@@ -24,35 +18,131 @@
     <!-- Close Button -->
     <md-icon-button slot="close-button" id="btn-settings-close" icon="close" aria-label="Close" data-i18n-title="nav.close"></md-icon-button>
 
-    <!-- Settings Content Grid (Only core map settings: Overlays and Theme) -->
+    <!-- Settings Content Grid (Only core map settings: Map Type and Theme) -->
     <div class="settings-grid">
-        <!-- Column 1: Show Details / Map Overlays -->
+        <!-- Column 1: Map Type & Features (5 Squares) -->
         <div class="settings-col">
-            <span class="settings-section-title" data-i18n="settings.show_details">Show Details</span>
-            <div class="settings-toggle-list">
-                <div class="settings-toggle-row">
-                    <span class="settings-toggle-label" data-i18n="settings.street_names">Street Names</span>
-                    <md-switch id="toggle-overlay-labels" aria-label="Street Names"></md-switch>
-                </div>
-                <div class="settings-toggle-row">
-                    <span class="settings-toggle-label" data-i18n="settings.bike_paths">Bike Paths</span>
-                    <md-switch id="toggle-overlay-bike" aria-label="Bike Paths"></md-switch>
-                </div>
-                <div class="settings-toggle-row">
-                    <span class="settings-toggle-label" data-i18n="settings.buildings">Buildings</span>
-                    <md-switch id="toggle-overlay-perspective" aria-label="Buildings"></md-switch>
-                </div>
+            <span class="settings-section-title">Map Type</span>
+            <div class="map-type-row" role="group" aria-label="Map Type and Overlays">
+                <!-- Map (Default) -->
+                <button type="button" class="map-type-item is-selected" id="btn-map-type-street" data-map-type="street" aria-label="Map" aria-pressed="true">
+                    <div class="map-type-preview-box">
+                        <img id="preview-map-street" class="map-type-img" src="https://a.tile.openstreetmap.org/13/4366/2933.png" alt="Map" loading="lazy">
+                    </div>
+                    <span class="map-type-name">Map</span>
+                </button>
+
+                <!-- Satellite -->
+                <button type="button" class="map-type-item" id="btn-map-type-satellite" data-map-type="satellite" aria-label="Satellite" aria-pressed="false">
+                    <div class="map-type-preview-box">
+                        <img id="preview-map-satellite" class="map-type-img" src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/13/2933/4366" alt="Satellite" loading="lazy">
+                    </div>
+                    <span class="map-type-name">Satellite</span>
+                </button>
+
+                <!-- Bike Paths -->
+                <button type="button" class="map-type-item" id="btn-map-type-bike" data-map-overlay="bike" aria-label="Bike Paths" aria-pressed="false">
+                    <div class="map-type-preview-box">
+                        <img id="preview-map-bike-base" class="map-type-img" src="https://a.tile.openstreetmap.org/13/4366/2933.png" alt="" loading="lazy">
+                        <img id="preview-map-bike" class="map-type-img map-type-overlay-img" src="https://tile.waymarkedtrails.org/cycling/13/4366/2933.png" alt="Bike Paths" loading="lazy">
+                    </div>
+                    <span class="map-type-name" data-i18n="settings.bike_paths">Bike Paths</span>
+                </button>
+
+                <!-- Transports -->
+                <button type="button" class="map-type-item" id="btn-map-type-transport" data-map-overlay="transport" aria-label="Transports" aria-pressed="false">
+                    <div class="map-type-preview-box">
+                        <img id="preview-map-transport-base" class="map-type-img" src="https://a.tile.openstreetmap.org/13/4366/2933.png" alt="" loading="lazy">
+                        <img id="preview-map-transport" class="map-type-img map-type-overlay-img" src="https://tile.thunderforest.com/transport/13/4366/2933.png" alt="Transports" loading="lazy">
+                    </div>
+                    <span class="map-type-name">Transports</span>
+                </button>
+
+                <!-- Topological -->
+                <button type="button" class="map-type-item" id="btn-map-type-topo" data-map-type="topo" aria-label="Topological" aria-pressed="false">
+                    <div class="map-type-preview-box">
+                        <img id="preview-map-topo" class="map-type-img" src="https://a.tile.opentopomap.org/13/4366/2933.png" alt="Topological" loading="lazy">
+                    </div>
+                    <span class="map-type-name">Topological</span>
+                </button>
             </div>
         </div>
 
-        <!-- Column 2: Appearance Theme -->
-        <div class="settings-col">
-            <span class="settings-section-title" data-i18n="settings.appearance_theme">Appearance Theme</span>
-            <div class="theme-btn-grid">
-                <button data-theme-btn="light" data-i18n="settings.theme_light">Light</button>
-                <button data-theme-btn="system" data-i18n="settings.theme_system">System</button>
-                <button data-theme-btn="dark" data-i18n="settings.theme_dark">Dark</button>
+        <!-- Column 2: Appearance, Language & Map Display Options -->
+        <div class="settings-col settings-col-options">
+            <!-- Theme -->
+            <div class="settings-row">
+                <div class="settings-row-text">
+                    <span class="settings-item-title" data-i18n="settings.theme">Theme</span>
+                    <span class="settings-item-subtitle" data-i18n="settings.theme_subtitle">Choose a theme for the  application</span>
+                </div>
+                <div class="settings-row-action">
+                    <md-button-group connected>
+                        <md-button data-theme-btn="light" variant="outlined" icon="light_mode" data-i18n="settings.theme_light">Light</md-button>
+                        <md-button data-theme-btn="system" variant="filled" icon="brightness_auto" data-i18n="settings.theme_system">System</md-button>
+                        <md-button data-theme-btn="dark" variant="outlined" icon="dark_mode" data-i18n="settings.theme_dark">Dark</md-button>
+                    </md-button-group>
+                </div>
+            </div>
+
+            <!-- Language -->
+            <div class="settings-row">
+                <div class="settings-row-text">
+                    <span class="settings-item-title" data-i18n="settings.language">Language</span>
+                    <span class="settings-item-subtitle" data-i18n="settings.language_subtitle">Application language</span>
+                </div>
+                <div class="settings-row-action">
+                    <md-button id="btn-language-picker" variant="outlined" icon="translate">
+                        <span id="current-language-label">Auto</span>
+                    </md-button>
+                </div>
+            </div>
+
+            <!-- Show Names -->
+            <div class="settings-row">
+                <div class="settings-row-text">
+                    <span class="settings-item-title" data-i18n="settings.show_names">Show Names</span>
+                    <span class="settings-item-subtitle" data-i18n="settings.show_names_subtitle">Display the streets names when on Satellite view</span>
+                </div>
+                <div class="settings-row-action">
+                    <md-switch id="toggle-overlay-labels" selected icons></md-switch>
+                </div>
+            </div>
+
+            <!-- 3D Buildings -->
+            <div class="settings-row">
+                <div class="settings-row-text">
+                    <span class="settings-item-title" data-i18n="settings.buildings_3d">3D Buildings</span>
+                    <span class="settings-item-subtitle" data-i18n="settings.buildings_3d_subtitle">Show 3D buildings when in Map view</span>
+                </div>
+                <div class="settings-row-action">
+                    <md-switch id="toggle-overlay-perspective" selected icons></md-switch>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Language Selection Modal Dialog -->
+    <md-dialog id="language-dialog" headline="Language" icon="translate">
+        <div class="language-dialog-body">
+            <md-radio-group id="language-radio-group" name="language_selection" value="system">
+                <md-radio value="system">Auto</md-radio>
+                <md-radio value="en">English</md-radio>
+                <md-radio value="it">Italiano</md-radio>
+                <md-radio value="es">Español</md-radio>
+                <md-radio value="fr">Français</md-radio>
+                <md-radio value="de">Deutsch</md-radio>
+                <md-radio value="zh">中文 (Chinese)</md-radio>
+                <md-radio value="ja">日本語 (Japanese)</md-radio>
+                <md-radio value="ar">العربية (Arabic)</md-radio>
+                <md-radio value="ru">Русский (Russian)</md-radio>
+                <md-radio value="pt">Português (Portuguese)</md-radio>
+                <md-radio value="hi">हिन्दी (Hindi)</md-radio>
+            </md-radio-group>
+        </div>
+        <div slot="actions">
+            <md-button variant="text" id="btn-language-cancel">Cancel</md-button>
+            <md-button variant="filled" id="btn-language-confirm">Confirm</md-button>
+        </div>
+    </md-dialog>
 </md-bottom-sheet>

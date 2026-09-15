@@ -1,50 +1,6 @@
 /* css/settings-panel.css - Bottom Settings Sheet Panel */
 
-.settings-toggle-wrapper {
-  position: fixed;
-  bottom: 1rem;
-  left: calc(1rem + 76px + 0.75rem + 42px + 0.75rem);
-  z-index: 10;
-  pointer-events: auto;
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
-.btn-settings-toggle {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  background-color: var(--bg-card-solid, #ffffff);
-  border: 1px solid var(--md-sys-color-outline-variant, #e2e8f0);
-  border-radius: var(--md-sys-shape-corner-extra-small, 4px);
-  box-shadow: var(--md-sys-elevation-level2, 0 2px 6px 2px rgba(0, 0, 0, 0.1));
-  color: var(--text-secondary, #475569);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.btn-settings-toggle:hover {
-  background-color: var(--bg-hover, #f1f5f9);
-  color: var(--color-indigo, #4f46e5);
-  box-shadow: var(--md-sys-elevation-level3, 0 4px 8px 3px rgba(0, 0, 0, 0.14));
-}
-
-.btn-settings-toggle:active {
-  transform: scale(0.96);
-}
-
-.dark .btn-settings-toggle {
-  background-color: var(--bg-card-solid, #1e293b);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-  color: var(--text-primary, #f8fafc);
-}
-
-.dark .btn-settings-toggle:hover {
-  background-color: #334155;
-}
 
 /* Material Design 3 Bottom Sheet Settings Panel */
 md-bottom-sheet#settings-panel {
@@ -80,27 +36,29 @@ md-bottom-sheet#settings-panel {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  max-width: 64rem;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
   padding: 0.5rem 0;
 }
 
 @media (min-width: 768px) {
   .settings-grid {
     flex-direction: row;
-    gap: 2rem;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 2.5rem;
   }
 }
 
 .settings-col {
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
 }
 
 @media (min-width: 768px) {
   .settings-col + .settings-col {
     border-left: 1px solid var(--border-subtle);
-    padding-left: 2rem;
+    padding-left: 2.5rem;
   }
 }
 
@@ -114,32 +72,109 @@ md-bottom-sheet#settings-panel {
   margin-bottom: 0.75rem;
 }
 
-/* Switches & Toggles */
-.settings-toggle-list {
+/* Map Type & Overlay Squares (Row of 5) */
+.map-type-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.map-type-item {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-}
-
-.settings-toggle-row {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.25rem 0;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+  user-select: none;
 }
 
-.settings-toggle-label {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
+.map-type-item:hover {
+  transform: translateY(-2px);
+}
+
+.map-type-item:active {
+  transform: translateY(0) scale(0.96);
+}
+
+.map-type-preview-box {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: var(--md-sys-shape-corner-medium, 12px);
+  overflow: hidden;
+  border: 2px solid transparent;
+  background-color: var(--bg-subtle, #f1f5f9);
+  box-shadow: var(--md-sys-elevation-level1, 0 1px 3px rgba(0, 0, 0, 0.1));
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dark .map-type-preview-box {
+  background-color: var(--bg-card-solid, #1e293b);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.map-type-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+}
+
+.map-type-overlay-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.map-type-name {
+  font-family: var(--font-sans, inherit);
+  font-size: 0.75rem;
   font-weight: 500;
-  transition: color 0.15s ease;
+  color: var(--text-secondary, #475569);
+  text-align: center;
+  line-height: 1.2;
+  transition: font-weight 0.15s ease, color 0.15s ease;
 }
 
-.settings-toggle-row:hover .settings-toggle-label {
-  color: var(--text-primary);
+.dark .map-type-name {
+  color: var(--text-muted, #94a3b8);
 }
 
-/* Theme selector buttons */
+/* Selected state: square has a border, name underneath boldened */
+.map-type-item.is-selected .map-type-preview-box {
+  border-color: var(--color-indigo, #4f46e5);
+  box-shadow: 0 0 0 1px var(--color-indigo, #4f46e5), var(--md-sys-elevation-level2, 0 2px 6px rgba(0, 0, 0, 0.15));
+}
+
+.dark .map-type-item.is-selected .map-type-preview-box {
+  border-color: var(--color-indigo, #6366f1);
+  box-shadow: 0 0 0 1px var(--color-indigo, #6366f1), 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.map-type-item.is-selected .map-type-name {
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.dark .map-type-item.is-selected .map-type-name {
+  color: #ffffff;
+}
+
+/* Theme selector buttons (legacy support) */
 .theme-btn-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -174,3 +209,77 @@ md-bottom-sheet#settings-panel {
   color: #ffffff !important;
   box-shadow: var(--shadow-sm);
 }
+
+/* Column 2 Settings Rows (Theme, Language, Show Names, 3D Buildings) */
+.settings-col-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+  min-width: 280px;
+  max-width: 520px;
+  flex: 1 1 auto;
+}
+
+.settings-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.settings-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.settings-item-title {
+  font-family: var(--font-sans, inherit);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  line-height: 1.25;
+}
+
+.dark .settings-item-title {
+  color: #f1f5f9;
+}
+
+.settings-item-subtitle {
+  font-family: var(--font-sans, inherit);
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+  line-height: 1.25;
+}
+
+.dark .settings-item-subtitle {
+  color: #94a3b8;
+}
+
+.settings-row-action {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Language Dialog Modal */
+.language-dialog-body {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px 8px;
+  margin: 4px 0;
+}
+
+.language-dialog-body md-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.language-dialog-body md-radio {
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+

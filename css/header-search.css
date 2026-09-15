@@ -6,7 +6,7 @@
   top: 1rem;
   left: 1rem;
   right: 1rem;
-  z-index: 1010;
+  z-index: 1030;
   pointer-events: none;
   display: flex;
   justify-content: space-between;
@@ -282,7 +282,7 @@
   bottom: 0;
   left: 0;
   height: 100dvh;
-  z-index: 1000;
+  z-index: 1020;
   pointer-events: auto;
   --md-side-sheet-width: 400px;
   box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));

@@ -8,7 +8,7 @@ export function setupSettingsUI(MapService) {
     const toggleOverlayBike = document.getElementById('toggle-overlay-bike');
     const toggleOverlayPerspective = document.getElementById('toggle-overlay-perspective');
 
-    if (!settingsPanel || !btnSettingsToggle) return;
+    if (!settingsPanel) return;
 
     function removeScrim() {
         if (settingsPanel.shadowRoot) {
@@ -72,8 +72,10 @@ export function setupSettingsUI(MapService) {
             settingsPanel.removeAttribute('open');
         }
 
-        const iconSpan = btnSettingsToggle.querySelector('.material-icons-outlined');
-        if (iconSpan) iconSpan.textContent = isOpen ? 'keyboard_double_arrow_down' : 'keyboard_double_arrow_up';
+        if (btnSettingsToggle) {
+            const iconSpan = btnSettingsToggle.querySelector('.material-icons-outlined');
+            if (iconSpan) iconSpan.textContent = isOpen ? 'keyboard_double_arrow_down' : 'keyboard_double_arrow_up';
+        }
 
         const btnLayers = document.getElementById('btn-layers');
         if (btnLayers) {
@@ -81,6 +83,8 @@ export function setupSettingsUI(MapService) {
         }
 
         if (isOpen) {
+            MapService.syncSettingsSquaresUI?.();
+            MapService.updateSettingsPreviews?.();
             requestAnimationFrame(() => {
                 updateControlPositions(true);
             });
@@ -92,11 +96,13 @@ export function setupSettingsUI(MapService) {
         }
     }
 
-    btnSettingsToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = settingsPanel.classList.contains('settings-open') || settingsPanel.hasAttribute('open');
-        setSettingsPanelOpen(!isOpen);
-    });
+    if (btnSettingsToggle) {
+        btnSettingsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = settingsPanel.classList.contains('settings-open') || settingsPanel.hasAttribute('open');
+            setSettingsPanelOpen(!isOpen);
+        });
+    }
 
     const btnLayers = document.getElementById('btn-layers');
     if (btnLayers) {
@@ -115,6 +121,8 @@ export function setupSettingsUI(MapService) {
     }
 
     settingsPanel.addEventListener('open', () => {
+        MapService.syncSettingsSquaresUI?.();
+        MapService.updateSettingsPreviews?.();
         updateControlPositions(true);
     });
     settingsPanel.addEventListener('close', () => {
@@ -136,7 +144,7 @@ export function setupSettingsUI(MapService) {
     document.addEventListener('click', (e) => {
         const path = e.composedPath ? e.composedPath() : [];
         const isInsidePanel = settingsPanel.contains(e.target) || path.includes(settingsPanel);
-        const isToggleBtn = btnSettingsToggle.contains(e.target) || path.includes(btnSettingsToggle);
+        const isToggleBtn = btnSettingsToggle && (btnSettingsToggle.contains(e.target) || path.includes(btnSettingsToggle));
         const btnLayersEl = document.getElementById('btn-layers');
         const isLayersBtn = btnLayersEl && (btnLayersEl.contains(e.target) || path.includes(btnLayersEl));
 
@@ -147,7 +155,54 @@ export function setupSettingsUI(MapService) {
         }
     });
 
-    // Layer Overlay Checks
+    // 5 Map Squares: Map, Satellite, Bike Paths, Transports, Topological
+    const btnMapStreet = document.getElementById('btn-map-type-street');
+    const btnMapSatellite = document.getElementById('btn-map-type-satellite');
+    const btnMapBike = document.getElementById('btn-map-type-bike');
+    const btnMapTransport = document.getElementById('btn-map-type-transport');
+    const btnMapTopo = document.getElementById('btn-map-type-topo');
+
+    if (btnMapStreet) {
+        btnMapStreet.addEventListener('click', (e) => {
+            e.stopPropagation();
+            MapService.setBaseLayer('street');
+        });
+    }
+
+    if (btnMapSatellite) {
+        btnMapSatellite.addEventListener('click', (e) => {
+            e.stopPropagation();
+            MapService.setBaseLayer('satellite');
+        });
+    }
+
+    if (btnMapBike) {
+        btnMapBike.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const nextState = !MapService.activeOverlays?.bike;
+            MapService.toggleOverlay('bike', nextState);
+        });
+    }
+
+    if (btnMapTransport) {
+        btnMapTransport.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const nextState = !MapService.activeOverlays?.transport;
+            MapService.toggleOverlay('transport', nextState);
+        });
+    }
+
+    if (btnMapTopo) {
+        btnMapTopo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            MapService.setBaseLayer('topo');
+        });
+    }
+
+    MapService.syncSettingsSquaresUI?.();
+    MapService.updateSettingsPreviews?.();
+
+    // Layer Overlay Checks (fallback for switches if present)
     function handleOverlayToggle(el, layerName) {
         if (!el) return;
         el.addEventListener('change', (e) => {
