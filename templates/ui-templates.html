@@ -118,9 +118,7 @@
             </div>
 
             <!-- Floating Close button -->
-            <button type="button" class="btn-close wiki-btn-close">
-                <span class="material-icons-outlined" style="font-size: 0.875rem;">close</span>
-            </button>
+            <md-icon-button type="button" class="btn-close wiki-btn-close" icon="close" aria-label="Close"></md-icon-button>
         </div>
 
         <!-- Padded content area below image -->
@@ -139,19 +137,16 @@
 
             <!-- Details Action Bar -->
             <div style="display: flex; flex-direction: column; gap: 0.5rem; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 1px solid var(--border-subtle); flex-shrink: 0;">
-                <button class="btn-directions btn-action-blue" style="width: 100%;">
-                    <span class="material-icons-outlined" style="font-size: 0.875rem;">directions</span>
+                <md-button class="btn-directions" variant="filled" icon="directions" style="width: 100%;">
                     <span>Get Directions</span>
-                </button>
+                </md-button>
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <button class="btn-edit btn-action-secondary">
-                        <span class="material-icons-outlined" style="font-size: 0.75rem;">edit</span>
+                    <md-button class="btn-edit" variant="tonal" icon="edit" style="flex: 1;">
                         <span>Edit</span>
-                    </button>
-                    <button class="btn-delete btn-action-danger">
-                        <span class="material-icons-outlined" style="font-size: 0.75rem;">delete</span>
+                    </md-button>
+                    <md-button class="btn-delete" variant="outlined" icon="delete" style="flex: 1;">
                         <span>Delete</span>
-                    </button>
+                    </md-button>
                 </div>
             </div>
 
@@ -166,12 +161,18 @@
 </template>
 
 <template id="template-marker-list-item">
-    <div class="marker-item">
+    <div class="marker-item" role="button" tabindex="0">
         <div class="marker-focus">
-            <span class="marker-color-dot"></span>
-            <div class="marker-name"></div>
+            <div class="marker-leading-icon">
+                <span class="marker-color-dot"></span>
+                <span class="marker-category-emoji"></span>
+            </div>
+            <div class="marker-text-container">
+                <div class="marker-name"></div>
+                <div class="marker-subtext"></div>
+            </div>
         </div>
-        <button class="btn-delete-marker">✕</button>
+        <md-icon-button class="btn-delete-marker" icon="delete" variant="standard" aria-label="Delete" title="Delete"></md-icon-button>
     </div>
 </template>
 

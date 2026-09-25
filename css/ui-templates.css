@@ -346,60 +346,127 @@
 
 /* ─── Marker List Items ─── */
 .marker-item {
-  padding: 0.75rem;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  background-color: var(--md-sys-color-surface-container, var(--bg-card));
+  border: 1px solid var(--md-sys-color-outline-variant, var(--border-subtle));
+  border-radius: var(--md-sys-shape-corner-medium, 12px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  font-size: 0.75rem;
   margin-bottom: 0.5rem;
-  transition: all 0.2s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
 }
 
 .marker-item:hover {
-  border-color: var(--color-indigo);
+  background-color: var(--md-sys-color-surface-container-high, var(--bg-card-hover));
+  border-color: var(--md-sys-color-primary, var(--color-indigo));
+  box-shadow: var(--shadow-sm);
 }
 
 .marker-focus {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.75rem;
   overflow: hidden;
   flex: 1;
+  min-width: 0;
+}
+
+.marker-leading-icon {
+  position: relative;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background-color: var(--md-sys-color-surface-container-highest, rgba(0, 0, 0, 0.05));
+}
+
+.marker-category-emoji {
+  font-size: 1.125rem;
+  line-height: 1;
 }
 
 .marker-color-dot {
-  width: 0.75rem;
-  height: 0.75rem;
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 0.625rem;
+  height: 0.625rem;
   border-radius: 50%;
-  flex-shrink: 0;
-  border: 1px solid #ffffff;
+  border: 1.5px solid var(--md-sys-color-surface, #ffffff);
   box-shadow: var(--shadow-sm);
 }
 
+.marker-text-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
 .marker-name {
+  font-size: 0.875rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--md-sys-color-on-surface, var(--text-primary));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.marker-subtext {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-on-surface-variant, var(--text-muted));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 0.125rem;
+}
+
 .btn-delete-marker {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  margin-left: 0.5rem;
-  font-size: 0.875rem;
-  line-height: 1;
+  color: var(--md-sys-color-on-surface-variant, var(--text-muted));
+  flex-shrink: 0;
+  margin-left: 0.25rem;
 }
 
 .btn-delete-marker:hover {
-  color: var(--color-red);
+  color: var(--md-sys-color-error, var(--color-red));
+}
+
+/* ─── Markers Empty State ─── */
+.markers-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.markers-empty-icon {
+  font-size: 2.5rem;
+  color: var(--md-sys-color-primary, var(--color-indigo));
+  opacity: 0.7;
+}
+
+.markers-empty-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface, var(--text-primary));
+  margin: 0;
+}
+
+.markers-empty-desc {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-on-surface-variant, var(--text-muted));
+  margin: 0;
+  max-width: 200px;
+  line-height: 1.4;
 }
 
 /* ─── Autocomplete Items ─── */

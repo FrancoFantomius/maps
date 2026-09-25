@@ -60,7 +60,9 @@ export const MarkerController = {
                 this.renderAll();
                 this.removeTempMarker();
                 HUDController.setState('place-details', data);
-                MapService.flyTo([data.lng, data.lat], 15);
+                if (MapService && typeof MapService.flyTo === 'function') {
+                    MapService.flyTo([data.lng, data.lat], 15);
+                }
             }
         );
     },
@@ -135,7 +137,13 @@ export const MarkerController = {
 
         if (this.customMarkers.length === 0) {
             if (savedMarkersList) {
-                savedMarkersList.innerHTML = `<div class="text-center py-6 text-slate-400 dark:text-slate-500">No custom places saved yet.</div>`;
+                savedMarkersList.innerHTML = `
+                    <div class="markers-empty-state">
+                        <md-icon name="bookmark_border" class="markers-empty-icon"></md-icon>
+                        <h4 class="markers-empty-title">No saved places yet</h4>
+                        <p class="markers-empty-desc">Click on the map or search for places to save your favorite locations.</p>
+                    </div>
+                `;
             }
             return;
         }
@@ -195,27 +203,52 @@ export const MarkerController = {
         const template = document.getElementById('template-marker-list-item');
         if (!template) return;
         const clone = template.content.cloneNode(true);
-        const dot = clone.querySelector('.marker-color-dot');
         const config = this.colorPalette[m.category] || this.colorPalette.poi;
-        dot.style.backgroundColor = config.main;
+
+        const dot = clone.querySelector('.marker-color-dot');
+        if (dot) dot.style.backgroundColor = config.main;
+
+        const emojiEl = clone.querySelector('.marker-category-emoji');
+        if (emojiEl) emojiEl.textContent = config.emoji || '📍';
 
         const nameEl = clone.querySelector('.marker-name');
-        nameEl.textContent = m.name;
+        if (nameEl) nameEl.textContent = m.name;
 
-        clone.querySelector('.marker-focus').addEventListener('click', (e) => {
-            e.stopPropagation();
-            MapService.flyTo([m.lng, m.lat], 15);
-            HUDController.setState('place-details', m);
-        });
+        const subtextEl = clone.querySelector('.marker-subtext');
+        if (subtextEl) {
+            const categoryLabels = {
+                poi: 'Point of Interest',
+                home: 'Home',
+                food: 'Food & Drink',
+                lodging: 'Lodging',
+                nature: 'Nature / Scenic'
+            };
+            subtextEl.textContent = m.desc || categoryLabels[m.category] || 'Custom pin';
+        }
 
-        clone.querySelector('.btn-delete-marker').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.delete(m.id);
-        });
+        const focusEl = clone.querySelector('.marker-focus');
+        if (focusEl) {
+            focusEl.addEventListener('click', (e) => {
+                e.stopPropagation();
+                MapService.flyTo([m.lng, m.lat], 15);
+                HUDController.setState('place-details', m);
+            });
+        }
 
-        clone.querySelector('.marker-item').addEventListener('click', () => {
-            HUDController.setState('place-details', m);
-        });
+        const deleteBtn = clone.querySelector('.btn-delete-marker');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.delete(m.id);
+            });
+        }
+
+        const itemEl = clone.querySelector('.marker-item');
+        if (itemEl) {
+            itemEl.addEventListener('click', () => {
+                HUDController.setState('place-details', m);
+            });
+        }
 
         container.appendChild(clone);
     },

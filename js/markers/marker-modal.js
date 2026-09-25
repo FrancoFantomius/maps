@@ -21,8 +21,14 @@ export function openMarkerModal(lat, lng, id, tempDetails, customMarkers, callba
             if (modalId) modalId.value = m.id;
             if (modalName) modalName.value = m.name;
             if (modalCategory) modalCategory.value = m.category;
-            if (modalDesc) modalDesc.value = m.desc;
+            if (modalDesc) modalDesc.value = m.desc || '';
             if (modalTitle) modalTitle.innerText = "Edit Marker";
+            if (markerModal) {
+                markerModal.headline = "Edit Marker";
+                if (typeof markerModal.setAttribute === 'function') {
+                    markerModal.setAttribute('headline', "Edit Marker");
+                }
+            }
         }
     } else {
         if (modalId) modalId.value = '';
@@ -30,14 +36,36 @@ export function openMarkerModal(lat, lng, id, tempDetails, customMarkers, callba
         if (modalCategory) modalCategory.value = 'poi';
         if (modalDesc) modalDesc.value = '';
         if (modalTitle) modalTitle.innerText = "Save Location";
+        if (markerModal) {
+            markerModal.headline = "Save Location";
+            if (typeof markerModal.setAttribute === 'function') {
+                markerModal.setAttribute('headline', "Save Location");
+            }
+        }
     }
 
-    if (markerModal) markerModal.classList.remove('hidden');
+    if (markerModal) {
+        markerModal.classList.remove('hidden');
+        if (typeof markerModal.showModal === 'function') {
+            markerModal.showModal();
+        } else if (typeof markerModal.show === 'function') {
+            markerModal.show();
+        } else {
+            markerModal.open = true;
+        }
+    }
 }
 
 export function closeMarkerModal(onClose) {
     const markerModal = document.getElementById('marker-modal');
-    if (markerModal) markerModal.classList.add('hidden');
+    if (markerModal) {
+        markerModal.classList.add('hidden');
+        if (typeof markerModal.close === 'function') {
+            markerModal.close();
+        } else {
+            markerModal.open = false;
+        }
+    }
     if (typeof onClose === 'function') onClose();
 }
 
@@ -56,9 +84,9 @@ export async function saveMarkerFromForm(tempDetails, customMarkers, MapService,
         id,
         lat,
         lng,
-        name: modalName ? modalName.value.trim() : '',
+        name: modalName ? (modalName.value || '').trim() : '',
         category: modalCategory ? modalCategory.value : 'poi',
-        desc: modalDesc ? modalDesc.value.trim() : '',
+        desc: modalDesc ? (modalDesc.value || '').trim() : '',
         updatedAt: Date.now()
     };
 
@@ -87,8 +115,7 @@ export async function saveMarkerFromForm(tempDetails, customMarkers, MapService,
             });
         }
         const updatedMarkers = await loadAllPlaces();
-        const markerModal = document.getElementById('marker-modal');
-        if (markerModal) markerModal.classList.add('hidden');
+        closeMarkerModal();
 
         if (typeof onSaved === 'function') {
             onSaved(data, updatedMarkers);
@@ -115,5 +142,23 @@ export function setupMarkerModalUI(MarkerController) {
             MarkerController.closeModal();
         });
     }
-}
 
+    const btnSaveMarkerModal = document.getElementById('btn-save-marker-modal');
+    if (btnSaveMarkerModal) {
+        btnSaveMarkerModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            MarkerController.saveFromForm();
+        });
+    }
+
+    const markerModal = document.getElementById('marker-modal');
+    if (markerModal && !markerModal._boundClose) {
+        markerModal._boundClose = true;
+        markerModal.addEventListener('close', () => {
+            MarkerController.closeModal();
+        });
+        markerModal.addEventListener('cancel', () => {
+            MarkerController.closeModal();
+        });
+    }
+}

@@ -1,35 +1,48 @@
 <link rel="stylesheet" href="/css/marker-modal.css">
-<!-- Modal 1: Place Marker Creation/Editing Form (z-[1000]) -->
-<div id="marker-modal" class="marker-modal-backdrop hidden">
-    <div class="marker-modal-card">
-        <h3 class="marker-modal-title" id="modal-title" data-i18n="markers.add_marker">Save Location</h3>
-        <form id="marker-form" style="display: flex; flex-direction: column; gap: 0.875rem; margin: 0;">
-            <input type="hidden" id="modal-lat">
-            <input type="hidden" id="modal-lng">
-            <input type="hidden" id="modal-id">
+<!-- Place Marker Creation/Editing M3 Dialog -->
+<md-dialog id="marker-modal" headline="Save Location" icon="bookmark" class="hidden">
+    <span id="modal-title" slot="headline" data-i18n="markers.add_marker">Save Location</span>
 
-            <div>
-                <label class="marker-form-label" data-i18n="markers.name">Place Name</label>
-                <input type="text" id="modal-name" required placeholder="Scenic overview, local cafe..." class="marker-form-input">
-            </div>
-            <div>
-                <label class="marker-form-label" data-i18n="markers.category">Category Type</label>
-                <select id="modal-category" class="marker-form-input">
-                    <option value="poi">🎯 Point of Interest</option>
-                    <option value="home">🏠 Home</option>
-                    <option value="food">🍕 Food & Drink</option>
-                    <option value="lodging">🏨 Lodging</option>
-                    <option value="nature">🌿 Nature / Scenic</option>
-                </select>
-            </div>
-            <div>
-                <label class="marker-form-label" data-i18n="markers.description">Description & Notes</label>
-                <textarea id="modal-desc" rows="3" placeholder="Add specific notes, descriptions..." class="marker-form-input" style="resize: none;"></textarea>
-            </div>
-            <div class="marker-modal-actions">
-                <button type="button" id="btn-close-marker-modal" data-i18n="markers.cancel" class="btn-marker-cancel">Cancel</button>
-                <button type="submit" data-i18n="markers.save" class="btn-marker-save">Save Marker</button>
-            </div>
-        </form>
+    <form id="marker-form" class="marker-dialog-form">
+        <input type="hidden" id="modal-lat">
+        <input type="hidden" id="modal-lng">
+        <input type="hidden" id="modal-id">
+
+        <md-text-field
+            id="modal-name"
+            label="Place Name"
+            variant="outlined"
+            required
+            data-i18n-label="markers.name"
+            placeholder="Scenic overview, local cafe..."
+        ></md-text-field>
+
+        <div class="marker-category-group">
+            <label class="marker-category-label" data-i18n="markers.category">Category Type</label>
+            <md-radio-group id="modal-category" name="marker_category" value="poi" class="marker-category-radios">
+                <md-radio value="poi">🎯 Point of Interest</md-radio>
+                <md-radio value="home">🏠 Home</md-radio>
+                <md-radio value="food">🍕 Food & Drink</md-radio>
+                <md-radio value="lodging">🏨 Lodging</md-radio>
+                <md-radio value="nature">🌿 Nature / Scenic</md-radio>
+            </md-radio-group>
+        </div>
+
+        <md-text-field
+            id="modal-desc"
+            label="Description & Notes"
+            variant="outlined"
+            data-i18n-label="markers.description"
+            placeholder="Add specific notes, descriptions..."
+        ></md-text-field>
+    </form>
+
+    <div slot="actions" class="marker-modal-actions">
+        <md-button type="button" id="btn-close-marker-modal" variant="text">
+            <span data-i18n="markers.cancel">Cancel</span>
+        </md-button>
+        <md-button type="submit" id="btn-save-marker-modal" variant="filled" form="marker-form">
+            <span data-i18n="markers.save">Save Marker</span>
+        </md-button>
     </div>
-</div>
+</md-dialog>

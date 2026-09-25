@@ -184,11 +184,15 @@
         <md-button id="sheet-btn-save" variant="tonal" icon="bookmark_add">
             <span data-i18n="markers.save_place">Save Place</span>
         </md-button>
+        <md-button id="sheet-btn-delete" variant="outlined" icon="delete" class="hidden">
+            <span data-i18n="markers.delete_marker">Delete</span>
+        </md-button>
     </div>
 
-    <!-- Coordinate Chip -->
+    <!-- Coordinate & Category Chips -->
     <div class="sheet-section sheet-coords-section">
         <md-chip id="sheet-coords-chip" variant="assist" icon="pin_drop" label=""></md-chip>
+        <md-chip id="sheet-category-chip" variant="assist" icon="bookmark" label="" class="hidden"></md-chip>
     </div>
 
     <!-- Address Row -->
@@ -201,6 +205,12 @@
     <div id="sheet-street-section" class="sheet-section sheet-info-card hidden">
         <md-icon name="directions_bike" class="sheet-info-icon"></md-icon>
         <span id="sheet-street-text" class="sheet-info-text"></span>
+    </div>
+
+    <!-- Saved Notes Section -->
+    <div id="sheet-notes-section" class="sheet-section sheet-info-card hidden">
+        <md-icon name="description" class="sheet-info-icon"></md-icon>
+        <span id="sheet-notes-text" class="sheet-info-text"></span>
     </div>
 
     <!-- Shop / POI Details Section -->

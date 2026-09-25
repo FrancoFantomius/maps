@@ -61,6 +61,7 @@ vi.mock('../js/markers/index.js', () => ({
     setTempMarker: vi.fn(),
     removeTempMarker: vi.fn(),
     openModal: vi.fn(),
+    delete: vi.fn(),
     createPin: vi.fn((category, colorOverride, content) => {
       const div = document.createElement('div');
       div.className = 'custom-map-pin-div';
@@ -863,16 +864,21 @@ describe('SearchController', () => {
           </div>
           <div class="sheet-actions-row">
             <md-button id="sheet-btn-directions" variant="filled">Directions</md-button>
-            <md-button id="sheet-btn-save" variant="tonal">Save</md-button>
+            <md-button id="sheet-btn-save" variant="tonal"><span>Save</span></md-button>
+            <md-button id="sheet-btn-delete" variant="outlined" class="hidden"><span>Delete</span></md-button>
           </div>
           <div>
             <md-chip id="sheet-coords-chip"></md-chip>
+            <md-chip id="sheet-category-chip" class="hidden"></md-chip>
           </div>
           <div id="sheet-address-section" class="hidden">
             <span id="sheet-address-text"></span>
           </div>
           <div id="sheet-street-section" class="hidden">
             <span id="sheet-street-text"></span>
+          </div>
+          <div id="sheet-notes-section" class="hidden">
+            <span id="sheet-notes-text"></span>
           </div>
           <div id="sheet-shop-section" class="hidden">
             <div id="sheet-shop-type" class="hidden"><span id="sheet-shop-type-val"></span></div>
@@ -1039,6 +1045,36 @@ describe('SearchController', () => {
         null,
         expect.objectContaining({ name: 'Trevi Fountain' })
       );
+    });
+
+    it('populates category chip, notes, and enables edit/delete for saved markers', () => {
+      const savedPlace = {
+        id: 'place_saved_1',
+        name: 'Grand Hotel',
+        category: 'lodging',
+        desc: 'Room 402 reserved',
+        lat: 45.438,
+        lng: 10.993,
+      };
+
+      SearchController.openPlaceDetails(savedPlace);
+
+      const categoryChip = document.getElementById('sheet-category-chip');
+      expect(categoryChip.classList.contains('hidden')).toBe(false);
+      expect(categoryChip.getAttribute('label')).toBe('Lodging');
+
+      const notesSec = document.getElementById('sheet-notes-section');
+      expect(notesSec.classList.contains('hidden')).toBe(false);
+      expect(document.getElementById('sheet-notes-text').textContent).toBe('Room 402 reserved');
+
+      const btnSave = document.getElementById('sheet-btn-save');
+      expect(btnSave.getAttribute('icon')).toBe('edit');
+
+      const btnDelete = document.getElementById('sheet-btn-delete');
+      expect(btnDelete.classList.contains('hidden')).toBe(false);
+
+      btnDelete.click();
+      expect(MarkerController.delete).toHaveBeenCalledWith('place_saved_1');
     });
   });
 });

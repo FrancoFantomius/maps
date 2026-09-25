@@ -53,7 +53,7 @@ export function openPlaceDetails(data) {
         }
     }
 
-    // 3. Coordinates chip
+    // 3. Coordinates & Category chips
     const coordsChip = document.getElementById('sheet-coords-chip');
     if (coordsChip) {
         if (!isNaN(data.lat) && !isNaN(data.lng)) {
@@ -64,7 +64,67 @@ export function openPlaceDetails(data) {
         }
     }
 
-    // 4. Address section
+    const categoryChip = document.getElementById('sheet-category-chip');
+    if (categoryChip) {
+        if (data.category) {
+            const categoryLabels = {
+                poi: 'Point of Interest',
+                home: 'Home',
+                food: 'Food & Drink',
+                lodging: 'Lodging',
+                nature: 'Nature / Scenic'
+            };
+            const categoryIcons = {
+                poi: 'place',
+                home: 'home',
+                food: 'restaurant',
+                lodging: 'hotel',
+                nature: 'park'
+            };
+            categoryChip.setAttribute('label', categoryLabels[data.category] || data.category);
+            categoryChip.setAttribute('icon', categoryIcons[data.category] || 'bookmark');
+            categoryChip.classList.remove('hidden');
+        } else {
+            categoryChip.classList.add('hidden');
+        }
+    }
+
+    // 4. Saved notes section
+    const notesSec = document.getElementById('sheet-notes-section');
+    const notesText = document.getElementById('sheet-notes-text');
+    if (notesSec && notesText) {
+        if (data.desc) {
+            notesText.textContent = data.desc;
+            notesSec.classList.remove('hidden');
+        } else {
+            notesSec.classList.add('hidden');
+        }
+    }
+
+    // 5. Save & Delete buttons state for saved places
+    const btnSaveEl = document.getElementById('sheet-btn-save');
+    const btnDeleteEl = document.getElementById('sheet-btn-delete');
+    const isSavedPlace = Boolean(data.id);
+    if (btnSaveEl) {
+        if (isSavedPlace) {
+            btnSaveEl.setAttribute('icon', 'edit');
+            const span = btnSaveEl.querySelector('span');
+            if (span) span.textContent = 'Edit Place';
+        } else {
+            btnSaveEl.setAttribute('icon', 'bookmark_add');
+            const span = btnSaveEl.querySelector('span');
+            if (span) span.textContent = 'Save Place';
+        }
+    }
+    if (btnDeleteEl) {
+        if (isSavedPlace) {
+            btnDeleteEl.classList.remove('hidden');
+        } else {
+            btnDeleteEl.classList.add('hidden');
+        }
+    }
+
+    // 6. Address section
     const addressSec = document.getElementById('sheet-address-section');
     const addressText = document.getElementById('sheet-address-text');
     if (addressSec && addressText) {
@@ -296,6 +356,20 @@ export function setupPlaceDetailsSheet(SearchController, HUDController, MarkerCo
                     placeData
                 );
             }
+        });
+    }
+
+    const btnDelete = document.getElementById('sheet-btn-delete');
+    if (btnDelete && !btnDelete._bound) {
+        btnDelete._bound = true;
+        btnDelete.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const placeData = getCurrentPlaceData();
+            if (!placeData || !placeData.id) return;
+            if (MarkerController && typeof MarkerController.delete === 'function') {
+                MarkerController.delete(placeData.id);
+            }
+            handleDismiss();
         });
     }
 }
