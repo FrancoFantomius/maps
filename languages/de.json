@@ -17,6 +17,7 @@
     "show_details": "Details anzeigen",
     "street_names": "Straßennamen",
     "bike_paths": "Radwege",
+    "trekking_paths": "Wanderwege",
     "buildings": "3D-Gebäude",
     "home_location": "Heimatort",
     "home_address": "Heimatadresse",
@@ -95,7 +96,8 @@
     "dark": "Dunkle Karte",
     "satellite": "Satellitenbilder",
     "osm": "OpenStreetMap Standard",
-    "bike": "Radwege"
+    "bike": "Radwege",
+    "trekking": "Wanderwege"
   },
   "controls": {
     "zoom_in": "Vergrößern",

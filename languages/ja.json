@@ -17,6 +17,7 @@
     "show_details": "詳細を表示",
     "street_names": "道路名",
     "bike_paths": "サイクリングロード",
+    "trekking_paths": "ハイキングコース",
     "buildings": "3D 建物",
     "home_location": "自宅の位置",
     "home_address": "自宅住所",
@@ -95,7 +96,8 @@
     "dark": "ダークモード地図",
     "satellite": "衛星画像",
     "osm": "OpenStreetMap 標準",
-    "bike": "自転車オーバーレイ"
+    "bike": "自転車オーバーレイ",
+    "trekking": "ハイキングコース"
   },
   "controls": {
     "zoom_in": "拡大",

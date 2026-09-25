@@ -17,6 +17,7 @@
     "show_details": "Показать детали",
     "street_names": "Названия улиц",
     "bike_paths": "Велодорожки",
+    "trekking_paths": "Пешеходные тропы",
     "buildings": "3D-Здания",
     "home_location": "Домашний адрес",
     "home_address": "Адрес дома",
@@ -95,7 +96,8 @@
     "dark": "Тёмная карта",
     "satellite": "Спутниковые снимки",
     "osm": "OpenStreetMap Стандарт",
-    "bike": "Велодорожки"
+    "bike": "Велодорожки",
+    "trekking": "Пешеходные тропы"
   },
   "controls": {
     "zoom_in": "Увеличить",

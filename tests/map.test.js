@@ -140,6 +140,7 @@ describe('MapService', () => {
       MapService.initOverlays();
       expect(MapService.activeOverlays.labels).toBe(true);
       expect(MapService.activeOverlays.perspective).toBe(true);
+      expect(MapService.activeOverlays.trekking).toBe(false);
     });
 
     it('respects explicitly disabled overlays from localStorage', () => {
@@ -148,6 +149,20 @@ describe('MapService', () => {
       MapService.initOverlays();
       expect(MapService.activeOverlays.labels).toBe(false);
       expect(MapService.activeOverlays.perspective).toBe(false);
+    });
+
+    it('respects enabled trekking overlay from localStorage', () => {
+      localStorage.setItem('maps_trekking_enabled', 'true');
+      MapService.initOverlays();
+      expect(MapService.activeOverlays.trekking).toBe(true);
+    });
+  });
+
+  describe('getTileUrl', () => {
+    it('generates tile URL for trekking overlay correctly', () => {
+      const url = MapService.getTileUrl('trekking', 13, 45.4064, 11.8768);
+      expect(url).toContain('https://tile.waymarkedtrails.org/hiking/');
+      expect(url).toMatch(/https:\/\/tile\.waymarkedtrails\.org\/hiking\/13\/\d+\/\d+\.png/);
     });
   });
 

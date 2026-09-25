@@ -17,6 +17,7 @@
     "show_details": "Mostrar Detalhes",
     "street_names": "Nomes das Ruas",
     "bike_paths": "Ciclovias",
+    "trekking_paths": "Trilhas de Trekking",
     "buildings": "Edifícios 3D",
     "home_location": "Localização de Casa",
     "home_address": "Endereço de Casa",
@@ -95,7 +96,8 @@
     "dark": "Mapa Escuro",
     "satellite": "Imagens de Satélite",
     "osm": "OpenStreetMap Padrão",
-    "bike": "Ciclovias"
+    "bike": "Ciclovias",
+    "trekking": "Trilhas de Trekking"
   },
   "controls": {
     "zoom_in": "Aumentar Zoom",

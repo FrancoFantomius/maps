@@ -17,6 +17,7 @@
     "show_details": "Show Details",
     "street_names": "Street Names",
     "bike_paths": "Bike Paths",
+    "trekking_paths": "Trekking Paths",
     "buildings": "Buildings",
     "home_location": "Home Location",
     "home_address": "Home Address",
@@ -95,7 +96,8 @@
     "dark": "Dark Mode Map",
     "satellite": "Satellite Imagery",
     "osm": "OpenStreetMap Standard",
-    "bike": "Bike Overlay"
+    "bike": "Bike Overlay",
+    "trekking": "Trekking Overlay"
   },
   "controls": {
     "zoom_in": "Zoom In",

@@ -17,6 +17,7 @@
     "show_details": "Mostra Dettagli",
     "street_names": "Nomi delle Strade",
     "bike_paths": "Piste Ciclabili",
+    "trekking_paths": "Sentieri da Trekking",
     "buildings": "Edifici 3D",
     "home_location": "Posizione Casa",
     "home_address": "Indirizzo di Casa",
@@ -95,7 +96,8 @@
     "dark": "Mappa Scura",
     "satellite": "Immagini Satellitari",
     "osm": "OpenStreetMap Standard",
-    "bike": "Piste Ciclabili"
+    "bike": "Piste Ciclabili",
+    "trekking": "Sentieri da Trekking"
   },
   "controls": {
     "zoom_in": "Ingrandisci",

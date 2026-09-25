@@ -30,6 +30,7 @@ export function setupSettingsUI(MapService) {
     const settingsPanel = document.getElementById('settings-panel');
     const toggleOverlayLabels = document.getElementById('toggle-overlay-labels');
     const toggleOverlayBike = document.getElementById('toggle-overlay-bike');
+    const toggleOverlayTrekking = document.getElementById('toggle-overlay-trekking');
     const toggleOverlayPerspective = document.getElementById('toggle-overlay-perspective');
 
     if (!settingsPanel) return;
@@ -188,10 +189,11 @@ export function setupSettingsUI(MapService) {
         }
     });
 
-    // 5 Map Squares: Map, Satellite, Bike Paths, Transports, Topological
+    // Map Squares: Map, Satellite, Bike Paths, Trekking Paths, Transports, Topological
     const btnMapStreet = document.getElementById('btn-map-type-street');
     const btnMapSatellite = document.getElementById('btn-map-type-satellite');
     const btnMapBike = document.getElementById('btn-map-type-bike');
+    const btnMapTrekking = document.getElementById('btn-map-type-trekking');
     const btnMapTransport = document.getElementById('btn-map-type-transport');
     const btnMapTopo = document.getElementById('btn-map-type-topo');
 
@@ -214,6 +216,14 @@ export function setupSettingsUI(MapService) {
             e.stopPropagation();
             const nextState = !MapService.activeOverlays?.bike;
             MapService.toggleOverlay('bike', nextState);
+        });
+    }
+
+    if (btnMapTrekking) {
+        btnMapTrekking.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const nextState = !MapService.activeOverlays?.trekking;
+            MapService.toggleOverlay('trekking', nextState);
         });
     }
 
@@ -248,6 +258,7 @@ export function setupSettingsUI(MapService) {
 
     handleOverlayToggle(toggleOverlayLabels, 'labels');
     handleOverlayToggle(toggleOverlayBike, 'bike');
+    handleOverlayToggle(toggleOverlayTrekking, 'trekking');
     handleOverlayToggle(toggleOverlayPerspective, 'perspective');
 }
 

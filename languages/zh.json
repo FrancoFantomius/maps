@@ -17,6 +17,7 @@
     "show_details": "显示细节",
     "street_names": "街道名称",
     "bike_paths": "自行车道",
+    "trekking_paths": "远足小径",
     "buildings": "3D 建筑",
     "home_location": "家庭位置",
     "home_address": "家庭地址",
@@ -95,7 +96,8 @@
     "dark": "深色地图",
     "satellite": "卫星图像",
     "osm": "OpenStreetMap 标准",
-    "bike": "自行车道"
+    "bike": "自行车道",
+    "trekking": "远足小径"
   },
   "controls": {
     "zoom_in": "放大",

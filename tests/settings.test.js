@@ -15,10 +15,12 @@ describe('Settings module', () => {
         <button id="btn-map-type-street" class="map-type-item is-selected"></button>
         <button id="btn-map-type-satellite" class="map-type-item"></button>
         <button id="btn-map-type-bike" class="map-type-item"></button>
+        <button id="btn-map-type-trekking" class="map-type-item"></button>
         <button id="btn-map-type-transport" class="map-type-item"></button>
         <button id="btn-map-type-topo" class="map-type-item"></button>
         <input type="checkbox" id="toggle-overlay-labels" />
         <input type="checkbox" id="toggle-overlay-bike" />
+        <input type="checkbox" id="toggle-overlay-trekking" />
         <input type="checkbox" id="toggle-overlay-perspective" />
       </div>
       <div class="bottom-ui-element"></div>
@@ -27,7 +29,7 @@ describe('Settings module', () => {
 
     mockMapService = {
       activeLayerKey: 'street',
-      activeOverlays: { labels: false, bike: false, perspective: false, transport: false },
+      activeOverlays: { labels: false, bike: false, trekking: false, perspective: false, transport: false },
       setBaseLayer: vi.fn((key) => { mockMapService.activeLayerKey = key; }),
       toggleOverlay: vi.fn((key, val) => { mockMapService.activeOverlays[key] = val; }),
       syncSettingsSquaresUI: vi.fn(),
@@ -114,6 +116,7 @@ describe('Settings module', () => {
 
     const toggleLabels = document.getElementById('toggle-overlay-labels');
     const toggleBike = document.getElementById('toggle-overlay-bike');
+    const toggleTrekking = document.getElementById('toggle-overlay-trekking');
     const togglePerspective = document.getElementById('toggle-overlay-perspective');
 
     toggleLabels.checked = true;
@@ -123,6 +126,10 @@ describe('Settings module', () => {
     toggleBike.checked = true;
     toggleBike.dispatchEvent(new Event('change'));
     expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('bike', true);
+
+    toggleTrekking.checked = true;
+    toggleTrekking.dispatchEvent(new Event('change'));
+    expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('trekking', true);
 
     togglePerspective.checked = false;
     togglePerspective.dispatchEvent(new Event('change'));
@@ -165,6 +172,7 @@ describe('Settings module', () => {
     const btnStreet = document.getElementById('btn-map-type-street');
     const btnSatellite = document.getElementById('btn-map-type-satellite');
     const btnBike = document.getElementById('btn-map-type-bike');
+    const btnTrekking = document.getElementById('btn-map-type-trekking');
     const btnTransport = document.getElementById('btn-map-type-transport');
     const btnTopo = document.getElementById('btn-map-type-topo');
 
@@ -183,6 +191,10 @@ describe('Settings module', () => {
     // Toggle bike overlay
     btnBike.click();
     expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('bike', true);
+
+    // Toggle trekking overlay
+    btnTrekking.click();
+    expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('trekking', true);
 
     // Toggle transport overlay
     btnTransport.click();

@@ -15,7 +15,7 @@ const STORAGE_KEY_LABELS = 'maps_labels_enabled';
 export const MapService = {
     map: null,
     activeLayerKey: 'street',
-    activeOverlays: { labels: false, bike: false, perspective: false, transport: false },
+    activeOverlays: { labels: false, bike: false, trekking: false, perspective: false, transport: false },
     highlightedPathCoords: null,
 
     init() {
@@ -380,7 +380,30 @@ export const MapService = {
             });
         }
 
-        // 2b. Add custom OSM public transport overlay (Base + Detail)
+        // 2b. Add trekking / hiking paths overlay
+        if (!this.map.getSource('trekking-source')) {
+            this.map.addSource('trekking-source', {
+                type: 'raster',
+                tiles: ['https://tile.waymarkedtrails.org/hiking/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: 'Hiking trails &copy; Waymarked Trails'
+            });
+        }
+        if (!this.map.getLayer('trekking-layer')) {
+            this.map.addLayer({
+                id: 'trekking-layer',
+                type: 'raster',
+                source: 'trekking-source',
+                layout: {
+                    visibility: this.activeOverlays.trekking ? 'visible' : 'none'
+                },
+                paint: {
+                    'raster-opacity': 0.75
+                }
+            });
+        }
+
+        // 2c. Add custom OSM public transport overlay (Base + Detail)
         TransitOverlay.setup(this.map, this.activeOverlays.transport);
 
         // 3. Add 3D buildings layer
@@ -640,6 +663,9 @@ export const MapService = {
         if (layerKey === 'bike') {
             return `https://tile.waymarkedtrails.org/cycling/${zoom}/${x}/${y}.png`;
         }
+        if (layerKey === 'trekking') {
+            return `https://tile.waymarkedtrails.org/hiking/${zoom}/${x}/${y}.png`;
+        }
         if (layerKey === 'transport') {
             return `https://tile.memomaps.de/tilegen/${zoom}/${x}/${y}.png`;
         }
@@ -674,6 +700,8 @@ export const MapService = {
         const topoImg = document.getElementById('preview-map-topo');
         const bikeImg = document.getElementById('preview-map-bike');
         const bikeBaseImg = document.getElementById('preview-map-bike-base');
+        const trekkingImg = document.getElementById('preview-map-trekking');
+        const trekkingBaseImg = document.getElementById('preview-map-trekking-base');
         const transportImg = document.getElementById('preview-map-transport');
         const transportBaseImg = document.getElementById('preview-map-transport-base');
 
@@ -681,11 +709,13 @@ export const MapService = {
         if (satelliteImg) satelliteImg.src = this.getTileUrl('satellite', zoom, lat, lng);
         if (topoImg) topoImg.src = this.getTileUrl('topo', zoom, lat, lng);
         if (bikeImg) bikeImg.src = this.getTileUrl('bike', zoom, lat, lng);
+        if (trekkingImg) trekkingImg.src = this.getTileUrl('trekking', zoom, lat, lng);
         if (transportImg) transportImg.src = this.getTileUrl('transport', zoom, lat, lng);
 
         const currentBase = (this.activeLayerKey === 'satellite') ? 'satellite' : (this.activeLayerKey === 'topo' ? 'topo' : 'street');
         const baseTileUrl = this.getTileUrl(currentBase, zoom, lat, lng);
         if (bikeBaseImg) bikeBaseImg.src = baseTileUrl;
+        if (trekkingBaseImg) trekkingBaseImg.src = baseTileUrl;
         if (transportBaseImg) transportBaseImg.src = baseTileUrl;
     },
 
@@ -694,12 +724,14 @@ export const MapService = {
         const btnSatellite = document.getElementById('btn-map-type-satellite');
         const btnTopo = document.getElementById('btn-map-type-topo');
         const btnBike = document.getElementById('btn-map-type-bike');
+        const btnTrekking = document.getElementById('btn-map-type-trekking');
         const btnTransport = document.getElementById('btn-map-type-transport');
 
         const isStreet = this.activeLayerKey === 'street';
         const isSatellite = this.activeLayerKey === 'satellite';
         const isTopo = this.activeLayerKey === 'topo';
         const isBike = Boolean(this.activeOverlays?.bike);
+        const isTrekking = Boolean(this.activeOverlays?.trekking);
         const isTransport = Boolean(this.activeOverlays?.transport);
 
         if (btnStreet) {
@@ -717,6 +749,10 @@ export const MapService = {
         if (btnBike) {
             btnBike.classList.toggle('is-selected', isBike);
             btnBike.setAttribute('aria-pressed', isBike ? 'true' : 'false');
+        }
+        if (btnTrekking) {
+            btnTrekking.classList.toggle('is-selected', isTrekking);
+            btnTrekking.setAttribute('aria-pressed', isTrekking ? 'true' : 'false');
         }
         if (btnTransport) {
             btnTransport.classList.toggle('is-selected', isTransport);
@@ -800,6 +836,12 @@ export const MapService = {
             this.map.setLayoutProperty('bike-layer', 'visibility', savedBike ? 'visible' : 'none');
         }
 
+        const savedTrekking = localStorage.getItem('maps_trekking_enabled') === 'true';
+        this.activeOverlays.trekking = savedTrekking;
+        if (this.map && typeof this.map.getLayer === 'function' && this.map.getLayer('trekking-layer')) {
+            this.map.setLayoutProperty('trekking-layer', 'visibility', savedTrekking ? 'visible' : 'none');
+        }
+
         const savedTransport = localStorage.getItem('maps_transport_enabled') === 'true';
         this.activeOverlays.transport = savedTransport;
         TransitOverlay.setVisible(savedTransport);
@@ -859,6 +901,7 @@ export const MapService = {
                 layer.id.startsWith('highlight-') ||
                 layer.id.startsWith('transit-') ||
                 layer.id === 'bike-layer' ||
+                layer.id === 'trekking-layer' ||
                 layer.id === 'transport-layer' ||
                 layer.id === '3d-buildings') {
                 return;
@@ -893,6 +936,16 @@ export const MapService = {
             const overlayToggleBike = document.getElementById('toggle-overlay-bike');
             if (overlayToggleBike) {
                 overlayToggleBike.checked = show;
+            }
+            this.syncSettingsSquaresUI();
+        } else if (key === 'trekking') {
+            if (this.map && this.map.getLayer('trekking-layer')) {
+                this.map.setLayoutProperty('trekking-layer', 'visibility', show ? 'visible' : 'none');
+            }
+            localStorage.setItem('maps_trekking_enabled', show ? 'true' : 'false');
+            const overlayToggleTrekking = document.getElementById('toggle-overlay-trekking');
+            if (overlayToggleTrekking) {
+                overlayToggleTrekking.checked = show;
             }
             this.syncSettingsSquaresUI();
         } else if (key === 'transport') {

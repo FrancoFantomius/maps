@@ -17,6 +17,7 @@
     "show_details": "विवरण दिखाएं",
     "street_names": "सड़कों के नाम",
     "bike_paths": "साइकिल पथ",
+    "trekking_paths": "ट्रेकिंग ट्रेल्स",
     "buildings": "3D इमारतें",
     "home_location": "घर का स्थान",
     "home_address": "घर का पता",
@@ -95,7 +96,8 @@
     "dark": "डार्क मोड मानचित्र",
     "satellite": "उपग्रह चित्र",
     "osm": "OpenStreetMap मानक",
-    "bike": "साइकिल ओवरले"
+    "bike": "साइकिल ओवरले",
+    "trekking": "ट्रेकिंग ओवरले"
   },
   "controls": {
     "zoom_in": "ज़ूम इन",

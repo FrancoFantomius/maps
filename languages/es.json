@@ -17,6 +17,7 @@
     "show_details": "Mostrar Detalles",
     "street_names": "Nombres de Calles",
     "bike_paths": "Carriles Bici",
+    "trekking_paths": "Rutas de Senderismo",
     "buildings": "Edificios 3D",
     "home_location": "Ubicación de Casa",
     "home_address": "Dirección de Casa",
@@ -95,7 +96,8 @@
     "dark": "Mapa Modo Oscuro",
     "satellite": "Imágenes por Satélite",
     "osm": "OpenStreetMap Estándar",
-    "bike": "Carriles Bici"
+    "bike": "Carriles Bici",
+    "trekking": "Rutas de Senderismo"
   },
   "controls": {
     "zoom_in": "Acercar",
