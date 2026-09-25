@@ -32,7 +32,9 @@
     "appearance_theme": "外観テーマ",
     "theme_light": "ライト",
     "theme_system": "システム",
-    "theme_dark": "ダーク"
+    "theme_dark": "ダーク",
+    "url_location": "URL の位置",
+    "url_location_subtitle": "URL に座標を含め、指定した場所でリンクを開く"
   },
   "hud": {
     "search_placeholder": "検索",

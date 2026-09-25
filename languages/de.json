@@ -32,7 +32,9 @@
     "appearance_theme": "Erscheinungsbild-Design",
     "theme_light": "Hell",
     "theme_system": "System",
-    "theme_dark": "Dunkel"
+    "theme_dark": "Dunkel",
+    "url_location": "URL-Standort",
+    "url_location_subtitle": "Koordinaten in URL einschließen und Links am angegebenen Ort öffnen"
   },
   "hud": {
     "search_placeholder": "Suchen",

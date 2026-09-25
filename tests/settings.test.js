@@ -22,6 +22,7 @@ describe('Settings module', () => {
         <input type="checkbox" id="toggle-overlay-bike" />
         <input type="checkbox" id="toggle-overlay-trekking" />
         <input type="checkbox" id="toggle-overlay-perspective" />
+        <input type="checkbox" id="toggle-url-location" />
       </div>
       <div class="bottom-ui-element"></div>
       <div class="maplibregl-ctrl-bottom-left"></div>
@@ -30,8 +31,10 @@ describe('Settings module', () => {
     mockMapService = {
       activeLayerKey: 'street',
       activeOverlays: { labels: false, bike: false, trekking: false, perspective: false, transport: false },
+      isUrlLocationEnabled: true,
       setBaseLayer: vi.fn((key) => { mockMapService.activeLayerKey = key; }),
       toggleOverlay: vi.fn((key, val) => { mockMapService.activeOverlays[key] = val; }),
+      setUrlLocationEnabled: vi.fn((val) => { mockMapService.isUrlLocationEnabled = val; }),
       syncSettingsSquaresUI: vi.fn(),
       updateSettingsPreviews: vi.fn(),
     };
@@ -147,6 +150,20 @@ describe('Settings module', () => {
 
     togglePerspective.dispatchEvent(new CustomEvent('change', { detail: { selected: true } }));
     expect(mockMapService.toggleOverlay).toHaveBeenCalledWith('perspective', true);
+  });
+
+  it('handles URL location toggle changes', () => {
+    setupSettingsUI(mockMapService);
+
+    const toggleUrl = document.getElementById('toggle-url-location');
+    expect(toggleUrl.checked).toBe(true);
+
+    toggleUrl.checked = false;
+    toggleUrl.dispatchEvent(new Event('change'));
+    expect(mockMapService.setUrlLocationEnabled).toHaveBeenCalledWith(false);
+
+    toggleUrl.dispatchEvent(new CustomEvent('change', { detail: { selected: true } }));
+    expect(mockMapService.setUrlLocationEnabled).toHaveBeenCalledWith(true);
   });
 
   it('toggles settings panel and active class when btn-layers is clicked', () => {

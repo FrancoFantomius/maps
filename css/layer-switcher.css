@@ -198,3 +198,12 @@
 .dark .zoom-button-group md-icon-button:first-child {
   border-bottom-color: rgba(255, 255, 255, 0.12);
 }
+
+/* Mobile responsive adjustments */
+@media (max-width: 767px), (max-height: 767px) {
+  .zoom-controls-wrapper,
+  #btn-layers {
+    display: none !important;
+  }
+}
+

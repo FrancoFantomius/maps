@@ -8,6 +8,7 @@ import { GPSController } from '../gps/index.js';
 import { ApiService } from '../api/index.js';
 import { DarkMapStyle } from './dark-style.js';
 import { TransitOverlay } from './transit-overlay.js';
+import { parseUrlCoordinates, formatUrlCoordinates, updateUrlHash } from './url-hash.js';
 
 const STORAGE_KEY_LAYER = 'maps_active_layer';
 const STORAGE_KEY_LABELS = 'maps_labels_enabled';
@@ -16,6 +17,7 @@ export const MapService = {
     map: null,
     activeLayerKey: 'street',
     activeOverlays: { labels: false, bike: false, trekking: false, perspective: false, transport: false },
+    isUrlLocationEnabled: true,
     highlightedPathCoords: null,
 
     init() {
@@ -26,11 +28,23 @@ export const MapService = {
         const MIN_ZOOM = 3;
         const MAX_ZOOM = 18;
 
+        const savedUrlLocation = localStorage.getItem('maps_url_location_enabled');
+        this.isUrlLocationEnabled = (savedUrlLocation === 'true' || savedUrlLocation === null);
+
+        // Step 0: Check URL coordinates if enabled (highest priority when link is opened)
+        const urlCoords = this.isUrlLocationEnabled ? parseUrlCoordinates() : null;
+        let hasUrlLocation = false;
+
         // Synchronously check Step 2 (last position) and Step 3 (home address) for initial map creation
         const lastPos = this.getLastPosition();
         const savedHome = this.getHomeAddress();
 
-        if (lastPos) {
+        if (urlCoords) {
+            initialLat = urlCoords.lat;
+            initialLng = urlCoords.lng;
+            initialZoom = urlCoords.zoom;
+            hasUrlLocation = true;
+        } else if (lastPos) {
             initialLat = lastPos.lat;
             initialLng = lastPos.lng;
             if (typeof lastPos.zoom === 'number') {
@@ -47,10 +61,16 @@ export const MapService = {
         const savedPerspective = localStorage.getItem('maps_perspective_enabled');
         this.activeOverlays.perspective = (savedPerspective === 'true' || savedPerspective === null);
         const savedPitch = localStorage.getItem('maps_pitch');
-        const initialPitch = savedPitch ? parseFloat(savedPitch) : 0;
+        let initialPitch = savedPitch ? parseFloat(savedPitch) : 0;
+        if (urlCoords && typeof urlCoords.pitch === 'number' && urlCoords.pitch > 0) {
+            initialPitch = urlCoords.pitch;
+        }
 
         const savedBearing = localStorage.getItem('maps_bearing');
-        const initialBearing = savedBearing ? parseFloat(savedBearing) : 0;
+        let initialBearing = savedBearing ? parseFloat(savedBearing) : 0;
+        if (urlCoords && typeof urlCoords.bearing === 'number' && urlCoords.bearing !== 0) {
+            initialBearing = urlCoords.bearing;
+        }
 
         const isDark = document.documentElement.classList.contains('dark');
         const initialStyle = isDark ? DarkMapStyle : 'https://tiles.openfreemap.org/styles/liberty';
@@ -70,6 +90,7 @@ export const MapService = {
 
         this.map.on('load', () => {
             this.setupMapLayersAndSources();
+            this.updateUrlCoordinates();
         });
 
         this.map.on('style.load', () => {
@@ -103,6 +124,7 @@ export const MapService = {
             }
 
             localStorage.setItem('maps_bearing', bearing);
+            this.updateUrlCoordinates();
         });
 
         this.map.on('pitch', () => {
@@ -117,16 +139,20 @@ export const MapService = {
             }
             localStorage.setItem('maps_pitch', pitch);
             this.syncPerspectiveButtonState();
+            this.updateUrlCoordinates();
         });
 
         this.map.on('moveend', () => {
             this.updateLayerSwitcherPreview();
             this.saveLastPosition();
+            this.updateUrlCoordinates();
         });
 
+        this.setupUrlListener();
+
         // Determine main startup view using priority chain:
-        // 1. Current position -> 2. Previous last position -> 3. Home address -> 4. IP position
-        this.determineStartupView(lastPos, savedHome, DEFAULT_ZOOM);
+        // 0. URL location -> 1. Current position -> 2. Previous last position -> 3. Home address -> 4. IP position
+        this.determineStartupView(lastPos, savedHome, DEFAULT_ZOOM, hasUrlLocation);
 
         this.syncLayerSwitcherUI();
     },
@@ -227,7 +253,12 @@ export const MapService = {
         return { lat: 45.4064, lng: 11.8768, zoom: 6, country: 'Default Region' };
     },
 
-    async determineStartupView(lastPos, savedHome, defaultZoom = 13) {
+    async determineStartupView(lastPos, savedHome, defaultZoom = 13, hasUrlLocation = false) {
+        // Step 0: URL coordinates (already initialized if present)
+        if (hasUrlLocation) {
+            return;
+        }
+
         // Step 1: Current position
         if (navigator.geolocation) {
             try {
@@ -857,6 +888,16 @@ export const MapService = {
             overlayTogglePerspective.checked = this.activeOverlays.perspective;
         }
 
+        const savedUrlLocation = localStorage.getItem('maps_url_location_enabled');
+        this.isUrlLocationEnabled = (savedUrlLocation === 'true' || savedUrlLocation === null);
+        const overlayToggleUrlLocation = document.getElementById('toggle-url-location');
+        if (overlayToggleUrlLocation) {
+            if ('selected' in overlayToggleUrlLocation) {
+                overlayToggleUrlLocation.selected = this.isUrlLocationEnabled;
+            }
+            overlayToggleUrlLocation.checked = this.isUrlLocationEnabled;
+        }
+
         this.syncPerspectiveButtonState();
         this.syncSettingsSquaresUI();
         this.updateSettingsPreviews();
@@ -1163,6 +1204,93 @@ export const MapService = {
         const home = this.getHomeAddress();
         if (home) {
             this.flyTo([home.lng, home.lat], 15);
+        }
+    },
+
+    setupUrlListener() {
+        if (typeof window === 'undefined' || this._urlListenerAttached) return;
+        this._urlListenerAttached = true;
+
+        const onHashOrStateChange = () => {
+            if (!this.isUrlLocationEnabled || this._isUpdatingUrl) return;
+            const coords = parseUrlCoordinates();
+            if (!coords || !this.map) return;
+
+            const currentCenter = this.getCenter();
+            const currentZoom = this.getZoom();
+
+            if (currentCenter) {
+                const latDiff = Math.abs(currentCenter.lat - coords.lat);
+                const lngDiff = Math.abs(currentCenter.lng - coords.lng);
+                const zoomDiff = Math.abs(currentZoom - coords.zoom);
+
+                if (latDiff > 0.0001 || lngDiff > 0.0001 || zoomDiff > 0.1) {
+                    this._isNavigatingFromUrl = true;
+                    if (typeof this.map.jumpTo === 'function') {
+                        this.map.jumpTo({
+                            center: [coords.lng, coords.lat],
+                            zoom: coords.zoom,
+                            bearing: coords.bearing || 0,
+                            pitch: coords.pitch || 0
+                        });
+                    } else if (typeof this.map.flyTo === 'function') {
+                        this.map.flyTo({
+                            center: [coords.lng, coords.lat],
+                            zoom: coords.zoom
+                        });
+                    }
+                    this._isNavigatingFromUrl = false;
+                }
+            }
+        };
+
+        window.addEventListener('hashchange', onHashOrStateChange);
+        window.addEventListener('popstate', onHashOrStateChange);
+    },
+
+    updateUrlCoordinates() {
+        if (!this.isUrlLocationEnabled || this._isNavigatingFromUrl || !this.map) return;
+        const center = this.getCenter();
+        if (!center) return;
+        const zoom = this.getZoom();
+        const bearing = this.getBearing();
+        const pitch = this.getPitch();
+
+        this._isUpdatingUrl = true;
+        updateUrlHash(center.lat, center.lng, zoom, bearing, pitch);
+        this._isUpdatingUrl = false;
+    },
+
+    getUrlCoordinates() {
+        return parseUrlCoordinates();
+    },
+
+    setUrlLocationEnabled(enabled) {
+        this.isUrlLocationEnabled = Boolean(enabled);
+        localStorage.setItem('maps_url_location_enabled', this.isUrlLocationEnabled ? 'true' : 'false');
+        const toggleSwitch = document.getElementById('toggle-url-location');
+        if (toggleSwitch) {
+            if ('selected' in toggleSwitch) {
+                toggleSwitch.selected = this.isUrlLocationEnabled;
+            }
+            toggleSwitch.checked = this.isUrlLocationEnabled;
+        }
+        if (this.isUrlLocationEnabled) {
+            this.updateUrlCoordinates();
+        } else {
+            this.clearUrlHash();
+        }
+    },
+
+    clearUrlHash() {
+        if (typeof window === 'undefined') return;
+        if (window.location.hash) {
+            if (window.history && window.history.replaceState) {
+                const newUrl = `${window.location.pathname}${window.location.search}`;
+                window.history.replaceState(null, '', newUrl);
+            } else {
+                window.location.hash = '';
+            }
         }
     }
 };

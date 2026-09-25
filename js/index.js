@@ -21,6 +21,19 @@ import '@francofantomius/material-components/dialog';
 import '@francofantomius/material-components/radio';
 import { css } from 'lit';
 
+// Compact icon-only md-button width when contracted or in narrow containers
+const buttonClass = customElements.get('md-button');
+if (buttonClass && buttonClass.elementStyles && !buttonClass._responsivePatched) {
+    buttonClass._responsivePatched = true;
+    buttonClass.elementStyles.push(css`
+        :host([icon-only]) button,
+        :host([icon-only]) a {
+            min-width: 44px;
+            padding: 0 12px;
+        }
+    `);
+}
+
 // Add breathing space between md-tooltip and anchor buttons
 const tooltipClass = customElements.get('md-tooltip');
 if (tooltipClass && !tooltipClass.prototype._spacingPatched) {
@@ -81,32 +94,43 @@ if (sideSheetClass && sideSheetClass.elementStyles && !sideSheetClass._scrimPatc
     `);
 }
 
-// Disable fullscreen scrim in md-bottom-sheet so map clicks and gestures are not intercepted
+// Disable fullscreen scrim in md-bottom-sheet and compact settings bottom sheet height
 const bottomSheetClass = customElements.get('md-bottom-sheet');
 if (bottomSheetClass && !bottomSheetClass._scrimPatched) {
     bottomSheetClass._scrimPatched = true;
-    const scrimDisableRule = css`
+    const bottomSheetCustomRules = css`
         .scrim {
             display: none !important;
             pointer-events: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
         }
+        :host(#settings-panel) .drag-handle-container {
+            padding: 6px 0 2px 0 !important;
+        }
+        :host(#settings-panel) .header {
+            padding: 4px 16px 4px 20px !important;
+            min-height: 36px !important;
+        }
+        :host(#settings-panel) .content {
+            padding: 6px 20px 10px 20px !important;
+            gap: 6px !important;
+        }
     `;
     if (bottomSheetClass.styles) {
         if (Array.isArray(bottomSheetClass.styles)) {
-            bottomSheetClass.styles.push(scrimDisableRule);
+            bottomSheetClass.styles.push(bottomSheetCustomRules);
         } else {
-            bottomSheetClass.styles = [bottomSheetClass.styles, scrimDisableRule];
+            bottomSheetClass.styles = [bottomSheetClass.styles, bottomSheetCustomRules];
         }
     }
     if (bottomSheetClass.elementStyles) {
-        bottomSheetClass.elementStyles.push(scrimDisableRule);
+        bottomSheetClass.elementStyles.push(bottomSheetCustomRules);
     }
 }
 
 // Feature Module Imports
-import { MapService, DarkMapStyle, setupMapControlsUI, TransitOverlay } from './map/index.js';
+import { MapService, DarkMapStyle, setupMapControlsUI, TransitOverlay, parseUrlCoordinates, formatUrlCoordinates, updateUrlHash } from './map/index.js';
 import { ApiService } from './api/index.js';
 import { HUDController, setupHUDUI } from './hud/index.js';
 import { MarkerController, setupMarkerModalUI, setupHomeAddressUI } from './markers/index.js';
@@ -126,6 +150,9 @@ export {
     MapService,
     DarkMapStyle,
     TransitOverlay,
+    parseUrlCoordinates,
+    formatUrlCoordinates,
+    updateUrlHash,
     ApiService,
     HUDController,
     MarkerController,

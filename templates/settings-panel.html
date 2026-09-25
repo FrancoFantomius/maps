@@ -79,53 +79,74 @@
 
         <!-- Column 2: Appearance, Language & Map Display Options -->
         <div class="settings-col settings-col-options">
-            <!-- Theme -->
-            <div class="settings-row">
-                <div class="settings-row-text">
-                    <span class="settings-item-title" data-i18n="settings.theme">Theme</span>
-                    <span class="settings-item-subtitle" data-i18n="settings.theme_subtitle">Choose a theme for the  application</span>
+            <div class="settings-subcol">
+                <!-- Theme -->
+                <div class="settings-block">
+                    <div class="settings-block-text">
+                        <span class="settings-item-title" data-i18n="settings.theme">Theme</span>
+                        <span class="settings-item-subtitle" data-i18n="settings.theme_subtitle">Choose a theme for the  application</span>
+                    </div>
+                    <div class="settings-block-action">
+                        <md-button-group connected>
+                            <md-button data-theme-btn="light" variant="outlined" icon="light_mode">
+                                <span class="theme-btn-label" data-i18n="settings.theme_light">Light</span>
+                            </md-button>
+                            <md-button data-theme-btn="system" variant="filled" icon="brightness_auto">
+                                <span class="theme-btn-label" data-i18n="settings.theme_system">System</span>
+                            </md-button>
+                            <md-button data-theme-btn="dark" variant="outlined" icon="dark_mode">
+                                <span class="theme-btn-label" data-i18n="settings.theme_dark">Dark</span>
+                            </md-button>
+                        </md-button-group>
+                    </div>
                 </div>
-                <div class="settings-row-action">
-                    <md-button-group connected>
-                        <md-button data-theme-btn="light" variant="outlined" icon="light_mode" data-i18n="settings.theme_light">Light</md-button>
-                        <md-button data-theme-btn="system" variant="filled" icon="brightness_auto" data-i18n="settings.theme_system">System</md-button>
-                        <md-button data-theme-btn="dark" variant="outlined" icon="dark_mode" data-i18n="settings.theme_dark">Dark</md-button>
-                    </md-button-group>
+
+                <!-- Language -->
+                <div class="settings-block">
+                    <div class="settings-block-text">
+                        <span class="settings-item-title" data-i18n="settings.language">Language</span>
+                        <span class="settings-item-subtitle" data-i18n="settings.language_subtitle">Application language</span>
+                    </div>
+                    <div class="settings-block-action">
+                        <md-button id="btn-language-picker" variant="outlined" icon="translate">
+                            <span id="current-language-label">Automatic: English</span>
+                        </md-button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Language -->
-            <div class="settings-row">
-                <div class="settings-row-text">
-                    <span class="settings-item-title" data-i18n="settings.language">Language</span>
-                    <span class="settings-item-subtitle" data-i18n="settings.language_subtitle">Application language</span>
+            <div class="settings-subcol">
+                <!-- Show Names -->
+                <div class="settings-row">
+                    <div class="settings-row-text">
+                        <span class="settings-item-title" data-i18n="settings.show_names">Show Names</span>
+                        <span class="settings-item-subtitle" data-i18n="settings.show_names_subtitle">Display the streets names when on Satellite view</span>
+                    </div>
+                    <div class="settings-row-action">
+                        <md-switch id="toggle-overlay-labels" selected icons></md-switch>
+                    </div>
                 </div>
-                <div class="settings-row-action">
-                    <md-button id="btn-language-picker" variant="outlined" icon="translate">
-                        <span id="current-language-label">Auto</span>
-                    </md-button>
-                </div>
-            </div>
 
-            <!-- Show Names -->
-            <div class="settings-row">
-                <div class="settings-row-text">
-                    <span class="settings-item-title" data-i18n="settings.show_names">Show Names</span>
-                    <span class="settings-item-subtitle" data-i18n="settings.show_names_subtitle">Display the streets names when on Satellite view</span>
+                <!-- 3D Buildings -->
+                <div class="settings-row">
+                    <div class="settings-row-text">
+                        <span class="settings-item-title" data-i18n="settings.buildings_3d">3D Buildings</span>
+                        <span class="settings-item-subtitle" data-i18n="settings.buildings_3d_subtitle">Show 3D buildings when in Map view</span>
+                    </div>
+                    <div class="settings-row-action">
+                        <md-switch id="toggle-overlay-perspective" selected icons></md-switch>
+                    </div>
                 </div>
-                <div class="settings-row-action">
-                    <md-switch id="toggle-overlay-labels" selected icons></md-switch>
-                </div>
-            </div>
 
-            <!-- 3D Buildings -->
-            <div class="settings-row">
-                <div class="settings-row-text">
-                    <span class="settings-item-title" data-i18n="settings.buildings_3d">3D Buildings</span>
-                    <span class="settings-item-subtitle" data-i18n="settings.buildings_3d_subtitle">Show 3D buildings when in Map view</span>
-                </div>
-                <div class="settings-row-action">
-                    <md-switch id="toggle-overlay-perspective" selected icons></md-switch>
+                <!-- URL Location -->
+                <div class="settings-row">
+                    <div class="settings-row-text">
+                        <span class="settings-item-title" data-i18n="settings.url_location">URL Location</span>
+                        <span class="settings-item-subtitle" data-i18n="settings.url_location_subtitle">Include coordinates in URL and open links at specified location</span>
+                    </div>
+                    <div class="settings-row-action">
+                        <md-switch id="toggle-url-location" selected icons></md-switch>
+                    </div>
                 </div>
             </div>
         </div>

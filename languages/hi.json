@@ -32,7 +32,9 @@
     "appearance_theme": "थीम स्वरूप",
     "theme_light": "लाइट",
     "theme_system": "सिस्टम",
-    "theme_dark": "डार्क"
+    "theme_dark": "डार्क",
+    "url_location": "URL स्थान",
+    "url_location_subtitle": "URL में निर्देशांक शामिल करें और निर्दिष्ट स्थान पर लिंक खोलें"
   },
   "hud": {
     "search_placeholder": "खोजें",

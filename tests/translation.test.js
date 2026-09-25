@@ -202,7 +202,7 @@ describe('TranslationController', () => {
 
             TranslationController.languagePref = 'system';
             TranslationController.updateSettingsUI();
-            expect(labelEl.textContent).toBe('Auto');
+            expect(labelEl.textContent).toBe('Automatic: English');
         });
 
         it('opens modal on picker button click and changes language on confirm', async () => {

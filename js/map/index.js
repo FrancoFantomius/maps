@@ -3,4 +3,5 @@ export { MapService, default } from './map-service.js';
 export { DarkMapStyle } from './dark-style.js';
 export { setupMapControlsUI } from './ui.js';
 export { TransitOverlay } from './transit-overlay.js';
+export { parseUrlCoordinates, formatUrlCoordinates, updateUrlHash } from './url-hash.js';
 

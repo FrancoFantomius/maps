@@ -6,6 +6,8 @@ import { MapService, DarkMapStyle } from '../js/map/index.js';
 vi.mock('../js/map/index.js', () => ({
   MapService: {
     setStyle: vi.fn(),
+    updateSettingsPreviews: vi.fn(),
+    updateLayerSwitcherPreview: vi.fn(),
   },
   DarkMapStyle: { version: 8, sources: {}, layers: [] },
 }));
@@ -29,6 +31,8 @@ describe('ThemeController', () => {
       expect(localStorage.getItem('theme_preference')).toBe('dark');
       expect(document.documentElement.classList.contains('dark')).toBe(true);
       expect(MapService.setStyle).toHaveBeenCalledWith(DarkMapStyle);
+      expect(MapService.updateSettingsPreviews).toHaveBeenCalled();
+      expect(MapService.updateLayerSwitcherPreview).toHaveBeenCalled();
     });
 
     it('applies light theme correctly', () => {

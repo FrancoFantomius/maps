@@ -32,7 +32,9 @@
     "appearance_theme": "Тема оформления",
     "theme_light": "Светлая",
     "theme_system": "Системная",
-    "theme_dark": "Тёмная"
+    "theme_dark": "Тёмная",
+    "url_location": "URL-координаты",
+    "url_location_subtitle": "Включать координаты в URL и открывать ссылки в указанном месте"
   },
   "hud": {
     "search_placeholder": "Поиск",

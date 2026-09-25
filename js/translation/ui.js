@@ -1,6 +1,6 @@
 // maps Translation UI - js/translation/ui.js
 
-export function updateSettingsLanguageUI(supportedLanguages, currentPref, t) {
+export function updateSettingsLanguageUI(supportedLanguages, currentPref, t, detectedLang = 'en') {
     const selectEl = document.getElementById('setting-language');
     if (selectEl) {
         const systemLabel = t('settings.language_system', {}, 'System (Auto)');
@@ -18,7 +18,9 @@ export function updateSettingsLanguageUI(supportedLanguages, currentPref, t) {
     const currentLabelEl = document.getElementById('current-language-label');
     if (currentLabelEl) {
         if (currentPref === 'system' || !currentPref) {
-            currentLabelEl.textContent = 'Auto';
+            const detectedCode = detectedLang || 'en';
+            const detectedName = (supportedLanguages && supportedLanguages[detectedCode]) || detectedCode || 'English';
+            currentLabelEl.textContent = `Automatic: ${detectedName}`;
         } else if (supportedLanguages && supportedLanguages[currentPref]) {
             currentLabelEl.textContent = supportedLanguages[currentPref];
         } else {

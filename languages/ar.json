@@ -32,7 +32,9 @@
     "appearance_theme": "مظهر الواجهة",
     "theme_light": "فاتح",
     "theme_system": "النظام",
-    "theme_dark": "داكن"
+    "theme_dark": "داكن",
+    "url_location": "موقع الرابط (URL)",
+    "url_location_subtitle": "تضمين الإحداثيات في الرابط وفتح الروابط في الموقع المحدد"
   },
   "hud": {
     "search_placeholder": "بحث",

@@ -1,6 +1,6 @@
 // tests/map.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MapService, setupMapControlsUI } from '../js/map/index.js';
+import { MapService, setupMapControlsUI, parseUrlCoordinates, formatUrlCoordinates, updateUrlHash } from '../js/map/index.js';
 
 describe('MapService', () => {
   beforeEach(() => {
@@ -164,6 +164,11 @@ describe('MapService', () => {
       expect(url).toContain('https://tile.waymarkedtrails.org/hiking/');
       expect(url).toMatch(/https:\/\/tile\.waymarkedtrails\.org\/hiking\/13\/\d+\/\d+\.png/);
     });
+
+    it('generates default tile URL for street map', () => {
+      const url = MapService.getTileUrl('street', 13, 45.4064, 11.8768);
+      expect(url).toContain('openstreetmap.org');
+    });
   });
 
   describe('Tilt and cycleTilt controls', () => {
@@ -205,6 +210,244 @@ describe('MapService', () => {
 
       cycleTiltSpy.mockRestore();
       toggleOverlaySpy.mockRestore();
+    });
+  });
+
+  describe('URL Coordinates & Hash Manager', () => {
+    describe('parseUrlCoordinates', () => {
+      it('returns null for empty or invalid input', () => {
+        expect(parseUrlCoordinates('')).toBeNull();
+        expect(parseUrlCoordinates('#')).toBeNull();
+        expect(parseUrlCoordinates('#abc')).toBeNull();
+        expect(parseUrlCoordinates(null)).toBeNull();
+      });
+
+      it('parses bracketed x+y+zoom format: #[lat+lng+zoom]', () => {
+        const parsed = parseUrlCoordinates('#[45.4064+11.8768+13]');
+        expect(parsed).toEqual({
+          lat: 45.4064,
+          lng: 11.8768,
+          zoom: 13,
+          bearing: 0,
+          pitch: 0
+        });
+      });
+
+      it('parses unbracketed plus format: #lat+lng+zoom', () => {
+        const parsed = parseUrlCoordinates('#45.4064+11.8768+14');
+        expect(parsed).toEqual({
+          lat: 45.4064,
+          lng: 11.8768,
+          zoom: 14,
+          bearing: 0,
+          pitch: 0
+        });
+      });
+
+      it('parses negative coordinates in bracketed format: #[-33.8688+151.2093+12]', () => {
+        const parsed = parseUrlCoordinates('#[-33.8688+151.2093+12]');
+        expect(parsed).toEqual({
+          lat: -33.8688,
+          lng: 151.2093,
+          zoom: 12,
+          bearing: 0,
+          pitch: 0
+        });
+      });
+
+      it('parses comma-separated format: #[lat,lng,zoom] and #lat,lng,zoom', () => {
+        const parsed1 = parseUrlCoordinates('#[40.7128,-74.0060,11]');
+        expect(parsed1).toEqual({
+          lat: 40.7128,
+          lng: -74.0060,
+          zoom: 11,
+          bearing: 0,
+          pitch: 0
+        });
+
+        const parsed2 = parseUrlCoordinates('#40.7128,-74.0060,11');
+        expect(parsed2).toEqual({
+          lat: 40.7128,
+          lng: -74.0060,
+          zoom: 11,
+          bearing: 0,
+          pitch: 0
+        });
+      });
+
+      it('parses standard MapLibre / Leaflet hash: #zoom/lat/lng', () => {
+        const parsed = parseUrlCoordinates('#13.5/45.4064/11.8768');
+        expect(parsed).toEqual({
+          lat: 45.4064,
+          lng: 11.8768,
+          zoom: 13.5,
+          bearing: 0,
+          pitch: 0
+        });
+      });
+
+      it('parses MapLibre extended hash with bearing and pitch: #zoom/lat/lng/bearing/pitch', () => {
+        const parsed = parseUrlCoordinates('#13/45.4064/11.8768/45/30');
+        expect(parsed).toEqual({
+          lat: 45.4064,
+          lng: 11.8768,
+          zoom: 13,
+          bearing: 45,
+          pitch: 30
+        });
+      });
+
+      it('parses OpenStreetMap #map=zoom/lat/lon format', () => {
+        const parsed = parseUrlCoordinates('#map=15/48.8584/2.2945');
+        expect(parsed).toEqual({
+          lat: 48.8584,
+          lng: 2.2945,
+          zoom: 15,
+          bearing: 0,
+          pitch: 0
+        });
+      });
+
+      it('parses query string parameters: ?lat=...&lng=...&zoom=...', () => {
+        const parsed = parseUrlCoordinates('https://example.com/?lat=51.5074&lng=-0.1278&zoom=10');
+        expect(parsed).toEqual({
+          lat: 51.5074,
+          lng: -0.1278,
+          zoom: 10,
+          bearing: 0,
+          pitch: 0
+        });
+      });
+
+      it('parses 2-number coordinates with default zoom level: #[lat+lng]', () => {
+        const parsed = parseUrlCoordinates('#[45.4064+11.8768]');
+        expect(parsed).toEqual({
+          lat: 45.4064,
+          lng: 11.8768,
+          zoom: 13,
+          bearing: 0,
+          pitch: 0
+        });
+      });
+
+      it('reads from window.location when no argument is supplied', () => {
+        window.location.hash = '#[45.4064+11.8768+15]';
+        const parsed = parseUrlCoordinates();
+        expect(parsed).toEqual({
+          lat: 45.4064,
+          lng: 11.8768,
+          zoom: 15,
+          bearing: 0,
+          pitch: 0
+        });
+        window.location.hash = '';
+      });
+
+      it('returns null when latitude or longitude is out of bounds', () => {
+        expect(parseUrlCoordinates('#[95.0+11.8768+13]')).toBeNull();
+        expect(parseUrlCoordinates('#[45.0+195.0+13]')).toBeNull();
+      });
+    });
+
+    describe('formatUrlCoordinates', () => {
+      it('formats coordinates without bearing and pitch', () => {
+        const formatted = formatUrlCoordinates(45.406401, 11.876802, 13);
+        expect(formatted).toBe('#13/45.4064/11.8768');
+      });
+
+      it('formats coordinates with non-zero bearing and pitch', () => {
+        const formatted = formatUrlCoordinates(45.4064, 11.8768, 13.5, 45, 30);
+        expect(formatted).toBe('#13.5/45.4064/11.8768/45/30');
+      });
+    });
+
+    describe('updateUrlHash', () => {
+      it('calls history.replaceState to update address bar URL', () => {
+        const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
+        updateUrlHash(45.4064, 11.8768, 13);
+        expect(replaceStateSpy).toHaveBeenCalledWith(
+          null,
+          '',
+          expect.stringContaining('#13/45.4064/11.8768')
+        );
+        replaceStateSpy.mockRestore();
+      });
+    });
+
+    describe('MapService URL coordination', () => {
+      it('provides getUrlCoordinates method', () => {
+        window.location.hash = '#[45.4064+11.8768+16]';
+        const coords = MapService.getUrlCoordinates();
+        expect(coords).toMatchObject({
+          lat: 45.4064,
+          lng: 11.8768,
+          zoom: 16
+        });
+        window.location.hash = '';
+      });
+
+      it('updates URL hash when updateUrlCoordinates is called on MapService', () => {
+        MapService.map = {
+          getCenter: vi.fn(() => ({ lat: 45.4064, lng: 11.8768 })),
+          getZoom: vi.fn(() => 14),
+          getBearing: vi.fn(() => 0),
+          getPitch: vi.fn(() => 0)
+        };
+
+        const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
+        MapService.updateUrlCoordinates();
+        expect(replaceStateSpy).toHaveBeenCalledWith(
+          null,
+          '',
+          expect.stringContaining('#14/45.4064/11.8768')
+        );
+        replaceStateSpy.mockRestore();
+      });
+
+      it('does not update URL hash when isUrlLocationEnabled is false', () => {
+        MapService.map = {
+          getCenter: vi.fn(() => ({ lat: 45.4064, lng: 11.8768 })),
+          getZoom: vi.fn(() => 14),
+          getBearing: vi.fn(() => 0),
+          getPitch: vi.fn(() => 0)
+        };
+        MapService.isUrlLocationEnabled = false;
+
+        const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
+        MapService.updateUrlCoordinates();
+        expect(replaceStateSpy).not.toHaveBeenCalled();
+        replaceStateSpy.mockRestore();
+        MapService.isUrlLocationEnabled = true;
+      });
+
+      it('toggles url location setting and clears URL hash when disabled', () => {
+        window.location.hash = '#14/45.4064/11.8768';
+        const replaceStateSpy = vi.spyOn(window.history, 'replaceState');
+
+        MapService.setUrlLocationEnabled(false);
+        expect(MapService.isUrlLocationEnabled).toBe(false);
+        expect(localStorage.getItem('maps_url_location_enabled')).toBe('false');
+        expect(replaceStateSpy).toHaveBeenCalled();
+
+        replaceStateSpy.mockClear();
+        MapService.map = {
+          getCenter: vi.fn(() => ({ lat: 45.4064, lng: 11.8768 })),
+          getZoom: vi.fn(() => 14),
+          getBearing: vi.fn(() => 0),
+          getPitch: vi.fn(() => 0)
+        };
+
+        MapService.setUrlLocationEnabled(true);
+        expect(MapService.isUrlLocationEnabled).toBe(true);
+        expect(localStorage.getItem('maps_url_location_enabled')).toBe('true');
+        expect(replaceStateSpy).toHaveBeenCalledWith(
+          null,
+          '',
+          expect.stringContaining('#14/45.4064/11.8768')
+        );
+
+        replaceStateSpy.mockRestore();
+      });
     });
   });
 });

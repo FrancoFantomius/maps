@@ -32,7 +32,9 @@
     "appearance_theme": "外观主题",
     "theme_light": "浅色",
     "theme_system": "系统",
-    "theme_dark": "深色"
+    "theme_dark": "深色",
+    "url_location": "URL 位置",
+    "url_location_subtitle": "在网址中包含坐标并在指定位置打开链接"
   },
   "hud": {
     "search_placeholder": "搜索",

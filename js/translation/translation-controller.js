@@ -245,7 +245,12 @@ export const TranslationController = {
     },
 
     updateSettingsUI() {
-        updateSettingsLanguageUI(this.supportedLanguages, this.languagePref, (k, p, fb) => this.t(k, p, fb));
+        updateSettingsLanguageUI(
+            this.supportedLanguages,
+            this.languagePref,
+            (k, p, fb) => this.t(k, p, fb),
+            this.currentLang || this.getBrowserLanguage()
+        );
     }
 };
 

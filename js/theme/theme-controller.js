@@ -33,6 +33,8 @@ export const ThemeController = {
         }
 
         updateThemeButtonsUI(theme);
+        MapService.updateSettingsPreviews?.();
+        MapService.updateLayerSwitcherPreview?.();
     }
 };
 

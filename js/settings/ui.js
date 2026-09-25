@@ -32,6 +32,7 @@ export function setupSettingsUI(MapService) {
     const toggleOverlayBike = document.getElementById('toggle-overlay-bike');
     const toggleOverlayTrekking = document.getElementById('toggle-overlay-trekking');
     const toggleOverlayPerspective = document.getElementById('toggle-overlay-perspective');
+    const toggleUrlLocation = document.getElementById('toggle-url-location');
 
     if (!settingsPanel) return;
 
@@ -260,5 +261,20 @@ export function setupSettingsUI(MapService) {
     handleOverlayToggle(toggleOverlayBike, 'bike');
     handleOverlayToggle(toggleOverlayTrekking, 'trekking');
     handleOverlayToggle(toggleOverlayPerspective, 'perspective');
+
+    if (toggleUrlLocation) {
+        const isUrlEnabled = MapService.isUrlLocationEnabled !== false;
+        if ('selected' in toggleUrlLocation) {
+            toggleUrlLocation.selected = isUrlEnabled;
+        }
+        toggleUrlLocation.checked = isUrlEnabled;
+
+        toggleUrlLocation.addEventListener('change', (e) => {
+            const isChecked = e.detail && typeof e.detail.selected === 'boolean'
+                ? e.detail.selected
+                : (typeof e.target.selected === 'boolean' ? e.target.selected : e.target.checked);
+            MapService.setUrlLocationEnabled?.(Boolean(isChecked));
+        });
+    }
 }
 
