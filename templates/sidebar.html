@@ -1,0 +1,250 @@
+<link rel="stylesheet" href="/css/sidebar.css">
+
+<!-- Full-Height Material Design 3 Side-Sheet for Saved Places / Bookmarks -->
+<md-side-sheet
+    id="saved-places-sheet"
+    side="start"
+    type="standard"
+    hide-close-button
+>
+    <!-- Spacer for the floating search bar at the top -->
+    <div slot="header" class="sheet-top-spacer"></div>
+
+    <div class="saved-places-header">
+        <div class="saved-places-header-text">
+            <div class="saved-places-title-row">
+                <h2 class="saved-places-title" data-i18n="markers.title">Saved Places</h2>
+                <span id="place-count-badge" class="saved-places-badge">0</span>
+            </div>
+            <p class="saved-places-subtitle" data-i18n="app.subtitle">Your personalized custom pins</p>
+        </div>
+        <md-icon-button id="btn-close-places" icon="close" aria-label="Close" data-i18n-aria-label="nav.close" variant="standard"></md-icon-button>
+    </div>
+
+    <md-divider style="margin: 0.5rem 0 0.75rem 0;"></md-divider>
+
+    <!-- Saved Markers Dynamic List -->
+    <md-list id="saved-markers-list" class="saved-markers-list custom-scrollbar"></md-list>
+</md-side-sheet>
+
+<!-- Full-Height Material Design 3 Side-Sheet for Place Details (Dropped Pins / POI / Search Details) -->
+<md-side-sheet
+    id="place-details-sheet"
+    side="start"
+    type="standard"
+    hide-close-button
+>
+    <!-- Spacer for the floating search bar at the top -->
+    <div slot="header" class="sheet-top-spacer"></div>
+
+    <!-- Place Cover Image Container -->
+    <div id="sheet-image-container" class="sheet-image-container hidden">
+        <img id="sheet-image" class="sheet-image" src="" alt="Place Image">
+        <div class="sheet-image-gradient"></div>
+    </div>
+
+    <!-- Quick Actions Row -->
+    <div class="sheet-actions-row">
+        <md-button id="sheet-btn-directions" variant="filled" icon="directions">
+            <span data-i18n="routing.directions">Directions</span>
+        </md-button>
+        <md-button id="sheet-btn-save" variant="tonal" icon="bookmark_add">
+            <span data-i18n="markers.save_place">Save Place</span>
+        </md-button>
+        <md-button id="sheet-btn-delete" variant="outlined" icon="delete" class="hidden">
+            <span data-i18n="markers.delete_marker">Delete</span>
+        </md-button>
+    </div>
+
+    <!-- Coordinate & Category Chips -->
+    <div class="sheet-section sheet-coords-section">
+        <md-chip id="sheet-coords-chip" variant="assist" icon="pin_drop" label=""></md-chip>
+        <md-chip id="sheet-category-chip" variant="assist" icon="bookmark" label="" class="hidden"></md-chip>
+    </div>
+
+    <!-- Address Row -->
+    <div id="sheet-address-section" class="sheet-section sheet-info-card hidden">
+        <md-icon name="location_on" class="sheet-info-icon"></md-icon>
+        <span id="sheet-address-text" class="sheet-info-text"></span>
+    </div>
+
+    <!-- Street Highlight Row -->
+    <div id="sheet-street-section" class="sheet-section sheet-info-card hidden">
+        <md-icon name="directions_bike" class="sheet-info-icon"></md-icon>
+        <span id="sheet-street-text" class="sheet-info-text"></span>
+    </div>
+
+    <!-- Saved Notes Section -->
+    <div id="sheet-notes-section" class="sheet-section sheet-info-card hidden">
+        <md-icon name="description" class="sheet-info-icon"></md-icon>
+        <span id="sheet-notes-text" class="sheet-info-text"></span>
+    </div>
+
+    <!-- Shop / POI Details Section -->
+    <div id="sheet-shop-section" class="sheet-section sheet-shop-card hidden">
+        <div class="sheet-shop-title">
+            <md-icon name="storefront"></md-icon>
+            <span>Place Information</span>
+        </div>
+        <div id="sheet-shop-type" class="sheet-shop-row hidden">
+            <span class="sheet-shop-label">Type:</span>
+            <span id="sheet-shop-type-val" class="sheet-shop-val"></span>
+        </div>
+        <div id="sheet-shop-brand" class="sheet-shop-row hidden">
+            <span class="sheet-shop-label">Brand:</span>
+            <span id="sheet-shop-brand-val" class="sheet-shop-val"></span>
+        </div>
+        <div id="sheet-shop-hours" class="sheet-shop-row hidden">
+            <md-icon name="schedule" class="sheet-shop-icon"></md-icon>
+            <span id="sheet-shop-hours-val" class="sheet-shop-val"></span>
+        </div>
+        <div id="sheet-shop-cuisine" class="sheet-shop-row hidden">
+            <md-icon name="restaurant" class="sheet-shop-icon"></md-icon>
+            <span id="sheet-shop-cuisine-val" class="sheet-shop-val"></span>
+        </div>
+        <div id="sheet-shop-phone" class="sheet-shop-row hidden">
+            <md-icon name="call" class="sheet-shop-icon"></md-icon>
+            <a id="sheet-shop-phone-link" href="" class="sheet-shop-link"></a>
+        </div>
+        <div id="sheet-shop-web" class="sheet-shop-row hidden">
+            <md-icon name="public" class="sheet-shop-icon"></md-icon>
+            <a id="sheet-shop-web-link" href="" target="_blank" rel="noopener noreferrer" class="sheet-shop-link"></a>
+        </div>
+    </div>
+
+    <!-- Wikipedia Summary Section -->
+    <div id="sheet-wiki-section" class="sheet-section sheet-wiki-card hidden">
+        <div class="sheet-wiki-header">
+            <md-icon name="menu_book"></md-icon>
+            <span>About</span>
+        </div>
+        <p id="sheet-wiki-text" class="sheet-wiki-text"></p>
+        <a id="sheet-wiki-link" href="" target="_blank" rel="noopener noreferrer" class="sheet-wiki-more hidden">
+            <span>Read on Wikipedia</span>
+            <md-icon name="open_in_new"></md-icon>
+        </a>
+    </div>
+
+    <!-- Attribution / Credits Footer -->
+    <div class="sheet-credits">
+        <span>Data from </span>
+        <a href="https://nominatim.openstreetmap.org/" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+        <span id="sheet-wiki-credit-dot" class="hidden"> · </span>
+        <a id="sheet-wiki-credit-link" href="" target="_blank" rel="noopener noreferrer" class="hidden">Wikipedia</a>
+    </div>
+</md-side-sheet>
+
+<!-- Full-Height Material Design 3 Side-Sheet for Distance Measurement -->
+<md-side-sheet
+    id="measure-sheet"
+    side="start"
+    type="standard"
+    hide-close-button
+>
+    <!-- Spacer for the floating search bar at the top -->
+    <div slot="header" class="sheet-top-spacer"></div>
+
+    <div class="measure-sheet-header">
+        <div class="measure-sheet-header-text">
+            <div class="measure-sheet-title-row">
+                <span class="measure-dot"></span>
+                <h2 class="measure-title" data-i18n="measurement.title">Measure Distance</h2>
+            </div>
+            <p id="measure-desc" class="measure-subtitle" data-i18n="measurement.click_to_start">Click sequential points on the map to calculate linear distance path.</p>
+        </div>
+        <md-icon-button id="btn-exit-measure" icon="close" aria-label="Exit measurement" data-i18n-aria-label="measurement.exit" variant="standard"></md-icon-button>
+    </div>
+
+    <md-divider style="margin: 0.5rem 0 0.75rem 0;"></md-divider>
+
+    <!-- Distance Output Card -->
+    <div class="measure-result-card">
+        <div class="measure-result-accent"></div>
+        <span class="measure-result-label" data-i18n="measurement.total_distance">Linear Distance</span>
+        <div id="measure-output" class="measure-result-value">Total Distance: 0.00 km</div>
+    </div>
+</md-side-sheet>
+
+<!-- Full-Height Material Design 3 Side-Sheet for Navigation & Directions -->
+<md-side-sheet
+    id="nav-sheet"
+    side="start"
+    type="standard"
+    hide-close-button
+>
+    <!-- Spacer for the floating search bar at the top -->
+    <div slot="header" class="sheet-top-spacer"></div>
+
+    <!-- Header with transport mode selection & close button -->
+    <div class="nav-sheet-header">
+        <div class="nav-modes-bar">
+            <button type="button" id="nav-mode-driving" data-nav-mode="driving" class="nav-mode-btn active">
+                <span class="material-symbols-outlined nav-mode-icon">directions_car</span>
+                <span data-i18n="routing.profile_driving">Drive</span>
+            </button>
+            <button type="button" id="nav-mode-cycling" data-nav-mode="cycling" class="nav-mode-btn">
+                <span class="material-symbols-outlined nav-mode-icon">directions_bike</span>
+                <span data-i18n="routing.profile_cycling">Bike</span>
+            </button>
+            <button type="button" id="nav-mode-foot" data-nav-mode="foot" class="nav-mode-btn">
+                <span class="material-symbols-outlined nav-mode-icon">directions_walk</span>
+                <span data-i18n="routing.profile_walking">Walk</span>
+            </button>
+        </div>
+        <md-icon-button id="btn-exit-nav" icon="close" aria-label="Exit navigation" data-i18n-aria-label="nav.close" variant="standard"></md-icon-button>
+    </div>
+
+    <!-- Waypoint Inputs -->
+    <div class="nav-waypoints-wrapper">
+        <!-- Timeline dots indicator -->
+        <div class="nav-timeline-dots">
+            <div class="nav-dot-origin"></div>
+            <div class="nav-timeline-line"></div>
+            <div class="nav-dot-dest"></div>
+        </div>
+
+        <!-- Input fields -->
+        <div class="nav-inputs-col">
+            <div class="nav-input-box">
+                <input type="text" id="nav-origin-input" placeholder="Choose starting point, or click map" data-i18n-placeholder="routing.origin" autocomplete="off" class="nav-input-field">
+                <button type="button" id="nav-use-location" title="Use my location" data-i18n-title="controls.my_location" class="nav-loc-btn">
+                    <span class="material-symbols-outlined" style="font-size: 1rem;">my_location</span>
+                </button>
+                <div id="nav-origin-autocomplete" class="nav-autocomplete custom-scrollbar hidden"></div>
+            </div>
+            <div class="nav-input-box">
+                <input type="text" id="nav-dest-input" placeholder="Choose destination" data-i18n-placeholder="routing.destination" autocomplete="off" class="nav-input-field">
+                <div id="nav-dest-autocomplete" class="nav-autocomplete custom-scrollbar hidden"></div>
+            </div>
+        </div>
+
+        <!-- Swap button -->
+        <div class="nav-swap-col">
+            <button type="button" id="nav-swap-btn" title="Swap origin and destination" class="nav-swap-btn">
+                <span class="material-symbols-outlined" style="font-size: 1.125rem;">swap_vert</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Route summary card -->
+    <div id="nav-route-summary" class="nav-summary-card hidden">
+        <div class="nav-summary-bar"></div>
+        <div class="nav-summary-row">
+            <span id="nav-route-time" class="nav-route-time">--</span>
+            <span id="nav-route-dist" class="nav-route-dist">--</span>
+        </div>
+        <div class="nav-route-via-row">
+            <span id="nav-route-via" class="nav-route-via">Fastest route</span>
+        </div>
+    </div>
+
+    <md-divider style="margin: 0.5rem 0;"></md-divider>
+
+    <!-- Turn-by-turn directions list -->
+    <div id="nav-steps-list" class="nav-steps-list custom-scrollbar">
+        <div class="nav-steps-empty">
+            <span class="material-symbols-outlined nav-steps-empty-icon">alt_route</span>
+            <span>Set origin and destination to see route directions</span>
+        </div>
+    </div>
+</md-side-sheet>

@@ -19,6 +19,9 @@ import '@francofantomius/material-components/bottom-sheet';
 import '@francofantomius/material-components/switch';
 import '@francofantomius/material-components/dialog';
 import '@francofantomius/material-components/radio';
+import '@francofantomius/material-components/list';
+import '@francofantomius/material-components/badge';
+import '@francofantomius/material-components/divider';
 import { css } from 'lit';
 
 // Compact icon-only md-button width when contracted or in narrow containers

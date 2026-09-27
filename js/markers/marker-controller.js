@@ -204,6 +204,24 @@ export const MarkerController = {
         if (!template) return;
         const clone = template.content.cloneNode(true);
         const config = this.colorPalette[m.category] || this.colorPalette.poi;
+        const categoryLabels = {
+            poi: 'Point of Interest',
+            home: 'Home',
+            food: 'Food & Drink',
+            lodging: 'Lodging',
+            nature: 'Nature / Scenic'
+        };
+
+        const itemEl = clone.querySelector('.marker-item') || clone.querySelector('md-list-item');
+        const headlineText = m.name || categoryLabels[m.category] || 'Custom pin';
+        const supportingText = m.desc || categoryLabels[m.category] || 'Custom pin';
+
+        if (itemEl) {
+            itemEl.setAttribute('headline', headlineText);
+            itemEl.setAttribute('supporting-text', supportingText);
+            itemEl.headline = headlineText;
+            itemEl.supportingText = supportingText;
+        }
 
         const dot = clone.querySelector('.marker-color-dot');
         if (dot) dot.style.backgroundColor = config.main;
@@ -212,25 +230,18 @@ export const MarkerController = {
         if (emojiEl) emojiEl.textContent = config.emoji || '📍';
 
         const nameEl = clone.querySelector('.marker-name');
-        if (nameEl) nameEl.textContent = m.name;
+        if (nameEl) nameEl.textContent = headlineText;
 
         const subtextEl = clone.querySelector('.marker-subtext');
-        if (subtextEl) {
-            const categoryLabels = {
-                poi: 'Point of Interest',
-                home: 'Home',
-                food: 'Food & Drink',
-                lodging: 'Lodging',
-                nature: 'Nature / Scenic'
-            };
-            subtextEl.textContent = m.desc || categoryLabels[m.category] || 'Custom pin';
-        }
+        if (subtextEl) subtextEl.textContent = supportingText;
 
         const focusEl = clone.querySelector('.marker-focus');
         if (focusEl) {
             focusEl.addEventListener('click', (e) => {
                 e.stopPropagation();
-                MapService.flyTo([m.lng, m.lat], 15);
+                if (MapService && typeof MapService.flyTo === 'function') {
+                    MapService.flyTo([m.lng, m.lat], 15);
+                }
                 HUDController.setState('place-details', m);
             });
         }
@@ -243,9 +254,11 @@ export const MarkerController = {
             });
         }
 
-        const itemEl = clone.querySelector('.marker-item');
         if (itemEl) {
             itemEl.addEventListener('click', () => {
+                if (MapService && typeof MapService.flyTo === 'function') {
+                    MapService.flyTo([m.lng, m.lat], 15);
+                }
                 HUDController.setState('place-details', m);
             });
         }

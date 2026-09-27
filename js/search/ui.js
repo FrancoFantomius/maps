@@ -719,17 +719,27 @@ export function setupSearchUI(SearchController, HUDController, MarkerController,
             MapService.on('movestart', onMapEvent);
         }
 
+        const handleMenuOrBackClick = (e) => {
+            if (e && typeof e.stopPropagation === 'function') {
+                e.stopPropagation();
+            }
+            if (HUDController.currentState === 'place-details') {
+                if (HUDController.previousState === 'saved-places') {
+                    HUDController.setState('saved-places');
+                } else {
+                    HUDController.setState('places');
+                }
+            } else if (HUDController.currentState === 'saved-places') {
+                HUDController.setState('places');
+            } else {
+                HUDController.setState('saved-places');
+            }
+        };
+
         const btnSearchMenu = document.getElementById('btn-search-menu');
         if (btnSearchMenu && !btnSearchMenu._bound) {
             btnSearchMenu._bound = true;
-            btnSearchMenu.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (HUDController.currentState === 'saved-places') {
-                    HUDController.setState('places');
-                } else {
-                    HUDController.setState('saved-places');
-                }
-            });
+            btnSearchMenu.addEventListener('click', handleMenuOrBackClick);
         }
 
         const btnSearchSubmit = document.getElementById('btn-search-submit');
@@ -742,14 +752,7 @@ export function setupSearchUI(SearchController, HUDController, MarkerController,
             });
         }
 
-        searchBar.addEventListener('leading-icon-click', (e) => {
-            e.stopPropagation();
-            if (HUDController.currentState === 'saved-places') {
-                HUDController.setState('places');
-            } else {
-                HUDController.setState('saved-places');
-            }
-        });
+        searchBar.addEventListener('leading-icon-click', handleMenuOrBackClick);
 
         searchBar.addEventListener('search', (e) => {
             handleSearch(e.detail?.value ?? searchBar.value);

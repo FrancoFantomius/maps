@@ -23,7 +23,7 @@ describe('HUDController', () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <div id="hud-panel" class="hud-closed"></div>
-      <div id="panel-places" class="hidden"></div>
+      <md-side-sheet id="saved-places-sheet"></md-side-sheet>
       <div id="panel-search" class="hidden"></div>
       <div id="panel-details" class="hidden"></div>
       <div id="measure-panel" class="hidden"></div>
@@ -71,6 +71,15 @@ describe('HUDController', () => {
       expect(document.getElementById('panel-search').classList.contains('hidden')).toBe(false);
     });
 
+    it('opens saved-places-sheet when state is "saved-places"', () => {
+      const sheet = document.getElementById('saved-places-sheet');
+      sheet.show = vi.fn();
+      HUDController.setState('saved-places');
+
+      expect(HUDController.currentState).toBe('saved-places');
+      expect(sheet.show).toHaveBeenCalled();
+    });
+
     it('shows nav-panel when state is "route"', () => {
       HUDController.setState('route');
 
@@ -82,6 +91,29 @@ describe('HUDController', () => {
       HUDController.setState('measure');
 
       expect(MarkerController.removeTempMarker).toHaveBeenCalled();
+    });
+
+    it('morphs menu icon to arrow_back when sidebar is open and back to menu when closed', () => {
+      document.body.innerHTML += `
+        <md-icon-button id="btn-search-menu" icon="menu"></md-icon-button>
+        <md-tooltip id="search-menu-tooltip"><span>Saved Places</span></md-tooltip>
+      `;
+
+      HUDController.setState('saved-places');
+      const btn = document.getElementById('btn-search-menu');
+      expect(btn.getAttribute('icon')).toBe('arrow_back');
+
+      HUDController.setState('places');
+      expect(btn.getAttribute('icon')).toBe('menu');
+    });
+
+    it('tracks previousState during state transitions', () => {
+      HUDController.setState('places');
+      HUDController.setState('saved-places');
+      expect(HUDController.previousState).toBe('places');
+
+      HUDController.setState('place-details', { name: 'Test Place' });
+      expect(HUDController.previousState).toBe('saved-places');
     });
   });
 

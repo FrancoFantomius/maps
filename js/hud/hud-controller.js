@@ -1,48 +1,49 @@
-// maps HUD Controller - js/HUDController.js
-
 import { MapService } from '../map/index.js';
 import { MarkerController } from '../markers/index.js';
-import { RoutingController } from '../routing/index.js';
 import { SearchController } from '../search/index.js';
+
+function showSheet(sheet) {
+    if (!sheet) return;
+    if (typeof sheet.show === 'function') {
+        sheet.show();
+    } else {
+        sheet.open = true;
+    }
+}
+
+function hideSheet(sheet) {
+    if (!sheet) return;
+    if (typeof sheet.close === 'function') {
+        sheet.close();
+    } else {
+        sheet.open = false;
+    }
+}
 
 export const HUDController = {
     currentState: 'places',
+    previousState: 'places',
     isOpen: false,
     isExpanded: false,
 
     open(expand = false) {
-        const hudPanel = document.getElementById('hud-panel');
-        if (!hudPanel) return;
-
         this.isOpen = true;
         this.isExpanded = expand;
-
-        hudPanel.classList.remove('hud-closed');
-
-        if (window.innerWidth < 768) {
-            if (expand) {
-                hudPanel.classList.remove('hud-open-default');
-                hudPanel.classList.add('hud-open-expanded');
-            } else {
-                hudPanel.classList.remove('hud-open-expanded');
-                hudPanel.classList.add('hud-open-default');
-            }
-            hudPanel.classList.remove('hud-open');
-        } else {
-            hudPanel.classList.add('hud-open');
-            hudPanel.classList.remove('hud-open-default', 'hud-open-expanded');
+        const panel = document.getElementById('hud-panel');
+        if (panel) {
+            panel.classList.remove('hud-closed');
         }
     },
 
     close() {
-        const hudPanel = document.getElementById('hud-panel');
-        if (!hudPanel) return;
-
         this.isOpen = false;
         this.isExpanded = false;
-
-        hudPanel.classList.add('hud-closed');
-        hudPanel.classList.remove('hud-open', 'hud-open-default', 'hud-open-expanded');
+        const panel = document.getElementById('hud-panel');
+        if (panel) {
+            panel.classList.add('hud-closed');
+        }
+        const sheets = ['saved-places-sheet', 'place-details-sheet', 'measure-sheet', 'nav-sheet'];
+        sheets.forEach(id => hideSheet(document.getElementById(id)));
     },
 
     expand() {
@@ -54,7 +55,11 @@ export const HUDController = {
     },
 
     setState(hudState, data = null) {
+        if (this.currentState !== hudState) {
+            this.previousState = this.currentState;
+        }
         this.currentState = hudState;
+        this.updateMenuIcon(hudState);
 
         if (hudState !== 'place-details') {
             MarkerController.removeTempMarker();
@@ -67,48 +72,88 @@ export const HUDController = {
             }
         }
 
-        const panels = ['panel-places', 'panel-search', 'panel-details', 'measure-panel', 'nav-panel'];
-        panels.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.classList.add('hidden');
-        });
-
-        const panelMap = {
-            'saved-places': 'panel-places',
-            'search-results': 'panel-search',
-            'measure': 'measure-panel',
-            'route': 'nav-panel',
-            'place-details': 'panel-details'
-        };
-
         const drawBtn = document.getElementById('btn-draw');
         const routeBtn = document.getElementById('btn-route');
 
         if (drawBtn) drawBtn.classList.remove('is-active');
         if (routeBtn) routeBtn.classList.remove('is-active');
 
-        if (hudState === 'places') {
-            this.close();
+        const savedPlacesSheet = document.getElementById('saved-places-sheet');
+        const placeDetailsSheet = document.getElementById('place-details-sheet');
+        const measureSheet = document.getElementById('measure-sheet');
+        const navSheet = document.getElementById('nav-sheet');
+
+        // Close all sheets first before opening the requested state
+        hideSheet(savedPlacesSheet);
+        hideSheet(placeDetailsSheet);
+        hideSheet(measureSheet);
+        hideSheet(navSheet);
+
+        // Also support legacy panel-search, measure-panel, nav-panel in tests if present
+        const panels = ['panel-places', 'panel-search', 'measure-panel', 'nav-panel'];
+        panels.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+
+        if (hudState === 'saved-places') {
+            this.isOpen = true;
             if (SearchController && typeof SearchController.closePlaceDetails === 'function') {
                 SearchController.closePlaceDetails();
             }
+            showSheet(savedPlacesSheet);
         } else if (hudState === 'place-details') {
-            this.close();
+            this.isOpen = true;
             this.renderPlaceDetails(data);
-        } else {
+        } else if (hudState === 'measure') {
+            this.isOpen = true;
             if (SearchController && typeof SearchController.closePlaceDetails === 'function') {
                 SearchController.closePlaceDetails();
             }
-            this.open();
-            const activeId = panelMap[hudState];
-            if (activeId) {
-                const activePanel = document.getElementById(activeId);
-                if (activePanel) activePanel.classList.remove('hidden');
+            showSheet(measureSheet);
+            const measurePanel = document.getElementById('measure-panel');
+            if (measurePanel) measurePanel.classList.remove('hidden');
+            if (drawBtn) drawBtn.classList.add('is-active');
+        } else if (hudState === 'route') {
+            this.isOpen = true;
+            if (SearchController && typeof SearchController.closePlaceDetails === 'function') {
+                SearchController.closePlaceDetails();
             }
-            if (hudState === 'measure' && drawBtn) {
-                drawBtn.classList.add('is-active');
-            } else if (hudState === 'route' && routeBtn) {
-                routeBtn.classList.add('is-active');
+            showSheet(navSheet);
+            const navPanel = document.getElementById('nav-panel');
+            if (navPanel) navPanel.classList.remove('hidden');
+            if (routeBtn) routeBtn.classList.add('is-active');
+        } else if (hudState === 'search-results') {
+            this.isOpen = true;
+            const searchPanel = document.getElementById('panel-search');
+            if (searchPanel) searchPanel.classList.remove('hidden');
+        } else {
+            // places state
+            this.isOpen = false;
+            if (SearchController && typeof SearchController.closePlaceDetails === 'function') {
+                SearchController.closePlaceDetails();
+            }
+        }
+    },
+
+    updateMenuIcon(hudState) {
+        const btnSearchMenu = document.getElementById('btn-search-menu');
+        const tooltipSpan = document.querySelector('#search-menu-tooltip span') || document.querySelector('md-tooltip[for="btn-search-menu"] span');
+        const isSidebarOpen = (hudState === 'saved-places' || hudState === 'place-details' || hudState === 'measure' || hudState === 'route');
+
+        if (btnSearchMenu) {
+            if (isSidebarOpen) {
+                btnSearchMenu.setAttribute('icon', 'arrow_back');
+                btnSearchMenu.icon = 'arrow_back';
+                btnSearchMenu.setAttribute('aria-label', 'Back');
+                btnSearchMenu.title = 'Back';
+                if (tooltipSpan) tooltipSpan.textContent = 'Back';
+            } else {
+                btnSearchMenu.setAttribute('icon', 'menu');
+                btnSearchMenu.icon = 'menu';
+                btnSearchMenu.setAttribute('aria-label', 'Saved Places');
+                btnSearchMenu.title = 'Saved Places';
+                if (tooltipSpan) tooltipSpan.textContent = 'Saved Places';
             }
         }
     },
@@ -132,177 +177,8 @@ export const HUDController = {
         if (SearchController && typeof SearchController.openPlaceDetails === 'function') {
             SearchController.openPlaceDetails(data);
         }
-
-        const panelDetails = document.getElementById('panel-details');
-        if (!panelDetails) return;
-
-        panelDetails.innerHTML = '';
-
-        if (data.isLoading) {
-            const template = document.getElementById('template-place-details-loading');
-            const clone = template.content.cloneNode(true);
-            clone.querySelector('.btn-close').addEventListener('click', () => this.setState('places'));
-            panelDetails.appendChild(clone);
-            return;
-        }
-
-        if (data.isTemp) {
-            const template = document.getElementById('template-place-details-temp');
-            const clone = template.content.cloneNode(true);
-
-            clone.querySelector('.place-name').textContent = data.name || "Dropped Pin";
-            clone.querySelector('.place-coords').textContent = `${data.lat.toFixed(5)}, ${data.lng.toFixed(5)}`;
-            clone.querySelector('.btn-close').addEventListener('click', () => this.setState('places'));
-
-            const img = clone.querySelector('.wiki-image');
-            if (data.wikiImage) {
-                img.src = data.wikiImage;
-                img.classList.remove('hidden');
-            } else {
-                img.classList.add('hidden');
-            }
-
-            if (data.streetName) {
-                const highlightContainer = clone.querySelector('.street-highlight-container');
-                highlightContainer.classList.remove('hidden');
-                highlightContainer.querySelector('.street-name').textContent = `Highlighting: ${data.streetName}`;
-            }
-
-            if (data.wikiSummary) {
-                const wikiContainer = clone.querySelector('.wiki-summary-container');
-                wikiContainer.classList.remove('hidden');
-                wikiContainer.textContent = data.wikiSummary;
-            } else if (data.address) {
-                const addressEl = clone.querySelector('.place-address');
-                addressEl.classList.remove('hidden');
-                addressEl.textContent = data.address;
-            } else {
-                clone.querySelector('.place-default-prompt').classList.remove('hidden');
-            }
-
-            if (data.shopInfo) {
-                const shopContainer = clone.querySelector('.shop-info-container');
-                shopContainer.classList.remove('hidden');
-
-                const shopFields = [
-                    { key: 'type', selector: '.shop-type', valSelector: '.shop-type-val', format: v => v.replace('_', ' ') },
-                    { key: 'brand', selector: '.shop-brand', valSelector: '.shop-brand-val' },
-                    { key: 'openingHours', selector: '.shop-hours', valSelector: '.shop-hours-val' },
-                    { key: 'cuisine', selector: '.shop-cuisine', valSelector: '.shop-cuisine-val' },
-                    { key: 'phone', selector: '.shop-phone', valSelector: '.shop-phone-val' }
-                ];
-
-                shopFields.forEach(field => {
-                    const val = data.shopInfo[field.key];
-                    if (val) {
-                        const el = shopContainer.querySelector(field.selector);
-                        if (el) {
-                            el.classList.remove('hidden');
-                            const valEl = el.querySelector(field.valSelector);
-                            if (valEl) valEl.textContent = field.format ? field.format(val) : val;
-                        }
-                    }
-                });
-
-                if (data.shopInfo.website) {
-                    const el = shopContainer.querySelector('.shop-web');
-                    if (el) {
-                        el.classList.remove('hidden');
-                        const link = el.querySelector('.shop-web-link');
-                        if (link) {
-                            link.href = data.shopInfo.website;
-                            link.textContent = data.shopInfo.website;
-                        }
-                    }
-                }
-            }
-
-            clone.querySelector('.btn-save').addEventListener('click', () => {
-                MarkerController.openModal(data.lat, data.lng, null, data);
-            });
-            const btnDirections = clone.querySelector('.btn-directions');
-            if (btnDirections) {
-                btnDirections.addEventListener('click', () => {
-                    RoutingController.enter();
-                    RoutingController.setDestination({ lat: data.lat, lng: data.lng }, data.name || "Selected Destination");
-                });
-            }
-
-            if (data.wikiUrl) {
-                const wikiCredits = clone.querySelectorAll('.wiki-credit');
-                wikiCredits.forEach(el => el.classList.remove('hidden'));
-                const wikiLink = clone.querySelector('.wiki-link');
-                if (wikiLink) {
-                    wikiLink.href = data.wikiUrl;
-                }
-            }
-
-            panelDetails.appendChild(clone);
-        } else {
-            const template = document.getElementById('template-place-details-saved');
-            const clone = template.content.cloneNode(true);
-            const colorPalette = MarkerController.colorPalette;
-            const config = colorPalette[data.category] || colorPalette.poi;
-            const categoryLabels = {
-                poi: '🎯 Point of Interest',
-                home: '🏠 Home',
-                food: '🍕 Food & Drink',
-                lodging: '🏨 Lodging',
-                nature: '🌿 Nature / Scenic'
-            };
-
-            const badge = clone.querySelector('.place-badge');
-            badge.textContent = categoryLabels[data.category] || 'Place';
-            badge.style.borderColor = `${config.main}30`;
-            badge.style.backgroundColor = `${config.main}15`;
-            badge.style.color = config.main;
-
-            clone.querySelector('.place-name').textContent = data.name;
-            clone.querySelector('.place-coords').textContent = `${data.lat.toFixed(5)}, ${data.lng.toFixed(5)}`;
-            clone.querySelector('.btn-close').addEventListener('click', () => this.setState('places'));
-
-            const img = clone.querySelector('.wiki-image');
-            if (data.wikiImage) {
-                img.src = data.wikiImage;
-                img.classList.remove('hidden');
-            } else {
-                img.classList.add('hidden');
-            }
-
-            const descText = clone.querySelector('.place-desc-text');
-            if (data.desc) {
-                descText.textContent = data.desc;
-            } else {
-                descText.textContent = "No notes or description saved.";
-                descText.className = "place-desc-text text-xs text-slate-400 dark:text-slate-600 italic";
-            }
-
-            if (data.wikiUrl) {
-                const wikiCredits = clone.querySelectorAll('.wiki-credit');
-                wikiCredits.forEach(el => el.classList.remove('hidden'));
-                const wikiLink = clone.querySelector('.wiki-link');
-                if (wikiLink) {
-                    wikiLink.href = data.wikiUrl;
-                }
-            }
-
-            clone.querySelector('.btn-edit').addEventListener('click', () => {
-                MarkerController.openModal(data.lat, data.lng, data.id);
-            });
-            clone.querySelector('.btn-delete').addEventListener('click', () => {
-                MarkerController.delete(data.id);
-            });
-            const btnDirections = clone.querySelector('.btn-directions');
-            if (btnDirections) {
-                btnDirections.addEventListener('click', () => {
-                    RoutingController.enter();
-                    RoutingController.setDestination({ lat: data.lat, lng: data.lng }, data.name || "Selected Destination");
-                });
-            }
-
-            panelDetails.appendChild(clone);
-        }
     }
 };
 
 export default HUDController;
+

@@ -243,7 +243,15 @@ export function openPlaceDetails(data) {
         sheet.open = true;
     }
 
-    // 10. Ensure old HUD panel is closed
+    // 10. Ensure HUD panel and saved-places-sheet are closed
+    const savedSheet = document.getElementById('saved-places-sheet');
+    if (savedSheet) {
+        if (typeof savedSheet.close === 'function') {
+            savedSheet.close();
+        } else {
+            savedSheet.open = false;
+        }
+    }
     const hudPanel = document.getElementById('hud-panel');
     if (hudPanel) {
         hudPanel.classList.add('hud-closed');

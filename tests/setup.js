@@ -1,12 +1,15 @@
 // tests/setup.js
 import { vi, beforeEach } from 'vitest';
-import PouchDB from 'pouchdb';
-import PouchDBMemory from 'pouchdb-adapter-memory';
 import maplibreglMock from './mocks/maplibregl.mock.js';
 
-// Use memory adapter for PouchDB in tests to prevent file locking issues
-PouchDB.plugin(PouchDBMemory);
-PouchDB.defaults({ adapter: 'memory' });
+vi.mock('pouchdb', async () => {
+  const { default: PouchDB } = await vi.importActual('pouchdb');
+  const { default: PouchDBMemory } = await vi.importActual('pouchdb-adapter-memory');
+  PouchDB.plugin(PouchDBMemory);
+  return {
+    default: PouchDB.defaults({ adapter: 'memory' }),
+  };
+});
 
 vi.mock('maplibre-gl', () => ({
   default: maplibreglMock,
