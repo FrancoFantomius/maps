@@ -228,54 +228,79 @@
     <!-- Spacer for the floating search bar at the top -->
     <div slot="header" class="sheet-top-spacer"></div>
 
-    <!-- Header with transport mode selection & close button -->
-    <div class="nav-sheet-header">
-        <div class="nav-modes-bar">
-            <button type="button" id="nav-mode-driving" data-nav-mode="driving" class="nav-mode-btn active">
-                <span class="material-symbols-outlined nav-mode-icon">directions_car</span>
-                <span data-i18n="routing.profile_driving">Drive</span>
-            </button>
-            <button type="button" id="nav-mode-cycling" data-nav-mode="cycling" class="nav-mode-btn">
-                <span class="material-symbols-outlined nav-mode-icon">directions_bike</span>
-                <span data-i18n="routing.profile_cycling">Bike</span>
-            </button>
-            <button type="button" id="nav-mode-foot" data-nav-mode="foot" class="nav-mode-btn">
-                <span class="material-symbols-outlined nav-mode-icon">directions_walk</span>
-                <span data-i18n="routing.profile_walking">Walk</span>
-            </button>
-        </div>
-        <md-icon-button id="btn-exit-nav" icon="close" aria-label="Exit navigation" data-i18n-aria-label="nav.close" variant="standard"></md-icon-button>
+    <!-- Mode Selector Button Group: Driving / Cycling / Walking / Public Transport -->
+    <div class="nav-mode-wrapper">
+        <md-button-group connected full-width class="nav-mode-group">
+            <md-button id="nav-mode-driving" data-nav-mode="driving" variant="filled" icon="directions_car">
+                <span>Drive</span>
+            </md-button>
+            <md-button id="nav-mode-cycling" data-nav-mode="cycling" variant="outlined" icon="directions_bike" icon-only>
+                <span>Bike</span>
+            </md-button>
+            <md-button id="nav-mode-foot" data-nav-mode="foot" variant="outlined" icon="directions_walk" icon-only>
+                <span>Walk</span>
+            </md-button>
+            <md-button id="nav-mode-transit" data-nav-mode="transit" variant="outlined" icon="directions_transit" icon-only>
+                <span>Transit</span>
+            </md-button>
+        </md-button-group>
+        <md-tooltip for="nav-mode-driving" position="bottom">Driving</md-tooltip>
+        <md-tooltip for="nav-mode-cycling" position="bottom">Cycling</md-tooltip>
+        <md-tooltip for="nav-mode-foot" position="bottom">Walking</md-tooltip>
+        <md-tooltip for="nav-mode-transit" position="bottom">Public Transport</md-tooltip>
     </div>
 
     <!-- Waypoint Inputs -->
     <div class="nav-waypoints-wrapper">
-        <!-- Timeline dots indicator -->
-        <div class="nav-timeline-dots">
-            <div class="nav-dot-origin"></div>
-            <div class="nav-timeline-line"></div>
-            <div class="nav-dot-dest"></div>
+        <div class="nav-input-box">
+            <md-text-field
+                id="nav-origin-input"
+                variant="outlined"
+                label="Start location"
+                data-i18n-label="routing.origin"
+            >
+                <md-icon-button
+                    slot="trailing-icon"
+                    id="nav-origin-my-location"
+                    icon="my_location"
+                    variant="standard"
+                ></md-icon-button>
+                <md-icon-button
+                    slot="trailing-icon"
+                    id="nav-origin-clear"
+                    icon="close"
+                    variant="standard"
+                    class="hidden"
+                ></md-icon-button>
+            </md-text-field>
+            <md-tooltip for="nav-origin-my-location" position="bottom">Use current location</md-tooltip>
+            <md-tooltip for="nav-origin-clear" position="bottom">Clear</md-tooltip>
+            <div id="nav-origin-autocomplete" class="nav-autocomplete custom-scrollbar hidden"></div>
         </div>
-
-        <!-- Input fields -->
-        <div class="nav-inputs-col">
-            <div class="nav-input-box">
-                <input type="text" id="nav-origin-input" placeholder="Choose starting point, or click map" data-i18n-placeholder="routing.origin" autocomplete="off" class="nav-input-field">
-                <button type="button" id="nav-use-location" title="Use my location" data-i18n-title="controls.my_location" class="nav-loc-btn">
-                    <span class="material-symbols-outlined" style="font-size: 1rem;">my_location</span>
-                </button>
-                <div id="nav-origin-autocomplete" class="nav-autocomplete custom-scrollbar hidden"></div>
-            </div>
-            <div class="nav-input-box">
-                <input type="text" id="nav-dest-input" placeholder="Choose destination" data-i18n-placeholder="routing.destination" autocomplete="off" class="nav-input-field">
-                <div id="nav-dest-autocomplete" class="nav-autocomplete custom-scrollbar hidden"></div>
-            </div>
-        </div>
-
-        <!-- Swap button -->
-        <div class="nav-swap-col">
-            <button type="button" id="nav-swap-btn" title="Swap origin and destination" class="nav-swap-btn">
-                <span class="material-symbols-outlined" style="font-size: 1.125rem;">swap_vert</span>
-            </button>
+        <div class="nav-input-box">
+            <md-text-field
+                id="nav-dest-input"
+                variant="outlined"
+                label="Destination"
+                data-i18n-label="routing.destination"
+            >
+                <md-icon-button
+                    slot="trailing-icon"
+                    id="nav-dest-my-location"
+                    icon="my_location"
+                    variant="standard"
+                ></md-icon-button>
+                <md-icon-button
+                    slot="trailing-icon"
+                    id="nav-dest-clear"
+                    icon="close"
+                    variant="standard"
+                    class="hidden"
+                ></md-icon-button>
+            </md-text-field>
+            <md-tooltip for="nav-dest-my-location" position="bottom">Use current location</md-tooltip>
+            <md-tooltip for="nav-dest-clear" position="bottom">Clear</md-tooltip>
+            <div id="nav-dest-autocomplete" class="nav-autocomplete custom-scrollbar hidden"></div>
         </div>
     </div>
 

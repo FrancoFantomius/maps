@@ -20,7 +20,7 @@ export function setupRoutingUI(RoutingController, MapService) {
     }
 
     // Transport mode buttons
-    document.querySelectorAll('.nav-mode-btn').forEach(btn => {
+    document.querySelectorAll('.nav-mode-group md-button, .nav-mode-btn, [data-nav-mode]').forEach(btn => {
         btn.addEventListener('click', () => {
             const mode = btn.getAttribute('data-nav-mode');
             if (mode) RoutingController.setProfile(mode);
@@ -44,16 +44,55 @@ export function setupRoutingUI(RoutingController, MapService) {
         });
     }
 
-    // Use my location button
-    const navUseLocation = document.getElementById('nav-use-location');
-    if (navUseLocation) {
-        navUseLocation.addEventListener('click', () => {
-            RoutingController.useMyLocation();
+    // Use my location buttons
+    const navOriginUseLocation = document.getElementById('nav-origin-my-location');
+    if (navOriginUseLocation) {
+        navOriginUseLocation.addEventListener('click', (e) => {
+            e.stopPropagation();
+            RoutingController.useMyLocation('origin');
         });
     }
 
-    // Close autocomplete when clicking outside
+    // Clear waypoints buttons
+    const navOriginClear = document.getElementById('nav-origin-clear');
+    if (navOriginClear) {
+        navOriginClear.addEventListener('click', (e) => {
+            e.stopPropagation();
+            RoutingController.clearOrigin();
+        });
+    }
+
+    const navDestClear = document.getElementById('nav-dest-clear');
+    if (navDestClear) {
+        navDestClear.addEventListener('click', (e) => {
+            e.stopPropagation();
+            RoutingController.clearDestination();
+        });
+    }
+
+    const navDestUseLocation = document.getElementById('nav-dest-my-location');
+    if (navDestUseLocation) {
+        navDestUseLocation.addEventListener('click', (e) => {
+            e.stopPropagation();
+            RoutingController.useMyLocation('destination');
+        });
+    }
+
+    const navUseLocation = document.getElementById('nav-use-location');
+    if (navUseLocation) {
+        navUseLocation.addEventListener('click', () => {
+            RoutingController.useMyLocation('origin');
+        });
+    }
+
+    // Close autocomplete when clicking outside or focus moves outside
     document.addEventListener('click', (e) => {
+        if (!e.target.closest('.nav-autocomplete') && !e.target.closest('#nav-origin-input') && !e.target.closest('#nav-dest-input')) {
+            RoutingController.closeAllAutocomplete();
+        }
+    });
+
+    document.addEventListener('focusin', (e) => {
         if (!e.target.closest('.nav-autocomplete') && !e.target.closest('#nav-origin-input') && !e.target.closest('#nav-dest-input')) {
             RoutingController.closeAllAutocomplete();
         }

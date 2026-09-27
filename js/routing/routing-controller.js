@@ -24,6 +24,7 @@ export const RoutingController = {
     routeSteps: [],
     navAutocompleteTimeout: null,
     navFocusedInput: null,
+    usedGPSField: null, // 'origin' | 'destination' | null
     lastRoutingData: null,
     currentRouteGeoJSON: null,
     currentAlternativesGeoJSON: null,
@@ -108,6 +109,69 @@ export const RoutingController = {
         return `${(meters / 1000).toFixed(1)} km`;
     },
 
+    updateTrailingButtons(type) {
+        if (type === 'origin' || !type) {
+            const input = document.getElementById('nav-origin-input');
+            const gpsBtn = document.getElementById('nav-origin-my-location');
+            const clearBtn = document.getElementById('nav-origin-clear');
+            const isFilled = input && !!(input.value || '').trim();
+            if (gpsBtn) {
+                if (isFilled) gpsBtn.classList.add('hidden');
+                else gpsBtn.classList.remove('hidden');
+            }
+            if (clearBtn) {
+                if (isFilled) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+            }
+        }
+        if (type === 'destination' || !type) {
+            const input = document.getElementById('nav-dest-input');
+            const gpsBtn = document.getElementById('nav-dest-my-location');
+            const clearBtn = document.getElementById('nav-dest-clear');
+            const isFilled = input && !!(input.value || '').trim();
+            if (gpsBtn) {
+                if (isFilled) gpsBtn.classList.add('hidden');
+                else gpsBtn.classList.remove('hidden');
+            }
+            if (clearBtn) {
+                if (isFilled) clearBtn.classList.remove('hidden');
+                else clearBtn.classList.add('hidden');
+            }
+        }
+    },
+
+    clearOrigin() {
+        this.routeStart = null;
+        this.routeStartName = '';
+        if (this.routeStartMarker) {
+            this.routeStartMarker.remove();
+            this.routeStartMarker = null;
+        }
+        const input = document.getElementById('nav-origin-input');
+        if (input) {
+            input.value = '';
+            if (typeof input.focus === 'function') input.focus();
+        }
+        this.updateTrailingButtons('origin');
+        this.clearRouteDisplay();
+    },
+
+    clearDestination() {
+        this.routeEnd = null;
+        this.routeEndName = '';
+        if (this.routeEndMarker) {
+            this.routeEndMarker.remove();
+            this.routeEndMarker = null;
+        }
+        const input = document.getElementById('nav-dest-input');
+        if (input) {
+            input.value = '';
+            if (typeof input.focus === 'function') input.focus();
+        }
+        this.updateTrailingButtons('destination');
+        this.clearRouteDisplay();
+    },
+
     renderAutocomplete(results, dropdownEl, onSelect) {
         dropdownEl.innerHTML = '';
         let hasItems = false;
@@ -119,11 +183,10 @@ export const RoutingController = {
                 const clone = template.content.cloneNode(true);
                 clone.querySelector('.item-name').textContent = 'Home';
                 clone.querySelector('.item-address').textContent = home.address;
-                const iconSpan = clone.querySelector('.material-icons-outlined');
+                const iconSpan = clone.querySelector('.autocomplete-icon') || clone.querySelector('.material-symbols-outlined') || clone.querySelector('.material-icons-outlined');
                 if (iconSpan) iconSpan.textContent = 'home';
 
                 const itemDiv = clone.querySelector('.nav-autocomplete-item');
-                if (itemDiv) itemDiv.classList.add('bg-indigo-50/40', 'dark:bg-indigo-950/30');
 
                 itemDiv.addEventListener('click', () => {
                     onSelect({
@@ -174,6 +237,7 @@ export const RoutingController = {
 
     setupAutocomplete(inputEl, dropdownEl, type) {
         inputEl.addEventListener('input', () => {
+            this.updateTrailingButtons(type);
             clearTimeout(this.navAutocompleteTimeout);
             const query = inputEl.value.trim();
             if (query.length < 2) {
@@ -181,6 +245,7 @@ export const RoutingController = {
                 if (home) {
                     this.renderAutocomplete([], dropdownEl, (place) => {
                         inputEl.value = place.name;
+                        this.updateTrailingButtons(type);
                         const latlng = { lat: place.lat, lng: place.lng };
                         if (type === 'origin') {
                             this.setOrigin(latlng, place.name);
@@ -197,8 +262,10 @@ export const RoutingController = {
             this.navAutocompleteTimeout = setTimeout(async () => {
                 try {
                     const results = await ApiService.searchGeocode(query, 5);
+                    if (this.navFocusedInput !== type) return;
                     this.renderAutocomplete(results, dropdownEl, (place) => {
                         inputEl.value = place.name;
+                        this.updateTrailingButtons(type);
                         const latlng = { lat: place.lat, lng: place.lng };
                         if (type === 'origin') {
                             this.setOrigin(latlng, place.name);
@@ -214,11 +281,28 @@ export const RoutingController = {
 
         inputEl.addEventListener('focus', () => {
             this.navFocusedInput = type;
-            if (!inputEl.value.trim()) {
+            const query = inputEl.value ? inputEl.value.trim() : '';
+            if (query.length >= 2) {
+                ApiService.searchGeocode(query, 5).then(results => {
+                    if (this.navFocusedInput === type) {
+                        this.renderAutocomplete(results, dropdownEl, (place) => {
+                            inputEl.value = place.name;
+                            this.updateTrailingButtons(type);
+                            const latlng = { lat: place.lat, lng: place.lng };
+                            if (type === 'origin') {
+                                this.setOrigin(latlng, place.name);
+                            } else {
+                                this.setDestination(latlng, place.name);
+                            }
+                        });
+                    }
+                }).catch(e => console.error("Autocomplete search failed", e));
+            } else if (!query) {
                 const home = MapService.getHomeAddress();
                 if (home) {
                     this.renderAutocomplete([], dropdownEl, (place) => {
                         inputEl.value = place.name;
+                        this.updateTrailingButtons(type);
                         const latlng = { lat: place.lat, lng: place.lng };
                         if (type === 'origin') {
                             this.setOrigin(latlng, place.name);
@@ -235,6 +319,8 @@ export const RoutingController = {
                 if (this.navFocusedInput === type) {
                     this.navFocusedInput = null;
                 }
+                dropdownEl.innerHTML = '';
+                dropdownEl.classList.add('hidden');
             }, 200);
         });
 
@@ -304,6 +390,7 @@ export const RoutingController = {
             const input = document.getElementById('nav-origin-input');
             if (input) input.value = name || `${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`;
         }
+        this.updateTrailingButtons('origin');
 
         if (this.routeStartMarker) this.routeStartMarker.remove();
         this.routeStartMarker = this.createNavMarker(latlng, 'origin').addTo(MapService.map);
@@ -319,6 +406,7 @@ export const RoutingController = {
             const input = document.getElementById('nav-dest-input');
             if (input) input.value = name || `${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`;
         }
+        this.updateTrailingButtons('destination');
 
         if (this.routeEndMarker) this.routeEndMarker.remove();
         this.routeEndMarker = this.createNavMarker(latlng, 'destination').addTo(MapService.map);
@@ -346,6 +434,7 @@ export const RoutingController = {
 
         if (originInput) originInput.value = this.routeStartName || (this.routeStart ? `${this.routeStart.lat.toFixed(4)}, ${this.routeStart.lng.toFixed(4)}` : '');
         if (destInput) destInput.value = this.routeEndName || (this.routeEnd ? `${this.routeEnd.lat.toFixed(4)}, ${this.routeEnd.lng.toFixed(4)}` : '');
+        this.updateTrailingButtons();
 
         if (this.routeStartMarker) this.routeStartMarker.remove();
         if (this.routeEndMarker) this.routeEndMarker.remove();
@@ -362,29 +451,45 @@ export const RoutingController = {
         this.tryCalculateRoute();
     },
 
-    useMyLocation() {
+    useMyLocation(target = 'origin') {
         if (!navigator.geolocation) return;
-        const originInput = document.getElementById('nav-origin-input');
-        if (originInput) originInput.value = 'Locating...';
+        const inputId = target === 'origin' ? 'nav-origin-input' : 'nav-dest-input';
+        const input = document.getElementById(inputId);
+        if (input) {
+            input.value = 'Locating...';
+            this.updateTrailingButtons(target);
+        }
 
         navigator.geolocation.getCurrentPosition(
             async (pos) => {
                 const latlng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
                 try {
                     const res = await ApiService.reverseGeocode(latlng.lat, latlng.lng);
-                    let name = `${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`;
+                    let name = 'My location';
                     if (res && res.display_name) {
                         name = res.display_name.split(',').slice(0, 2).join(',').trim();
                     }
-                    if (originInput) originInput.value = name;
-                    this.setOrigin(latlng, name, true);
+                    if (input) input.value = name;
+                    if (target === 'origin') {
+                        this.setOrigin(latlng, name, true);
+                    } else {
+                        this.setDestination(latlng, name, true);
+                    }
                 } catch (err) {
                     console.error("Reverse geocoding my location failed", err);
-                    if (originInput) originInput.value = '';
+                    const coordName = `${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}`;
+                    if (input) input.value = coordName;
+                    if (target === 'origin') {
+                        this.setOrigin(latlng, coordName, true);
+                    } else {
+                        this.setDestination(latlng, coordName, true);
+                    }
                 }
+                this.updateTrailingButtons(target);
             },
             () => {
-                if (originInput) originInput.value = '';
+                if (input) input.value = '';
+                this.updateTrailingButtons(target);
             },
             { timeout: 8000 }
         );
@@ -452,12 +557,20 @@ export const RoutingController = {
     },
 
     setProfile(profile) {
-        document.querySelectorAll('.nav-mode-btn').forEach(btn => {
+        document.querySelectorAll('.nav-mode-group md-button, .nav-mode-btn, [data-nav-mode]').forEach(btn => {
             const mode = btn.getAttribute('data-nav-mode');
             if (mode === profile) {
-                btn.className = 'nav-mode-btn flex-1 flex items-center justify-center gap-1 py-1.5 text-[11px] font-bold rounded-lg transition-all bg-blue-600 text-white shadow-sm';
+                if (typeof btn.setAttribute === 'function') {
+                    btn.setAttribute('variant', 'filled');
+                    btn.removeAttribute('icon-only');
+                }
+                if (btn.classList) btn.classList.add('active');
             } else {
-                btn.className = 'nav-mode-btn flex-1 flex items-center justify-center gap-1 py-1.5 text-[11px] font-semibold rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-all';
+                if (typeof btn.setAttribute === 'function') {
+                    btn.setAttribute('variant', 'outlined');
+                    btn.setAttribute('icon-only', '');
+                }
+                if (btn.classList) btn.classList.remove('active');
             }
         });
 

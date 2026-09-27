@@ -31,8 +31,13 @@ if (buttonClass && buttonClass.elementStyles && !buttonClass._responsivePatched)
     buttonClass.elementStyles.push(css`
         :host([icon-only]) button,
         :host([icon-only]) a {
-            min-width: 44px;
-            padding: 0 12px;
+            min-width: 36px;
+            padding: 0 8px;
+        }
+        :host-context(.nav-mode-group) button,
+        :host-context(.nav-mode-group) a {
+            min-width: 36px;
+            padding: 0 8px;
         }
     `);
 }
