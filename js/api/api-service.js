@@ -62,6 +62,19 @@ export const ApiService = {
         return await res.json();
     },
 
+    async calculateMultiPointRoute(points, profile = 'driving') {
+        if (!points || points.length < 2) return null;
+        let profileSlug = 'driving';
+        if (profile === 'cycling') profileSlug = 'bike';
+        if (profile === 'foot') profileSlug = 'foot';
+
+        const coordsStr = points.map(p => `${p.lng},${p.lat}`).join(';');
+        const url = `https://router.project-osrm.org/route/v1/${profileSlug}/${coordsStr}?geometries=geojson&overview=full&steps=true&alternatives=false`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`OSRM routing failed: ${res.statusText}`);
+        return await res.json();
+    },
+
     async fetchWikimediaImage(lat, lng, radius = 1000) {
         const url = `https://commons.wikimedia.org/w/api.php?action=query&generator=geosearch&ggsnamespace=6&ggsradius=${radius}&ggscoord=${lat}|${lng}&ggslimit=5&prop=imageinfo&iiprop=url|mime&iiurlwidth=800&format=json&origin=*`;
         const res = await fetch(url);

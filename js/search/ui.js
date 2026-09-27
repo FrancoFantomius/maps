@@ -3,6 +3,8 @@
 import { MapService } from '../map/index.js';
 import { MarkerController } from '../markers/index.js';
 import { HUDController } from '../hud/index.js';
+import { MeasurementController } from '../measurement/index.js';
+import { RoutingController } from '../routing/index.js';
 import { selectResult } from './selectResult.js';
 import { prioritizeResults } from './prioritizeResults.js';
 import { getRecentSearches, addRecentSearch, removeRecentSearch, clearRecentSearches } from './recentSearches.js';
@@ -729,6 +731,10 @@ export function setupSearchUI(SearchController, HUDController, MarkerController,
                 } else {
                     HUDController.setState('places');
                 }
+            } else if (HUDController.currentState === 'measure') {
+                MeasurementController.exit();
+            } else if (HUDController.currentState === 'route') {
+                RoutingController.exit();
             } else if (HUDController.currentState === 'saved-places') {
                 HUDController.setState('places');
             } else {

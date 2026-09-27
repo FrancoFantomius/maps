@@ -154,10 +154,12 @@ export function setupMarkerModalUI(MarkerController) {
     const markerModal = document.getElementById('marker-modal');
     if (markerModal && !markerModal._boundClose) {
         markerModal._boundClose = true;
-        markerModal.addEventListener('close', () => {
+        markerModal.addEventListener('close', (e) => {
+            if (e.target && e.target !== markerModal) return;
             MarkerController.closeModal();
         });
-        markerModal.addEventListener('cancel', () => {
+        markerModal.addEventListener('cancel', (e) => {
+            if (e.target && e.target !== markerModal) return;
             MarkerController.closeModal();
         });
     }

@@ -66,12 +66,43 @@ export const RoutingController = {
         return `${hours} hr ${remainingMins} min`;
     },
 
-    formatDistance(meters) {
+    formatDistance(meters, useImperial) {
+        const isImperial = typeof useImperial === 'boolean'
+            ? useImperial
+            : (typeof localStorage !== 'undefined' && localStorage.getItem('maps_imperial_units') === 'true');
+
+        if (!meters || meters <= 0) {
+            return isImperial ? '0.0 mi' : '0.0 km';
+        }
+
+        if (isImperial) {
+            const feet = meters * 3.28084;
+            const miles = meters / 1609.344;
+            if (feet < 1000) return `${Math.round(feet)} ft`;
+            return `${miles.toFixed(1)} mi`;
+        }
+
         if (meters < 1000) return `${Math.round(meters)} m`;
         return `${(meters / 1000).toFixed(1)} km`;
     },
 
-    formatStepDistance(meters) {
+    formatStepDistance(meters, useImperial) {
+        const isImperial = typeof useImperial === 'boolean'
+            ? useImperial
+            : (typeof localStorage !== 'undefined' && localStorage.getItem('maps_imperial_units') === 'true');
+
+        if (!meters || meters <= 0) {
+            return isImperial ? '0 ft' : '0 m';
+        }
+
+        if (isImperial) {
+            const feet = meters * 3.28084;
+            const miles = meters / 1609.344;
+            if (feet < 100) return `${Math.round(feet)} ft`;
+            if (feet < 1000) return `${Math.round(feet / 10) * 10} ft`;
+            return `${miles.toFixed(1)} mi`;
+        }
+
         if (meters < 100) return `${Math.round(meters)} m`;
         if (meters < 1000) return `${Math.round(meters / 10) * 10} m`;
         return `${(meters / 1000).toFixed(1)} km`;
@@ -242,7 +273,6 @@ export const RoutingController = {
             .setLngLat([latlng.lng, latlng.lat]);
 
         el.addEventListener('click', (e) => e.stopPropagation());
-        el.addEventListener('mousedown', (e) => e.stopPropagation());
 
         marker.on('dragend', async () => {
             const lngLat = marker.getLngLat();
@@ -617,6 +647,10 @@ export const RoutingController = {
 
         if (viaEl) {
             let viaRoad = 'Fastest route';
+            const isImperial = (typeof localStorage !== 'undefined' && localStorage.getItem('maps_imperial_units') === 'true');
+            const footSpeed = isImperial ? '3.0 mph' : '4.8 km/h';
+            const bikeSpeed = isImperial ? '10.3 mph' : '16.5 km/h';
+
             if (route.legs && route.legs[0] && route.legs[0].steps) {
                 const steps = route.legs[0].steps;
                 let longestStep = steps[0];
@@ -625,15 +659,15 @@ export const RoutingController = {
                 });
                 if (longestStep && longestStep.name && longestStep.name.trim()) {
                     if (this.routingProfile === 'foot') {
-                        viaRoad = `via ${longestStep.name} (4.8 km/h)`;
+                        viaRoad = `via ${longestStep.name} (${footSpeed})`;
                     } else if (this.routingProfile === 'cycling') {
-                        viaRoad = `via ${longestStep.name} (16.5 km/h)`;
+                        viaRoad = `via ${longestStep.name} (${bikeSpeed})`;
                     } else {
                         viaRoad = `via ${longestStep.name}`;
                     }
                 } else {
-                    if (this.routingProfile === 'foot') viaRoad = 'Walking at 4.8 km/h';
-                    if (this.routingProfile === 'cycling') viaRoad = 'Cycling at 16.5 km/h';
+                    if (this.routingProfile === 'foot') viaRoad = `Walking at ${footSpeed}`;
+                    if (this.routingProfile === 'cycling') viaRoad = `Cycling at ${bikeSpeed}`;
                 }
             }
             viaEl.innerText = viaRoad;

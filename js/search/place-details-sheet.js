@@ -324,12 +324,14 @@ export function setupPlaceDetailsSheet(SearchController, HUDController, MarkerCo
 
     if (sheet && !sheet._bound) {
         sheet._bound = true;
-        sheet.addEventListener('close', () => {
+        sheet.addEventListener('close', (e) => {
+            if (e.target && e.target !== sheet) return;
             if (HUDController && HUDController.currentState === 'place-details') {
                 handleDismiss();
             }
         });
-        sheet.addEventListener('close-click', () => {
+        sheet.addEventListener('close-click', (e) => {
+            if (e.target && e.target !== sheet) return;
             handleDismiss();
         });
     }

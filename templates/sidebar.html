@@ -153,22 +153,68 @@
 
     <div class="measure-sheet-header">
         <div class="measure-sheet-header-text">
-            <div class="measure-sheet-title-row">
-                <span class="measure-dot"></span>
-                <h2 class="measure-title" data-i18n="measurement.title">Measure Distance</h2>
-            </div>
-            <p id="measure-desc" class="measure-subtitle" data-i18n="measurement.click_to_start">Click sequential points on the map to calculate linear distance path.</p>
+            <h2 class="measure-title" data-i18n="measurement.title">Measure Distance</h2>
+            <p id="measure-desc" class="measure-subtitle" data-i18n="measurement.click_to_start">Click sequential points on the map to calculate distance.</p>
         </div>
-        <md-icon-button id="btn-exit-measure" icon="close" aria-label="Exit measurement" data-i18n-aria-label="measurement.exit" variant="standard"></md-icon-button>
     </div>
 
-    <md-divider style="margin: 0.5rem 0 0.75rem 0;"></md-divider>
+    <!-- Mode Selector: Distance (geodesic straight) vs Path (routed road/path) vs Area (polygon area) -->
+    <div class="measure-mode-wrapper">
+        <md-button-group connected full-width class="measure-mode-group">
+            <md-button id="measure-mode-distance" variant="filled" icon="polyline">
+                <span>Distance</span>
+            </md-button>
+            <md-button id="measure-mode-path" variant="outlined" icon="conversion_path">
+                <span>Path</span>
+            </md-button>
+            <md-button id="measure-mode-area" variant="outlined" icon="square_foot">
+                <span>Area</span>
+            </md-button>
+        </md-button-group>
+        <md-tooltip for="measure-mode-distance" position="bottom">Straight-line distance</md-tooltip>
+        <md-tooltip for="measure-mode-path" position="bottom">Path route distance</md-tooltip>
+        <md-tooltip for="measure-mode-area" position="bottom">Enclosed area measurement</md-tooltip>
+    </div>
 
-    <!-- Distance Output Card -->
-    <div class="measure-result-card">
-        <div class="measure-result-accent"></div>
-        <span class="measure-result-label" data-i18n="measurement.total_distance">Linear Distance</span>
-        <div id="measure-output" class="measure-result-value">Total Distance: 0.00 km</div>
+    <!-- Distance Output Top Summary (Not in a card) -->
+    <div class="measure-summary-section">
+        <span class="measure-summary-label" data-i18n="measurement.total_distance">Total Distance</span>
+        <div id="measure-total-value" class="measure-total-value">0.00 km</div>
+        
+        <div class="measure-travel-time-container">
+            <span class="measure-travel-time-label">Travel Time</span>
+            <div id="measure-estimates" class="measure-travel-time-row">
+                <span class="measure-time-item"><span class="measure-time-mode">Walk:</span> <span id="measure-time-walk">—</span></span>
+                <span class="measure-time-separator">·</span>
+                <span class="measure-time-item"><span class="measure-time-mode">Bike:</span> <span id="measure-time-bike">—</span></span>
+                <span class="measure-time-separator">·</span>
+                <span class="measure-time-item"><span class="measure-time-mode">Car:</span> <span id="measure-time-car">—</span></span>
+            </div>
+        </div>
+        <div id="measure-output" class="hidden">Total Distance: 0.00 km</div>
+    </div>
+
+    <md-divider style="margin: 0.75rem 0 0.5rem 0;"></md-divider>
+
+    <!-- Breakdown of Distance Between Points -->
+    <div class="measure-breakdown-section">
+        <div class="measure-breakdown-header">
+            <span class="measure-breakdown-title">Points & Segments</span>
+            <button type="button" id="btn-clear-measure" class="measure-clear-btn hidden">Clear</button>
+        </div>
+        <div id="measure-points-list" class="measure-points-list">
+            <div class="measure-empty-state">
+                <md-icon name="straighten" class="measure-empty-icon"></md-icon>
+                <p class="measure-empty-text">Click on the map to add measurement points</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Action to Save Current Path as GPX -->
+    <div class="measure-footer-actions">
+        <md-button id="btn-save-gpx" variant="tonal" icon="download" disabled style="width: 100%;">
+            <span>Save as GPX</span>
+        </md-button>
     </div>
 </md-side-sheet>
 

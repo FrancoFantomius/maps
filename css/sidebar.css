@@ -369,19 +369,12 @@
 .measure-sheet-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .measure-sheet-header-text {
   flex: 1;
   min-width: 0;
-}
-
-.measure-sheet-title-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 }
 
 .measure-title {
@@ -392,15 +385,6 @@
   letter-spacing: -0.01em;
 }
 
-.measure-dot {
-  width: 0.625rem;
-  height: 0.625rem;
-  border-radius: 50%;
-  background-color: var(--color-teal, #14b8a6);
-  box-shadow: 0 0 8px rgba(20, 184, 166, 0.6);
-  animation: pulse 1.5s infinite;
-}
-
 .measure-subtitle {
   font-size: 0.75rem;
   color: var(--text-muted);
@@ -408,41 +392,252 @@
   line-height: 1.4;
 }
 
-.measure-result-card {
-  background: var(--color-teal-subtle, rgba(20, 184, 166, 0.08));
-  border: 1px solid rgba(20, 184, 166, 0.25);
-  border-radius: 0.875rem;
-  padding: 1rem;
+.measure-mode-wrapper {
+  margin-bottom: 0.75rem;
+}
+
+.measure-mode-group {
+  width: 100%;
+}
+
+.measure-mode-group md-button {
+  flex: 1;
+}
+
+.measure-summary-section {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  position: relative;
-  overflow: hidden;
-  margin-top: 0.5rem;
+  padding: 0.5rem 0;
 }
 
-.measure-result-accent {
-  width: 4px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background-color: var(--color-teal, #14b8a6);
-}
-
-.measure-result-label {
-  font-size: 0.625rem;
+.measure-summary-label {
+  font-size: 0.6875rem;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.measure-total-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.measure-travel-time-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin-top: 0.375rem;
+}
+
+.measure-travel-time-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.measure-travel-time-row {
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.measure-time-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.measure-time-mode {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.measure-time-separator {
+  color: var(--border-subtle);
+  font-weight: 700;
+}
+
+.measure-estimates {
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.125rem;
+}
+
+.measure-breakdown-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 1rem;
+}
+
+.measure-breakdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.measure-breakdown-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.measure-clear-btn {
+  background: none;
+  border: none;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--md-sys-color-primary, #6366f1);
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.measure-clear-btn:hover {
+  text-decoration: underline;
+  background-color: var(--bg-subtle);
+}
+
+.measure-points-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: calc(100vh - 380px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.measure-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.measure-empty-icon {
+  font-size: 2.25rem;
+  opacity: 0.4;
+  margin-bottom: 0.5rem;
+}
+
+.measure-empty-text {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.measure-point-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.625rem;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.5rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+  cursor: pointer;
+}
+
+.measure-point-item:hover {
+  background-color: var(--bg-card-hover, rgba(0,0,0,0.04));
+  border-color: var(--color-teal, #14b8a6);
+}
+
+.measure-point-badge {
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 50%;
+  background-color: var(--color-teal, #14b8a6);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.measure-point-coords {
+  flex: 1;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  font-family: var(--font-mono, monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.measure-point-delete {
+  --md-icon-button-size: 28px;
+  --md-icon-button-icon-size: 18px;
+  color: var(--text-muted);
+}
+
+.measure-segment-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0 0.25rem 0.625rem;
+  position: relative;
+}
+
+.measure-segment-line {
+  position: absolute;
+  left: 1.3125rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border-subtle);
+}
+
+.measure-segment-info {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0;
+  margin-left: 1.625rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+
+.measure-segment-icon {
+  font-size: 0.875rem;
   color: var(--color-teal, #14b8a6);
 }
 
-.measure-result-value {
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: var(--text-primary);
-  letter-spacing: -0.01em;
+.measure-segment-distance {
+  color: var(--text-secondary, var(--text-primary));
+  font-weight: 600;
+  font-size: 0.8125rem;
+}
+
+.measure-footer-actions {
+  margin-top: auto;
+  padding-top: 0.75rem;
 }
 
 /* ==========================================================================

@@ -23,6 +23,7 @@ describe('Settings module', () => {
         <input type="checkbox" id="toggle-overlay-trekking" />
         <input type="checkbox" id="toggle-overlay-perspective" />
         <input type="checkbox" id="toggle-url-location" />
+        <input type="checkbox" id="toggle-imperial-units" />
       </div>
       <div class="bottom-ui-element"></div>
       <div class="maplibregl-ctrl-bottom-left"></div>
@@ -32,9 +33,11 @@ describe('Settings module', () => {
       activeLayerKey: 'street',
       activeOverlays: { labels: false, bike: false, trekking: false, perspective: false, transport: false },
       isUrlLocationEnabled: true,
+      isImperialUnits: false,
       setBaseLayer: vi.fn((key) => { mockMapService.activeLayerKey = key; }),
       toggleOverlay: vi.fn((key, val) => { mockMapService.activeOverlays[key] = val; }),
       setUrlLocationEnabled: vi.fn((val) => { mockMapService.isUrlLocationEnabled = val; }),
+      setImperialUnits: vi.fn((val) => { mockMapService.isImperialUnits = val; }),
       syncSettingsSquaresUI: vi.fn(),
       updateSettingsPreviews: vi.fn(),
     };
@@ -164,6 +167,20 @@ describe('Settings module', () => {
 
     toggleUrl.dispatchEvent(new CustomEvent('change', { detail: { selected: true } }));
     expect(mockMapService.setUrlLocationEnabled).toHaveBeenCalledWith(true);
+  });
+
+  it('handles Imperial Units toggle changes', () => {
+    setupSettingsUI(mockMapService);
+
+    const toggleImperial = document.getElementById('toggle-imperial-units');
+    expect(toggleImperial.checked).toBe(false);
+
+    toggleImperial.checked = true;
+    toggleImperial.dispatchEvent(new Event('change'));
+    expect(mockMapService.setImperialUnits).toHaveBeenCalledWith(true);
+
+    toggleImperial.dispatchEvent(new CustomEvent('change', { detail: { selected: false } }));
+    expect(mockMapService.setImperialUnits).toHaveBeenCalledWith(false);
   });
 
   it('toggles settings panel and active class when btn-layers is clicked', () => {

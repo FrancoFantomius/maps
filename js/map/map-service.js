@@ -18,6 +18,7 @@ export const MapService = {
     activeLayerKey: 'street',
     activeOverlays: { labels: false, bike: false, trekking: false, perspective: false, transport: false },
     isUrlLocationEnabled: true,
+    isImperialUnits: false,
     highlightedPathCoords: null,
 
     init() {
@@ -30,6 +31,9 @@ export const MapService = {
 
         const savedUrlLocation = localStorage.getItem('maps_url_location_enabled');
         this.isUrlLocationEnabled = (savedUrlLocation === 'true' || savedUrlLocation === null);
+
+        const savedImperial = localStorage.getItem('maps_imperial_units');
+        this.isImperialUnits = (savedImperial === 'true');
 
         // Step 0: Check URL coordinates if enabled (highest priority when link is opened)
         const urlCoords = this.isUrlLocationEnabled ? parseUrlCoordinates() : null;
@@ -538,11 +542,25 @@ export const MapService = {
             });
         }
 
-        // 6. Add measurement line layers and sources
+        // 6. Add measurement line and fill layers and sources
         if (!this.map.getSource('measure-source')) {
             this.map.addSource('measure-source', {
                 type: 'geojson',
                 data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } }
+            });
+        }
+        if (!this.map.getLayer('measure-fill-layer')) {
+            this.map.addLayer({
+                id: 'measure-fill-layer',
+                source: 'measure-source',
+                type: 'fill',
+                layout: {
+                    visibility: (MeasurementController.isMeasureMode && MeasurementController.mode === 'area') ? 'visible' : 'none'
+                },
+                paint: {
+                    'fill-color': '#14b8a6',
+                    'fill-opacity': 0.18
+                }
             });
         }
         if (!this.map.getLayer('measure-line-layer')) {
@@ -625,15 +643,11 @@ export const MapService = {
     restoreActiveLayerData() {
         if (!this.map) return;
 
-        // Restore linear distance measurement
+        // Restore measurement
         if (MeasurementController.measurePoints && MeasurementController.measurePoints.length > 0) {
-            this.updateSourceData('measure-source', {
-                type: 'Feature',
-                geometry: {
-                    type: 'LineString',
-                    coordinates: MeasurementController.measurePoints.map(p => [p.lng, p.lat])
-                }
-            });
+            MeasurementController.updateLine();
+        } else {
+            this.setMeasureFillVisibility(false);
         }
 
         // Restore routing path
@@ -898,6 +912,16 @@ export const MapService = {
             overlayToggleUrlLocation.checked = this.isUrlLocationEnabled;
         }
 
+        const savedImperial = localStorage.getItem('maps_imperial_units');
+        this.isImperialUnits = (savedImperial === 'true');
+        const overlayToggleImperial = document.getElementById('toggle-imperial-units');
+        if (overlayToggleImperial) {
+            if ('selected' in overlayToggleImperial) {
+                overlayToggleImperial.selected = this.isImperialUnits;
+            }
+            overlayToggleImperial.checked = this.isImperialUnits;
+        }
+
         this.syncPerspectiveButtonState();
         this.syncSettingsSquaresUI();
         this.updateSettingsPreviews();
@@ -1036,6 +1060,13 @@ export const MapService = {
                 this.map.setLayoutProperty(layer.id, 'visibility', show ? 'visible' : 'none');
             }
         });
+    },
+
+    setMeasureFillVisibility(show) {
+        if (!this.map || typeof this.map.setLayoutProperty !== 'function') return;
+        if (typeof this.map.getLayer === 'function' && this.map.getLayer('measure-fill-layer')) {
+            this.map.setLayoutProperty('measure-fill-layer', 'visibility', show ? 'visible' : 'none');
+        }
     },
 
     setStyle(styleUrl) {
@@ -1280,6 +1311,32 @@ export const MapService = {
         } else {
             this.clearUrlHash();
         }
+    },
+
+    setImperialUnits(enabled) {
+        this.isImperialUnits = Boolean(enabled);
+        localStorage.setItem('maps_imperial_units', this.isImperialUnits ? 'true' : 'false');
+        const toggleSwitch = document.getElementById('toggle-imperial-units');
+        if (toggleSwitch) {
+            if ('selected' in toggleSwitch) {
+                toggleSwitch.selected = this.isImperialUnits;
+            }
+            toggleSwitch.checked = this.isImperialUnits;
+        }
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('maps-unit-changed', { detail: { imperial: this.isImperialUnits } }));
+        }
+        if (MeasurementController && MeasurementController.isMeasureMode) {
+            MeasurementController.renderBreakdown();
+        }
+        if (RoutingController && RoutingController.lastRoutingData && RoutingController.lastRoutingData.routes && RoutingController.lastRoutingData.routes.length > 0) {
+            RoutingController.renderRouteSummary(RoutingController.lastRoutingData.routes[0]);
+            RoutingController.renderRouteSteps(RoutingController.lastRoutingData.routes[0]);
+        }
+    },
+
+    getImperialUnits() {
+        return this.isImperialUnits;
     },
 
     clearUrlHash() {

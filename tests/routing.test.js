@@ -73,11 +73,19 @@ describe('RoutingController', () => {
       expect(RoutingController.formatDuration(3900)).toBe('1 hr 5 min');
     });
 
-    it('formats distances cleanly', () => {
+    it('formats distances cleanly in metric by default and imperial when enabled', () => {
       expect(RoutingController.formatDistance(500)).toBe('500 m');
       expect(RoutingController.formatDistance(2500)).toBe('2.5 km');
       expect(RoutingController.formatStepDistance(45)).toBe('45 m');
       expect(RoutingController.formatStepDistance(250)).toBe('250 m');
+
+      // Imperial mode
+      expect(RoutingController.formatDistance(500, true)).toBe('1640.4 mi' ? (500 * 3.28084 >= 1000 ? `${(500 / 1609.344).toFixed(1)} mi` : `${Math.round(500 * 3.28084)} ft`) : '');
+      expect(RoutingController.formatDistance(100, true)).toBe('328 ft');
+      expect(RoutingController.formatDistance(2500, true)).toBe('1.6 mi');
+      expect(RoutingController.formatStepDistance(25, true)).toBe('82 ft');
+      expect(RoutingController.formatStepDistance(250, true)).toBe('820 ft');
+      expect(RoutingController.formatStepDistance(2500, true)).toBe('1.6 mi');
     });
   });
 

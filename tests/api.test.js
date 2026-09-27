@@ -131,6 +131,26 @@ describe('ApiService', () => {
         expect.stringContaining('/v1/foot/')
       );
     });
+
+    it('calculates multi-point route correctly via calculateMultiPointRoute', async () => {
+      const mockRoute = { routes: [{ distance: 5400, legs: [{ distance: 2000 }, { distance: 3400 }] }] };
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockRoute,
+      });
+
+      const points = [
+        { lat: 45.4, lng: 11.8 },
+        { lat: 45.42, lng: 11.85 },
+        { lat: 45.45, lng: 11.9 }
+      ];
+      const res = await ApiService.calculateMultiPointRoute(points, 'driving');
+
+      expect(fetch).toHaveBeenCalledWith(
+        'https://router.project-osrm.org/route/v1/driving/11.8,45.4;11.85,45.42;11.9,45.45?geometries=geojson&overview=full&steps=true&alternatives=false'
+      );
+      expect(res).toEqual(mockRoute);
+    });
   });
 
   describe('fetchWikipediaNearby & fetchWikipediaSummary', () => {

@@ -155,18 +155,22 @@ export function setupSettingsUI(MapService) {
         });
     }
 
-    settingsPanel.addEventListener('open', () => {
+    settingsPanel.addEventListener('open', (e) => {
+        if (e.target && e.target !== settingsPanel) return;
         MapService.syncSettingsSquaresUI?.();
         MapService.updateSettingsPreviews?.();
         updateControlPositions(true);
     });
-    settingsPanel.addEventListener('close', () => {
+    settingsPanel.addEventListener('close', (e) => {
+        if (e.target && e.target !== settingsPanel) return;
         setSettingsPanelOpen(false);
     });
-    settingsPanel.addEventListener('cancel', () => {
+    settingsPanel.addEventListener('cancel', (e) => {
+        if (e.target && e.target !== settingsPanel) return;
         setSettingsPanelOpen(false);
     });
-    settingsPanel.addEventListener('drag-dismiss', () => {
+    settingsPanel.addEventListener('drag-dismiss', (e) => {
+        if (e.target && e.target !== settingsPanel) return;
         setSettingsPanelOpen(false);
     });
 
@@ -274,6 +278,22 @@ export function setupSettingsUI(MapService) {
                 ? e.detail.selected
                 : (typeof e.target.selected === 'boolean' ? e.target.selected : e.target.checked);
             MapService.setUrlLocationEnabled?.(Boolean(isChecked));
+        });
+    }
+
+    const toggleImperialUnits = document.getElementById('toggle-imperial-units');
+    if (toggleImperialUnits) {
+        const isImperial = MapService.isImperialUnits === true;
+        if ('selected' in toggleImperialUnits) {
+            toggleImperialUnits.selected = isImperial;
+        }
+        toggleImperialUnits.checked = isImperial;
+
+        toggleImperialUnits.addEventListener('change', (e) => {
+            const isChecked = e.detail && typeof e.detail.selected === 'boolean'
+                ? e.detail.selected
+                : (typeof e.target.selected === 'boolean' ? e.target.selected : e.target.checked);
+            MapService.setImperialUnits?.(Boolean(isChecked));
         });
     }
 }

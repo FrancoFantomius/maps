@@ -18,12 +18,14 @@ export function setupHUDUI(HUDController, SearchController, MarkerController) {
     const savedPlacesSheet = document.getElementById('saved-places-sheet');
     if (savedPlacesSheet && !savedPlacesSheet._bound) {
         savedPlacesSheet._bound = true;
-        savedPlacesSheet.addEventListener('close', () => {
+        savedPlacesSheet.addEventListener('close', (e) => {
+            if (e.target && e.target !== savedPlacesSheet) return;
             if (HUDController && HUDController.currentState === 'saved-places') {
                 HUDController.setState('places');
             }
         });
-        savedPlacesSheet.addEventListener('close-click', () => {
+        savedPlacesSheet.addEventListener('close-click', (e) => {
+            if (e.target && e.target !== savedPlacesSheet) return;
             if (HUDController && HUDController.currentState === 'saved-places') {
                 HUDController.setState('places');
             }
@@ -33,12 +35,14 @@ export function setupHUDUI(HUDController, SearchController, MarkerController) {
     const measureSheet = document.getElementById('measure-sheet');
     if (measureSheet && !measureSheet._bound) {
         measureSheet._bound = true;
-        measureSheet.addEventListener('close', () => {
+        measureSheet.addEventListener('close', (e) => {
+            if (e.target && e.target !== measureSheet) return;
             if (HUDController && HUDController.currentState === 'measure') {
                 HUDController.setState('places');
             }
         });
-        measureSheet.addEventListener('close-click', () => {
+        measureSheet.addEventListener('close-click', (e) => {
+            if (e.target && e.target !== measureSheet) return;
             if (HUDController && HUDController.currentState === 'measure') {
                 HUDController.setState('places');
             }
@@ -48,12 +52,14 @@ export function setupHUDUI(HUDController, SearchController, MarkerController) {
     const navSheet = document.getElementById('nav-sheet');
     if (navSheet && !navSheet._bound) {
         navSheet._bound = true;
-        navSheet.addEventListener('close', () => {
+        navSheet.addEventListener('close', (e) => {
+            if (e.target && e.target !== navSheet) return;
             if (HUDController && HUDController.currentState === 'route') {
                 HUDController.setState('places');
             }
         });
-        navSheet.addEventListener('close-click', () => {
+        navSheet.addEventListener('close-click', (e) => {
+            if (e.target && e.target !== navSheet) return;
             if (HUDController && HUDController.currentState === 'route') {
                 HUDController.setState('places');
             }
