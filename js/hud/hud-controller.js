@@ -44,6 +44,9 @@ export const HUDController = {
         }
         const sheets = ['saved-places-sheet', 'place-details-sheet', 'measure-sheet', 'nav-sheet'];
         sheets.forEach(id => hideSheet(document.getElementById(id)));
+        if (MarkerController && typeof MarkerController.resetPagination === 'function') {
+            MarkerController.resetPagination();
+        }
     },
 
     expand() {
@@ -100,6 +103,9 @@ export const HUDController = {
             this.isOpen = true;
             if (SearchController && typeof SearchController.closePlaceDetails === 'function') {
                 SearchController.closePlaceDetails();
+            }
+            if (MarkerController && typeof MarkerController.resetPagination === 'function') {
+                MarkerController.resetPagination();
             }
             showSheet(savedPlacesSheet);
         } else if (hudState === 'place-details') {

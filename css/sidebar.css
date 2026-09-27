@@ -83,18 +83,28 @@
   line-height: 1;
 }
 
-.saved-places-subtitle {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin: 0.25rem 0 0 0;
-}
-
-.saved-markers-list {
+.saved-places-body {
   flex: 1;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+}
+
+.saved-markers-list {
+  display: flex;
+  flex-direction: column;
   padding: 0;
+}
+
+.saved-places-expand-container {
+  padding: 0.5rem 0.75rem 0.75rem 0.75rem;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.saved-places-expand-container.hidden {
+  display: none !important;
 }
 
 .marker-item {

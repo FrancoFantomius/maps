@@ -16,15 +16,22 @@
                 <h2 class="saved-places-title" data-i18n="markers.title">Saved Places</h2>
                 <span id="place-count-badge" class="saved-places-badge">0</span>
             </div>
-            <p class="saved-places-subtitle" data-i18n="app.subtitle">Your personalized custom pins</p>
         </div>
-        <md-icon-button id="btn-close-places" icon="close" aria-label="Close" data-i18n-aria-label="nav.close" variant="standard"></md-icon-button>
     </div>
 
     <md-divider style="margin: 0.5rem 0 0.75rem 0;"></md-divider>
 
-    <!-- Saved Markers Dynamic List -->
-    <md-list id="saved-markers-list" class="saved-markers-list custom-scrollbar"></md-list>
+    <!-- Saved Markers Dynamic List & Expand Action -->
+    <div class="saved-places-body custom-scrollbar">
+        <md-list id="saved-markers-list" class="saved-markers-list"></md-list>
+
+        <!-- Expand Button Container -->
+        <div id="saved-places-expand-container" class="saved-places-expand-container hidden">
+            <md-button id="btn-expand-saved-places" variant="tonal" icon="expand_more" style="width: 100%;">
+                <span>Expand</span>
+            </md-button>
+        </div>
+    </div>
 </md-side-sheet>
 
 <!-- Full-Height Material Design 3 Side-Sheet for Place Details (Dropped Pins / POI / Search Details) -->

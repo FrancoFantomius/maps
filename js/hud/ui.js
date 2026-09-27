@@ -14,15 +14,6 @@ export function setupHUDUI(HUDController, SearchController, MarkerController) {
         });
     }
 
-    // Close button inside Saved Places list
-    const btnClosePlaces = document.getElementById('btn-close-places');
-    if (btnClosePlaces && !btnClosePlaces._bound) {
-        btnClosePlaces._bound = true;
-        btnClosePlaces.addEventListener('click', (e) => {
-            e.stopPropagation();
-            HUDController.setState('places');
-        });
-    }
 
     const savedPlacesSheet = document.getElementById('saved-places-sheet');
     if (savedPlacesSheet && !savedPlacesSheet._bound) {

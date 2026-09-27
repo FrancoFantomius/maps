@@ -230,5 +230,131 @@ describe('MarkerController', () => {
 
       expect(deletePlaceFromDB).toHaveBeenCalledWith('m1');
     });
+
+    it('limits saved places in list to 3 and shows Expand button when > 3 places exist', () => {
+      document.body.innerHTML += `
+        <div id="saved-markers-list"></div>
+        <div id="saved-places-expand-container" class="hidden">
+          <button id="btn-expand-saved-places"></button>
+        </div>
+        <template id="template-marker-list-item">
+          <div class="marker-item">
+            <span class="marker-name"></span>
+          </div>
+        </template>
+      `;
+
+      MarkerController.customMarkers = [
+        { id: 'm1', name: 'Place 1', category: 'poi', lat: 10, lng: 20 },
+        { id: 'm2', name: 'Place 2', category: 'poi', lat: 11, lng: 21 },
+        { id: 'm3', name: 'Place 3', category: 'poi', lat: 12, lng: 22 },
+        { id: 'm4', name: 'Place 4', category: 'poi', lat: 13, lng: 23 },
+        { id: 'm5', name: 'Place 5', category: 'poi', lat: 14, lng: 24 },
+      ];
+
+      MarkerController.visibleLimit = 3;
+      MarkerController.renderAll();
+
+      const listEl = document.getElementById('saved-markers-list');
+      const items = listEl.querySelectorAll('.marker-item');
+      expect(items.length).toBe(3);
+
+      const expandContainer = document.getElementById('saved-places-expand-container');
+      expect(expandContainer.classList.contains('hidden')).toBe(false);
+
+      // Clicking expand loads 10 more (all remaining 2 in this case)
+      const expandBtn = document.getElementById('btn-expand-saved-places');
+      expandBtn.click();
+
+      expect(listEl.querySelectorAll('.marker-item').length).toBe(5);
+      expect(expandContainer.classList.contains('hidden')).toBe(true);
+    });
+
+    it('triggers loadMore on list scroll when near bottom', () => {
+      document.body.innerHTML += `
+        <div id="saved-markers-list" style="height: 100px; overflow-y: auto;"></div>
+        <div id="saved-places-expand-container" class="hidden">
+          <button id="btn-expand-saved-places"></button>
+        </div>
+        <template id="template-marker-list-item">
+          <div class="marker-item">
+            <span class="marker-name"></span>
+          </div>
+        </template>
+      `;
+
+      // 15 items
+      MarkerController.customMarkers = Array.from({ length: 15 }, (_, i) => ({
+        id: `m${i + 1}`,
+        name: `Place ${i + 1}`,
+        category: 'poi',
+        lat: 10 + i * 0.01,
+        lng: 20 + i * 0.01
+      }));
+
+      MarkerController.visibleLimit = 3;
+      MarkerController.renderAll();
+
+      const listEl = document.getElementById('saved-markers-list');
+      expect(listEl.querySelectorAll('.marker-item').length).toBe(3);
+
+      // Expand once -> 13 items
+      document.getElementById('btn-expand-saved-places').click();
+      expect(listEl.querySelectorAll('.marker-item').length).toBe(13);
+
+      // Mock scroll properties to simulate reaching end of list
+      Object.defineProperty(listEl, 'scrollTop', { value: 500, configurable: true });
+      Object.defineProperty(listEl, 'clientHeight', { value: 100, configurable: true });
+      Object.defineProperty(listEl, 'scrollHeight', { value: 600, configurable: true });
+
+      listEl.dispatchEvent(new Event('scroll'));
+      expect(listEl.querySelectorAll('.marker-item').length).toBe(15);
+    });
+
+    it('resets pagination limit back to 3 and re-shows Expand button when resetPagination is called', () => {
+      document.body.innerHTML += `
+        <div class="saved-places-body">
+          <div id="saved-markers-list"></div>
+          <div id="saved-places-expand-container" class="hidden">
+            <button id="btn-expand-saved-places"></button>
+          </div>
+        </div>
+        <template id="template-marker-list-item">
+          <div class="marker-item">
+            <span class="marker-name"></span>
+          </div>
+        </template>
+      `;
+
+      MarkerController.customMarkers = Array.from({ length: 8 }, (_, i) => ({
+        id: `m${i + 1}`,
+        name: `Place ${i + 1}`,
+        category: 'poi',
+        lat: 10 + i * 0.01,
+        lng: 20 + i * 0.01
+      }));
+
+      MarkerController.visibleLimit = 3;
+      MarkerController.renderAll();
+
+      const listEl = document.getElementById('saved-markers-list');
+      const expandContainer = document.getElementById('saved-places-expand-container');
+      const expandBtn = document.getElementById('btn-expand-saved-places');
+
+      expect(listEl.querySelectorAll('.marker-item').length).toBe(3);
+      expect(expandContainer.classList.contains('hidden')).toBe(false);
+
+      // Expand all items
+      expandBtn.click();
+      expect(listEl.querySelectorAll('.marker-item').length).toBe(8);
+      expect(expandContainer.classList.contains('hidden')).toBe(true);
+
+      // Reset pagination (e.g. sidebar closed and reopened)
+      MarkerController.resetPagination();
+
+      expect(MarkerController.visibleLimit).toBe(3);
+      expect(listEl.querySelectorAll('.marker-item').length).toBe(3);
+      expect(expandContainer.classList.contains('hidden')).toBe(false);
+    });
   });
 });

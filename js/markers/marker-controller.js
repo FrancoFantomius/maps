@@ -15,6 +15,8 @@ export const MarkerController = {
     homeMarkerInstance: null,
     currentTempDetails: null,
 
+    visibleLimit: 3,
+
     get colorPalette() {
         return colorPalette;
     },
@@ -69,6 +71,7 @@ export const MarkerController = {
 
     async loadFromStorage() {
         try {
+            this.visibleLimit = 3;
             this.customMarkers = await loadAllPlaces();
             this.renderAll();
         } catch (e) {
@@ -121,6 +124,7 @@ export const MarkerController = {
     renderAll() {
         const savedMarkersList = document.getElementById('saved-markers-list');
         const markersCount = document.getElementById('place-count-badge') || document.getElementById('markers-count');
+        const expandContainer = document.getElementById('saved-places-expand-container');
 
         if (this.markerInstances) {
             this.markerInstances.forEach(m => m.remove());
@@ -136,6 +140,9 @@ export const MarkerController = {
         this.renderHomeMarker();
 
         if (this.customMarkers.length === 0) {
+            if (expandContainer) {
+                expandContainer.classList.add('hidden');
+            }
             if (savedMarkersList) {
                 savedMarkersList.innerHTML = `
                     <div class="markers-empty-state">
@@ -193,9 +200,112 @@ export const MarkerController = {
 
                 this.markerInstances.push(pin);
             }
+        });
 
+        if (!this.visibleLimit || this.visibleLimit < 3) {
+            this.visibleLimit = 3;
+        }
+
+        const visibleMarkers = this.customMarkers.slice(0, this.visibleLimit);
+        visibleMarkers.forEach((m) => {
             this.renderListItem(m, savedMarkersList);
         });
+
+        if (expandContainer) {
+            if (this.customMarkers.length > this.visibleLimit) {
+                expandContainer.classList.remove('hidden');
+            } else {
+                expandContainer.classList.add('hidden');
+            }
+        }
+
+        this.setupListListeners(savedMarkersList);
+    },
+
+    resetPagination() {
+        this.visibleLimit = 3;
+        const savedMarkersList = document.getElementById('saved-markers-list');
+        const expandContainer = document.getElementById('saved-places-expand-container');
+        const scrollContainer = document.querySelector('.saved-places-body') || savedMarkersList;
+
+        if (scrollContainer) {
+            scrollContainer.scrollTop = 0;
+        }
+
+        if (savedMarkersList) {
+            savedMarkersList.innerHTML = '';
+            if (this.customMarkers.length === 0) {
+                if (expandContainer) expandContainer.classList.add('hidden');
+                savedMarkersList.innerHTML = `
+                    <div class="markers-empty-state">
+                        <md-icon name="bookmark_border" class="markers-empty-icon"></md-icon>
+                        <h4 class="markers-empty-title">No saved places yet</h4>
+                        <p class="markers-empty-desc">Click on the map or search for places to save your favorite locations.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const visibleMarkers = this.customMarkers.slice(0, this.visibleLimit);
+            visibleMarkers.forEach((m) => {
+                this.renderListItem(m, savedMarkersList);
+            });
+
+            if (expandContainer) {
+                if (this.customMarkers.length > this.visibleLimit) {
+                    expandContainer.classList.remove('hidden');
+                } else {
+                    expandContainer.classList.add('hidden');
+                }
+            }
+        }
+    },
+
+    loadMore() {
+        if (this.visibleLimit >= this.customMarkers.length) return;
+        const previousLimit = this.visibleLimit;
+        this.visibleLimit += 10;
+        const savedMarkersList = document.getElementById('saved-markers-list');
+        const expandContainer = document.getElementById('saved-places-expand-container');
+
+        if (savedMarkersList) {
+            const nextBatch = this.customMarkers.slice(previousLimit, this.visibleLimit);
+            nextBatch.forEach(m => {
+                this.renderListItem(m, savedMarkersList);
+            });
+        }
+
+        if (expandContainer) {
+            if (this.customMarkers.length > this.visibleLimit) {
+                expandContainer.classList.remove('hidden');
+            } else {
+                expandContainer.classList.add('hidden');
+            }
+        }
+    },
+
+    setupListListeners(savedMarkersList) {
+        const expandBtn = document.getElementById('btn-expand-saved-places');
+        if (expandBtn && !expandBtn._bound) {
+            expandBtn._bound = true;
+            expandBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.loadMore();
+            });
+        }
+
+        const scrollContainer = document.querySelector('.saved-places-body') || savedMarkersList;
+        if (scrollContainer && !scrollContainer._scrollBound) {
+            scrollContainer._scrollBound = true;
+            scrollContainer.addEventListener('scroll', () => {
+                const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+                if (scrollTop + clientHeight >= scrollHeight - 30) {
+                    if (this.visibleLimit < this.customMarkers.length) {
+                        this.loadMore();
+                    }
+                }
+            });
+        }
     },
 
     renderListItem(m, container) {
