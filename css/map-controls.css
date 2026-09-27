@@ -21,7 +21,7 @@
 
 /* Material Design 3 Unified FAB Base */
 .map-control-fab {
-  --md-sys-color-primary-container: var(--bg-card-solid, #ffffff);
+  --md-sys-color-primary-container: var(--md-sys-color-surface-container-high, #f1f5f9);
   --md-sys-color-on-primary-container: var(--text-primary, #0f172a);
   --md-sys-elevation-level3: 0 4px 10px rgba(0, 0, 0, 0.12);
   --md-sys-elevation-level4: 0 6px 14px rgba(0, 0, 0, 0.18);
@@ -32,7 +32,7 @@
 }
 
 .dark .map-control-fab {
-  --md-sys-color-primary-container: var(--bg-card-solid, #1e293b);
+  --md-sys-color-primary-container: var(--md-sys-color-surface-container-high, #1e293b);
   --md-sys-color-on-primary-container: var(--text-primary, #f8fafc);
   --md-sys-elevation-level3: 0 4px 12px rgba(0, 0, 0, 0.45);
   --md-sys-elevation-level4: 0 6px 16px rgba(0, 0, 0, 0.55);
@@ -71,7 +71,7 @@
 
 .compass-rotate-btn {
   position: absolute;
-  --md-sys-color-primary-container: var(--bg-card-solid, #ffffff);
+  --md-sys-color-primary-container: var(--md-sys-color-surface-container-high, #f1f5f9);
   --md-sys-color-on-primary-container: var(--text-secondary, #475569);
   --md-sys-elevation-level3: 0 2px 6px rgba(0, 0, 0, 0.1);
   --md-sys-elevation-level4: 0 4px 10px rgba(0, 0, 0, 0.16);
@@ -81,7 +81,7 @@
 }
 
 .dark .compass-rotate-btn {
-  --md-sys-color-primary-container: var(--bg-card-solid, #1e293b);
+  --md-sys-color-primary-container: var(--md-sys-color-surface-container-high, #1e293b);
   --md-sys-color-on-primary-container: var(--text-secondary, #cbd5e1);
   --md-sys-elevation-level3: 0 2px 6px rgba(0, 0, 0, 0.35);
   --md-sys-elevation-level4: 0 4px 10px rgba(0, 0, 0, 0.45);

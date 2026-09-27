@@ -1,29 +1,30 @@
-/* css/page-header.css - Static Documentation Header */
+/* css/page-header.css - M3 Static Documentation Header */
 
 .page-header {
-  padding: 2rem;
-  border-bottom: 1px solid var(--border-subtle);
-  background-color: var(--bg-card);
+  padding: 2.25rem 2rem 1.5rem;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant, var(--border-subtle));
+  background-color: var(--md-sys-color-surface-container-low, var(--bg-card));
 }
 
 .page-header-logo-wrapper {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 .page-header-title {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-weight: 700;
   font-size: 1.875rem;
   line-height: 2.25rem;
-  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  color: var(--md-sys-color-on-surface, var(--text-primary));
   margin: 0;
 }
 
 .page-header-updated {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-on-surface-variant, var(--text-muted));
+  margin-top: 0.375rem;
   margin-bottom: 0;
-  font-weight: 500;
+  font-weight: 400;
 }
 

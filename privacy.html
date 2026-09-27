@@ -15,49 +15,37 @@
         <!-- Content -->
         <div class="legal-content">
             <p class="legal-lead">
-                At Maps, your privacy is our core value. Maps is designed as a local-first, client-side application. We do not operate server infrastructure to collect, store, track, or sell your personal details or saved place markers.
+                Maps is designed as a local-first, client-side application. We do not operate server infrastructure to collect, store, track, or sell your personal details or saved place markers.
             </p>
 
-            <hr class="legal-divider">
+            <md-divider></md-divider>
 
             <section class="legal-section">
-                <h2 class="legal-section-title">
-                    <span class="material-icons-outlined">dns</span>
-                    <span>1. Local Storage & Database Security</span>
-                </h2>
+                <h2 class="legal-section-title">1. Local Storage & Database Security</h2>
                 <p>
                     All place markers, names, descriptions, and custom categories you record are stored locally on your device in a sandboxed PouchDB database. This data is private to your browser. Clearing your browser's application cache or using incognito/private modes will remove this database.
                 </p>
             </section>
 
             <section class="legal-section">
-                <h2 class="legal-section-title">
-                    <span class="material-icons-outlined">vpn_key</span>
-                    <span>2. End-to-End Encrypted Cloud Sync</span>
-                </h2>
+                <h2 class="legal-section-title">2. End-to-End Encrypted Cloud Sync</h2>
                 <p>
                     If you choose to enable cloud synchronization, Maps links directly to the secure cloud APIs provided by <strong>Filen</strong>. Your credentials (email, password, and two-factor code) are processed purely on the client side to retrieve security keys directly from Filen.
                 </p>
                 <p>
-                    Your saved places are compiled and encrypted client-side using military-grade AES-256-GCM encryption before leaving your device, then stored as a private file named <code>places.json</code> inside a folder named <code>Apps/maps</code>. We do not have access to your decryption keys, password, or plaintext places.
+                    Your saved places are compiled and encrypted client-side using AES-256-GCM encryption before leaving your device, then stored as a private file named <code>places.json</code> inside a folder named <code>Apps/maps</code>. We do not have access to your decryption keys, password, or plaintext places.
                 </p>
             </section>
 
             <section class="legal-section">
-                <h2 class="legal-section-title">
-                    <span class="material-icons-outlined">analytics</span>
-                    <span>3. Analytics and Data Collection</span>
-                </h2>
+                <h2 class="legal-section-title">3. Analytics and Data Collection</h2>
                 <p>
                     We do not collect diagnostics, crash logs, IP address tracking, telemetry, or user analytics. The application operates in complete anonymity.
                 </p>
             </section>
 
             <section class="legal-section">
-                <h2 class="legal-section-title">
-                    <span class="material-icons-outlined">code</span>
-                    <span>4. Open Source Transparency</span>
-                </h2>
+                <h2 class="legal-section-title">4. Open Source Transparency</h2>
                 <p>
                     Because this project is open-source and AGPL-3.0 licensed, you can review the source code directly, run your own builds, or contribute adjustments openly on the repository.
                 </p>
