@@ -9,6 +9,8 @@ import { MapService } from '../map/index.js';
 import { db } from './index.js';
 import { getSyncSettings, saveSyncSettings } from './IO.js';
 import { loadAllPlaces, getDeletedPlacesQueue, removeFromDeletedPlacesQueue } from './places.js';
+import { loadAllPaths, getDeletedPathsQueue, removeFromDeletedPathsQueue } from './paths.js';
+import { parseGPX } from '../paths/gpx-parser.js';
 
 // Polyfill Readable.from in the browser stream polyfill
 if (Readable) {
@@ -545,6 +547,13 @@ async function runSync() {
       }
     }
 
+    // Synchronize GPX path files in /Apps/maps
+    try {
+      await syncPaths(remoteFiles, parentUUID);
+    } catch (pathErr) {
+      console.error("[Sync] Error during paths sync:", pathErr);
+    }
+
     // Refresh storage stats from Filen after sync
     try {
       const info = await fetchFilenAccountInfo();
@@ -574,6 +583,150 @@ async function runSync() {
     updateSyncStatus('error');
   } finally {
     isSyncInProgress = false;
+  }
+}
+
+async function syncPaths(remoteFiles, parentUUID) {
+  const localPaths = await loadAllPaths();
+  const deletedPathsQueue = await getDeletedPathsQueue();
+  const remoteGpxFiles = (remoteFiles || []).filter(name => name.toLowerCase().endsWith('.gpx'));
+
+  // 1. Process deleted paths locally that need removing on remote
+  for (const delItem of deletedPathsQueue) {
+    const fileName = `${delItem.name}.gpx`;
+    if (remoteGpxFiles.includes(fileName)) {
+      try {
+        await filenClient.fs().rm({ path: `${FILEN_SYNC_DIR}/${fileName}`, permanent: true });
+      } catch (e) {
+        console.warn(`[Sync] Failed to delete remote file ${fileName}:`, e);
+      }
+    }
+    await removeFromDeletedPathsQueue(delItem.id);
+  }
+
+  // 2. Upload local paths that are new or updated
+  for (const localP of localPaths) {
+    if (deletedPathsQueue.some(item => item.id === localP.id)) continue;
+
+    const fileName = `${localP.name}.gpx`;
+    const remoteFileExists = remoteGpxFiles.includes(fileName);
+    let shouldUpload = false;
+
+    if (!remoteFileExists) {
+      shouldUpload = true;
+    } else {
+      try {
+        const stat = await filenClient.fs().stat({ path: `${FILEN_SYNC_DIR}/${fileName}` });
+        if (stat && localP.updatedAt > (stat.mtimeMs || 0)) {
+          shouldUpload = true;
+        }
+      } catch (e) {
+        shouldUpload = true;
+      }
+    }
+
+    if (shouldUpload && localP.gpx) {
+      try {
+        if (remoteFileExists) {
+          try {
+            await filenClient.fs().rm({ path: `${FILEN_SYNC_DIR}/${fileName}`, permanent: true });
+          } catch (e) { }
+        }
+        const blob = new Blob([localP.gpx], { type: 'application/gpx+xml' });
+        const file = new File([blob], fileName, {
+          type: 'application/gpx+xml',
+          lastModified: localP.updatedAt
+        });
+        await filenClient.cloud().uploadWebFile({
+          file,
+          parent: parentUUID,
+          name: fileName
+        });
+
+        const doc = await db.get(localP.id);
+        doc.synced = true;
+        doc.lastSynced = Date.now();
+        await db.put(doc);
+      } catch (err) {
+        console.error(`[Sync] Failed to upload path ${fileName}:`, err);
+      }
+    }
+  }
+
+  // 3. Download new or updated remote GPX files
+  let pathsChangedLocally = false;
+  for (const rFile of remoteGpxFiles) {
+    const pathName = rFile.replace(/\.gpx$/i, '');
+    const localMatch = localPaths.find(p => p.name === pathName || `${p.name}.gpx` === rFile);
+
+    if (deletedPathsQueue.some(item => item.name === pathName)) {
+      continue;
+    }
+
+    let shouldDownload = false;
+    let remoteMtime = 0;
+    try {
+      const stat = await filenClient.fs().stat({ path: `${FILEN_SYNC_DIR}/${rFile}` });
+      remoteMtime = stat ? stat.mtimeMs : 0;
+    } catch (e) { }
+
+    if (!localMatch) {
+      shouldDownload = true;
+    } else if (remoteMtime > localMatch.updatedAt) {
+      shouldDownload = true;
+    }
+
+    if (shouldDownload) {
+      try {
+        const dataBuffer = await filenClient.fs().readFile({ path: `${FILEN_SYNC_DIR}/${rFile}` });
+        const gpxText = dataBuffer.toString('utf-8');
+        const parsed = parseGPX(gpxText);
+        const finalName = (parsed.name && parsed.name !== 'Imported Path') ? parsed.name : pathName;
+        const pathId = localMatch ? localMatch.id : ('path_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5));
+
+        let existingDoc = null;
+        try {
+          existingDoc = await db.get(pathId);
+        } catch (e) { }
+
+        const doc = {
+          _id: pathId,
+          type: 'path',
+          name: finalName,
+          gpx: gpxText,
+          points: parsed.points,
+          distance: parsed.distance,
+          mode: 'path',
+          createdAt: existingDoc ? (existingDoc.createdAt || remoteMtime) : (remoteMtime || Date.now()),
+          updatedAt: remoteMtime || Date.now(),
+          synced: true,
+          lastSynced: Date.now()
+        };
+        if (existingDoc) {
+          doc._rev = existingDoc._rev;
+        }
+        await db.put(doc);
+        pathsChangedLocally = true;
+      } catch (err) {
+        console.error(`[Sync] Error downloading remote GPX file ${rFile}:`, err);
+      }
+    }
+  }
+
+  // 4. Delete local paths that were removed from remote
+  for (const localP of localPaths) {
+    const fileName = `${localP.name}.gpx`;
+    if (!remoteGpxFiles.includes(fileName) && localP.lastSynced) {
+      try {
+        const doc = await db.get(localP.id);
+        await db.remove(doc);
+        pathsChangedLocally = true;
+      } catch (e) { }
+    }
+  }
+
+  if (pathsChangedLocally) {
+    window.dispatchEvent(new CustomEvent('maps-paths-updated'));
   }
 }
 

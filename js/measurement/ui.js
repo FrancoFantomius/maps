@@ -35,6 +35,13 @@ export function setupMeasurementUI(MeasurementController) {
         });
     }
 
+    const btnSavePath = document.getElementById('btn-save-path');
+    if (btnSavePath) {
+        btnSavePath.addEventListener('click', () => {
+            MeasurementController.promptSavePath();
+        });
+    }
+
     const btnSaveGpx = document.getElementById('btn-save-gpx');
     if (btnSaveGpx) {
         btnSaveGpx.addEventListener('click', () => {

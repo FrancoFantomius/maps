@@ -46,3 +46,29 @@
         </md-button>
     </div>
 </md-dialog>
+
+<!-- Path Creation/Save M3 Dialog -->
+<md-dialog id="path-modal" headline="Save Path" icon="route" class="hidden">
+    <span id="path-modal-title" slot="headline">Save Path</span>
+
+    <form id="path-form" class="marker-dialog-form">
+        <md-text-field
+            id="path-modal-name"
+            label="Path Name"
+            variant="outlined"
+            required
+            placeholder="e.g., Morning Run, Bike Trail..."
+        ></md-text-field>
+        <p id="path-modal-info" class="section-help" style="margin-top: 0.5rem; font-size: 0.8125rem; color: var(--text-muted);"></p>
+    </form>
+
+    <div slot="actions" class="marker-modal-actions">
+        <md-button type="button" id="btn-close-path-modal" variant="text">
+            <span>Cancel</span>
+        </md-button>
+        <md-button type="submit" id="btn-save-path-modal" variant="filled" form="path-form">
+            <span id="path-modal-submit-label">Save Path</span>
+        </md-button>
+    </div>
+</md-dialog>
+

@@ -1,6 +1,7 @@
 import { MapService } from '../map/index.js';
 import { MarkerController } from '../markers/index.js';
 import { SearchController } from '../search/index.js';
+import { PathsController } from '../paths/index.js';
 
 function showSheet(sheet) {
     if (!sheet) return;
@@ -46,6 +47,9 @@ export const HUDController = {
         sheets.forEach(id => hideSheet(document.getElementById(id)));
         if (MarkerController && typeof MarkerController.resetPagination === 'function') {
             MarkerController.resetPagination();
+        }
+        if (PathsController && typeof PathsController.resetPagination === 'function') {
+            PathsController.resetPagination();
         }
     },
 
@@ -106,6 +110,9 @@ export const HUDController = {
             }
             if (MarkerController && typeof MarkerController.resetPagination === 'function') {
                 MarkerController.resetPagination();
+            }
+            if (PathsController && typeof PathsController.resetPagination === 'function') {
+                PathsController.resetPagination();
             }
             showSheet(savedPlacesSheet);
         } else if (hudState === 'place-details') {

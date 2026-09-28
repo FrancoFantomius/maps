@@ -360,12 +360,18 @@ export const MarkerController = {
         if (deleteBtn) {
             deleteBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
+                if (typeof deleteBtn.blur === 'function') deleteBtn.blur();
+                if (itemEl && typeof itemEl.blur === 'function') itemEl.blur();
                 this.delete(m.id);
             });
         }
 
         if (itemEl) {
             itemEl.addEventListener('click', () => {
+                if (typeof itemEl.blur === 'function') itemEl.blur();
+                if (itemEl.shadowRoot && typeof itemEl.shadowRoot.querySelector === 'function') {
+                    itemEl.shadowRoot.querySelector('.item')?.blur();
+                }
                 if (MapService && typeof MapService.flyTo === 'function') {
                     MapService.flyTo([m.lng, m.lat], 15);
                 }

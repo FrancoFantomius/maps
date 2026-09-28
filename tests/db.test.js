@@ -97,6 +97,44 @@ describe('db module', () => {
       expect(FILEN_SYNC_FILE).toBe('/Apps/maps/places.json');
     });
   });
+
+  describe('Paths storage', () => {
+    it('saves a path and retrieves it in loadAllPaths', async () => {
+      const { savePath, loadAllPaths, deletePathFromDB } = await import('../js/db/index.js');
+      const pathId = 'path_' + Date.now();
+      await savePath(pathId, {
+        name: 'River Path',
+        points: [{ lat: 45.438, lng: 10.993 }, { lat: 45.440, lng: 10.995 }],
+        distance: 250,
+        mode: 'path'
+      });
+
+      const paths = await loadAllPaths();
+      const match = paths.find(p => p.id === pathId);
+      expect(match).toBeDefined();
+      expect(match.name).toBe('River Path');
+      expect(match.points.length).toBe(2);
+      expect(match.distance).toBe(250);
+
+      // Cleanup
+      await deletePathFromDB(pathId);
+    });
+
+    it('deletes a path from the database', async () => {
+      const { savePath, loadAllPaths, deletePathFromDB } = await import('../js/db/index.js');
+      const pathId = 'path_delete_' + Date.now();
+      await savePath(pathId, {
+        name: 'Temporary Path',
+        points: [{ lat: 45.0, lng: 10.0 }, { lat: 45.1, lng: 10.1 }]
+      });
+
+      await deletePathFromDB(pathId);
+
+      const paths = await loadAllPaths();
+      const match = paths.find(p => p.id === pathId);
+      expect(match).toBeUndefined();
+    });
+  });
 });
 
 

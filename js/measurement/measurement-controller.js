@@ -8,6 +8,7 @@ import { getDistance, formatDistance, calculatePolylineDistances } from './measu
 import { calculateArea, formatArea } from './area.js';
 import { formatDuration, calculateTravelTimes } from './time.js';
 import { exportGPX } from './gpx.js';
+import { PathsController } from '../paths/index.js';
 
 export const MeasurementController = {
     isMeasureMode: false,
@@ -335,6 +336,7 @@ export const MeasurementController = {
         const measureOutput = document.getElementById('measure-output');
         const pointsListEl = document.getElementById('measure-points-list');
         const saveGpxBtn = document.getElementById('btn-save-gpx');
+        const savePathBtn = document.getElementById('btn-save-path');
         const clearBtn = document.getElementById('btn-clear-measure');
 
         const totalDist = this.totalDist || 0;
@@ -400,14 +402,26 @@ export const MeasurementController = {
             }
         }
 
+        const minPoints = this.mode === 'area' ? 3 : 2;
+        const hasEnoughPoints = this.measurePoints.length >= minPoints;
+
         if (saveGpxBtn) {
-            const minPoints = this.mode === 'area' ? 3 : 2;
-            if (this.measurePoints.length >= minPoints) {
+            if (hasEnoughPoints) {
                 saveGpxBtn.removeAttribute('disabled');
                 saveGpxBtn.disabled = false;
             } else {
                 saveGpxBtn.setAttribute('disabled', '');
                 saveGpxBtn.disabled = true;
+            }
+        }
+
+        if (savePathBtn) {
+            if (hasEnoughPoints) {
+                savePathBtn.removeAttribute('disabled');
+                savePathBtn.disabled = false;
+            } else {
+                savePathBtn.setAttribute('disabled', '');
+                savePathBtn.disabled = true;
             }
         }
 
@@ -484,6 +498,12 @@ export const MeasurementController = {
 
     exportGPX() {
         return exportGPX(this.measurePoints, this.mode, this.routedGeometry);
+    },
+
+    promptSavePath() {
+        const minPoints = this.mode === 'area' ? 3 : 2;
+        if (this.measurePoints.length < minPoints) return;
+        PathsController.promptSaveMeasurePath(this.measurePoints, this.mode, this.routedGeometry, this.totalDist);
     }
 };
 

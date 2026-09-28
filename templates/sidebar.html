@@ -31,6 +31,33 @@
                 <span>Expand</span>
             </md-button>
         </div>
+
+        <!-- Saved Paths Section -->
+        <md-divider style="margin: 1.25rem 0 0.75rem 0;"></md-divider>
+
+        <div class="saved-paths-header">
+            <div class="saved-paths-header-text">
+                <div class="saved-paths-title-row">
+                    <h2 class="saved-paths-title">Saved Paths</h2>
+                    <span id="path-count-badge" class="saved-places-badge">0</span>
+                </div>
+            </div>
+            <div class="saved-paths-actions">
+                <md-button id="btn-import-gpx" variant="tonal" icon="upload">
+                    <span>Import GPX</span>
+                </md-button>
+                <input type="file" id="gpx-file-input" accept=".gpx,application/gpx+xml" style="display: none;">
+            </div>
+        </div>
+
+        <md-list id="saved-paths-list" class="saved-paths-list"></md-list>
+
+        <!-- Expand Paths Button Container -->
+        <div id="saved-paths-expand-container" class="saved-places-expand-container hidden">
+            <md-button id="btn-expand-saved-paths" variant="tonal" icon="expand_more" style="width: 100%;">
+                <span>Expand</span>
+            </md-button>
+        </div>
     </div>
 </md-side-sheet>
 
@@ -210,10 +237,13 @@
         </div>
     </div>
 
-    <!-- Bottom Action to Save Current Path as GPX -->
+    <!-- Bottom Actions to Save Current Path to Saved Paths or Export as GPX -->
     <div class="measure-footer-actions">
-        <md-button id="btn-save-gpx" variant="tonal" icon="download" disabled style="width: 100%;">
-            <span>Save as GPX</span>
+        <md-button id="btn-save-path" variant="filled" icon="bookmark_add" disabled>
+            <span>Save Path</span>
+        </md-button>
+        <md-button id="btn-save-gpx" variant="tonal" icon="download" disabled>
+            <span>Export as GPX</span>
         </md-button>
     </div>
 </md-side-sheet>

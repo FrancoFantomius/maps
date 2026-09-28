@@ -26,6 +26,7 @@ export async function destroyDatabase() {
 
 export * from './IO.js';
 export * from './places.js';
+export * from './paths.js';
 export * from './sync.js';
 
 export default db;

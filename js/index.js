@@ -148,6 +148,7 @@ import { SearchController, setupSearchUI, setupPlaceDetailsSheet } from './searc
 import { GPSController, setupGPSUI } from './gps/index.js';
 import { ThemeController } from './theme/index.js';
 import { AccountController, LoginController, setupAccountUI } from './account/index.js';
+import { PathsController, setupPathsUI } from './paths/index.js';
 import { TranslationController } from './translation/index.js';
 import { setupSettingsUI, openSettingsPanel } from './settings/index.js';
 import { initPWA } from './pwa/index.js';
@@ -164,6 +165,7 @@ export {
     ApiService,
     HUDController,
     MarkerController,
+    PathsController,
     MeasurementController,
     RoutingController,
     SearchController,
@@ -406,6 +408,7 @@ export function initApp() {
     MapService.initOverlays();
     ThemeController.init();
     MarkerController.loadFromStorage();
+    PathsController.loadFromStorage();
     LoginController.init();
     setupAccountUI(AccountController);
 
@@ -416,6 +419,7 @@ export function initApp() {
     setupHUDUI(HUDController, SearchController, MarkerController);
     setupMarkerModalUI(MarkerController);
     setupHomeAddressUI(MapService, MarkerController);
+    setupPathsUI(PathsController);
     setupGPSUI(GPSController, MapService);
     setupMeasurementUI(MeasurementController);
     setupRoutingUI(RoutingController, MapService);

@@ -20,6 +20,7 @@ export const MapService = {
     isUrlLocationEnabled: true,
     isImperialUnits: false,
     highlightedPathCoords: null,
+    displayedPathCoords: null,
 
     init() {
         let initialLat = 45.4064; // DEFAULT_LAT
@@ -634,6 +635,40 @@ export const MapService = {
             });
         }
 
+        // 9. Add saved path source & layers
+        if (!this.map.getSource('saved-path-source')) {
+            this.map.addSource('saved-path-source', {
+                type: 'geojson',
+                data: { type: 'Feature', geometry: { type: 'LineString', coordinates: [] } }
+            });
+        }
+        if (!this.map.getLayer('saved-path-bg')) {
+            this.map.addLayer({
+                id: 'saved-path-bg',
+                source: 'saved-path-source',
+                type: 'line',
+                layout: { 'line-cap': 'round', 'line-join': 'round' },
+                paint: {
+                    'line-color': '#0284c7',
+                    'line-width': 9,
+                    'line-opacity': 0.35
+                }
+            });
+        }
+        if (!this.map.getLayer('saved-path-fg')) {
+            this.map.addLayer({
+                id: 'saved-path-fg',
+                source: 'saved-path-source',
+                type: 'line',
+                layout: { 'line-cap': 'round', 'line-join': 'round' },
+                paint: {
+                    'line-color': '#0284c7',
+                    'line-width': 4,
+                    'line-opacity': 0.95
+                }
+            });
+        }
+
         this.setLabelsVisibility(this.activeOverlays.labels);
         this.updateStyleLayersVisibility();
         this.restoreActiveLayerData();
@@ -656,6 +691,17 @@ export const MapService = {
         }
         if (RoutingController.currentAlternativesGeoJSON) {
             this.updateSourceData('alternative-routes-source', RoutingController.currentAlternativesGeoJSON);
+        }
+
+        // Restore saved displayed path
+        if (this.displayedPathCoords) {
+            this.updateSourceData('saved-path-source', {
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: this.displayedPathCoords
+                }
+            });
         }
 
         // Restore street highlighted path
@@ -1171,6 +1217,47 @@ export const MapService = {
         if (this.map) {
             this.map.fitBounds(bounds, { padding });
         }
+    },
+
+    displayPath(points) {
+        if (!points || !Array.isArray(points) || points.length === 0) return;
+        const coords = points.map(p => [p.lng, p.lat]);
+        this.displayedPathCoords = coords;
+        this.updateSourceData('saved-path-source', {
+            type: 'Feature',
+            geometry: {
+                type: 'LineString',
+                coordinates: coords
+            }
+        });
+
+        if (this.map && coords.length > 0) {
+            if (maplibregl.LngLatBounds) {
+                const bounds = coords.reduce((b, coord) => b.extend(coord), new maplibregl.LngLatBounds(coords[0], coords[0]));
+                this.fitBounds(bounds, 60);
+            } else if (typeof this.map.fitBounds === 'function') {
+                let minLng = coords[0][0], maxLng = coords[0][0];
+                let minLat = coords[0][1], maxLat = coords[0][1];
+                for (const c of coords) {
+                    if (c[0] < minLng) minLng = c[0];
+                    if (c[0] > maxLng) maxLng = c[0];
+                    if (c[1] < minLat) minLat = c[1];
+                    if (c[1] > maxLat) maxLat = c[1];
+                }
+                this.fitBounds([[minLng, minLat], [maxLng, maxLat]], 60);
+            }
+        }
+    },
+
+    clearDisplayedPath() {
+        this.displayedPathCoords = null;
+        this.updateSourceData('saved-path-source', {
+            type: 'Feature',
+            geometry: {
+                type: 'LineString',
+                coordinates: []
+            }
+        });
     },
 
     createMarker(element, draggable = false, anchor = 'center') {

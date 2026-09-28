@@ -13,6 +13,19 @@
     </md-list-item>
 </template>
 
+<template id="template-path-list-item">
+    <md-list-item class="path-item" interactive>
+        <div slot="start" class="path-leading-badge">
+            <md-icon name="route" class="path-leading-icon"></md-icon>
+        </div>
+        <span class="path-name" style="display: none;"></span>
+        <span class="path-subtext" style="display: none;"></span>
+        <md-icon-button slot="end" class="btn-edit-path" icon="edit" variant="standard" aria-label="Rename path" title="Rename path"></md-icon-button>
+        <md-icon-button slot="end" class="btn-download-path" icon="download" variant="standard" aria-label="Export GPX" title="Export GPX"></md-icon-button>
+        <md-icon-button slot="end" class="btn-delete-path" icon="delete" variant="standard" aria-label="Delete path" title="Delete"></md-icon-button>
+    </md-list-item>
+</template>
+
 <template id="template-autocomplete-item">
     <div class="nav-autocomplete-item">
         <div class="nav-autocomplete-icon-box">

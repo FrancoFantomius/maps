@@ -172,6 +172,113 @@
 }
 
 /* ==========================================================================
+   Saved Paths Styles
+   ========================================================================== */
+
+.saved-paths-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.saved-paths-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.saved-paths-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.saved-paths-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.saved-paths-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.saved-paths-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.saved-paths-expand-container {
+  padding: 0.5rem 0.75rem 0.75rem 0.75rem;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.saved-paths-expand-container.hidden {
+  display: none !important;
+}
+
+.path-item {
+  border-radius: 8px;
+  transition: background-color 150ms ease;
+}
+
+.path-leading-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--bg-subtle, rgba(0, 0, 0, 0.04));
+  flex-shrink: 0;
+}
+
+.path-leading-icon {
+  font-size: 1.25rem;
+  color: var(--color-indigo, #6366f1);
+}
+
+.path-actions-end {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.btn-edit-path,
+.btn-download-path,
+.btn-delete-path {
+  --md-icon-button-size: 32px;
+  --md-icon-button-icon-size: 18px;
+  color: var(--text-muted);
+}
+
+.btn-edit-path:hover,
+.btn-download-path:hover,
+.btn-delete-path:hover {
+  color: var(--text-primary);
+}
+
+.paths-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
    Place Details Sheet Styles
    ========================================================================== */
 
@@ -638,6 +745,13 @@
 .measure-footer-actions {
   margin-top: auto;
   padding-top: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.measure-footer-actions md-button {
+  flex: 1;
 }
 
 /* ==========================================================================
