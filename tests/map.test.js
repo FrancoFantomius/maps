@@ -495,5 +495,125 @@ describe('MapService', () => {
       fitBoundsSpy.mockRestore();
     });
   });
+
+  describe('3D Buildings & Perspective in Satellite View', () => {
+    it('disables 3D buildings / extrusions when active base layer is satellite', () => {
+      MapService.activeLayerKey = 'satellite';
+      MapService.activeOverlays.perspective = true;
+      MapService.map = {
+        getStyle: vi.fn(() => ({
+          layers: [
+            { id: '3d-buildings', type: 'fill-extrusion' },
+            { id: 'satellite-layer', type: 'raster' },
+          ]
+        })),
+        setLayoutProperty: vi.fn(),
+      };
+
+      MapService.setAllExtrusionsVisibility(true);
+      expect(MapService.map.setLayoutProperty).toHaveBeenCalledWith('3d-buildings', 'visibility', 'none');
+    });
+
+    it('enables 3D buildings / extrusions when active base layer is street and perspective is enabled', () => {
+      MapService.activeLayerKey = 'street';
+      MapService.activeOverlays.perspective = true;
+      MapService.map = {
+        getStyle: vi.fn(() => ({
+          layers: [
+            { id: '3d-buildings', type: 'fill-extrusion' },
+            { id: 'street-layer', type: 'fill' },
+          ]
+        })),
+        setLayoutProperty: vi.fn(),
+      };
+
+      MapService.setAllExtrusionsVisibility(true);
+      expect(MapService.map.setLayoutProperty).toHaveBeenCalledWith('3d-buildings', 'visibility', 'visible');
+    });
+
+    it('hides 3D buildings when switching base layer to satellite', () => {
+      MapService.activeLayerKey = 'street';
+      MapService.activeOverlays.perspective = true;
+      MapService.map = {
+        getCenter: vi.fn(() => ({ lat: 45.4064, lng: 11.8768 })),
+        getZoom: vi.fn(() => 13),
+        getStyle: vi.fn(() => ({
+          layers: [
+            { id: '3d-buildings', type: 'fill-extrusion' },
+            { id: 'satellite-layer', type: 'raster' },
+          ]
+        })),
+        setLayoutProperty: vi.fn(),
+      };
+
+      MapService.setBaseLayer('satellite');
+      expect(MapService.activeLayerKey).toBe('satellite');
+      expect(MapService.map.setLayoutProperty).toHaveBeenCalledWith('3d-buildings', 'visibility', 'none');
+    });
+
+    it('inserts 3d-buildings layer before the first symbol layer so labels and icons render on top', () => {
+      const addedLayers = [];
+      MapService.activeLayerKey = 'street';
+      MapService.activeOverlays.perspective = true;
+      MapService.map = {
+        getStyle: vi.fn(() => ({
+          layers: [
+            { id: 'background', type: 'background' },
+            { id: 'water', type: 'fill' },
+            { id: 'road-primary', type: 'line' },
+            { id: 'poi-restaurant', type: 'symbol' },
+            { id: 'place-city', type: 'symbol' },
+          ]
+        })),
+        getSource: vi.fn(() => false),
+        addSource: vi.fn(),
+        getLayer: vi.fn((id) => addedLayers.some(l => l.layer.id === id)),
+        addLayer: vi.fn((layer, beforeId) => {
+          addedLayers.push({ layer, beforeId });
+        }),
+        setLight: vi.fn(),
+        setTerrain: vi.fn(),
+        setLayoutProperty: vi.fn(),
+        setPaintProperty: vi.fn(),
+        loadImage: vi.fn(),
+        hasImage: vi.fn(() => true),
+        addImage: vi.fn(),
+        getCenter: vi.fn(() => ({ lat: 45.4064, lng: 11.8768 })),
+        getZoom: vi.fn(() => 13),
+      };
+
+      MapService.setupMapLayersAndSources();
+
+      const buildingsLayerCall = addedLayers.find(l => l.layer.id === '3d-buildings');
+      expect(buildingsLayerCall).toBeDefined();
+      expect(buildingsLayerCall.beforeId).toBe('poi-restaurant');
+    });
+
+    it('configures tile LOD parameters on setupMapLayersAndSources when supported', () => {
+      MapService.activeLayerKey = 'street';
+      MapService.activeOverlays.perspective = true;
+      const setSourceTileLodParamsMock = vi.fn();
+      MapService.map = {
+        getStyle: vi.fn(() => ({ layers: [] })),
+        getSource: vi.fn(() => false),
+        addSource: vi.fn(),
+        getLayer: vi.fn(() => false),
+        addLayer: vi.fn(),
+        setLight: vi.fn(),
+        setTerrain: vi.fn(),
+        setLayoutProperty: vi.fn(),
+        setPaintProperty: vi.fn(),
+        loadImage: vi.fn(),
+        hasImage: vi.fn(() => true),
+        addImage: vi.fn(),
+        getCenter: vi.fn(() => ({ lat: 45.4064, lng: 11.8768 })),
+        getZoom: vi.fn(() => 13),
+        setSourceTileLodParams: setSourceTileLodParamsMock,
+      };
+
+      MapService.setupMapLayersAndSources();
+      expect(setSourceTileLodParamsMock).toHaveBeenCalledWith(4.0, 8.0);
+    });
+  });
 });
 

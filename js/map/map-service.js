@@ -348,14 +348,15 @@ export const MapService = {
             });
         }
 
-        const layers = this.map.getStyle().layers;
+        const layers = this.map.getStyle()?.layers || [];
         let firstLayerId = null;
-        if (layers) {
-            for (const layer of layers) {
-                if (layer.type !== 'background') {
-                    firstLayerId = layer.id;
-                    break;
-                }
+        let firstSymbolId = null;
+        for (const layer of layers) {
+            if (!firstLayerId && layer.type !== 'background') {
+                firstLayerId = layer.id;
+            }
+            if (!firstSymbolId && layer.type === 'symbol') {
+                firstSymbolId = layer.id;
             }
         }
 
@@ -452,15 +453,16 @@ export const MapService = {
                 source: 'openmaptiles',
                 'source-layer': 'building',
                 type: 'fill-extrusion',
-                minzoom: 15,
+                minzoom: 13,
+                filter: ['!=', ['get', 'hide_3d'], true],
                 layout: {
-                    visibility: this.activeOverlays.perspective ? 'visible' : 'none'
+                    visibility: (this.activeOverlays.perspective && this.activeLayerKey !== 'satellite') ? 'visible' : 'none'
                 },
                 paint: {
                     'fill-extrusion-color': [
                         'interpolate',
                         ['linear'],
-                        ['coalesce', ['get', 'render_height'], ['get', 'height'], 15],
+                        ['coalesce', ['get', 'render_height'], ['get', 'height'], 0],
                         0, isDark ? '#1e293b' : '#f1f5f9',
                         30, isDark ? '#2e3f56' : '#cbd5e1',
                         100, isDark ? '#3d526e' : '#94a3b8',
@@ -471,7 +473,7 @@ export const MapService = {
                     'fill-extrusion-opacity': 0.85,
                     'fill-extrusion-vertical-gradient': true
                 }
-            });
+            }, firstSymbolId || undefined);
 
             this.map.setLight({
                 anchor: 'viewport',
@@ -479,6 +481,13 @@ export const MapService = {
                 intensity: 0.45,
                 position: [1.5, 210, 30]
             });
+        }
+
+        // Apply Level of Detail (LOD) parameters to allow loading higher-detail tiles at distance when pitched/rotated
+        if (typeof this.map.setSourceTileLodParams === 'function') {
+            try {
+                this.map.setSourceTileLodParams(4.0, 8.0);
+            } catch {}
         }
 
         // 4. Add 3D Terrain
@@ -819,7 +828,7 @@ export const MapService = {
     },
 
     updateLayerSwitcherPreview() {
-        if (!this.map) return;
+        if (!this.map || typeof this.map.getCenter !== 'function' || typeof this.map.getZoom !== 'function') return;
         const center = this.map.getCenter();
         const zoom = Math.min(Math.floor(this.map.getZoom()), 15);
         const lat = center.lat;
@@ -835,7 +844,7 @@ export const MapService = {
     },
 
     updateSettingsPreviews() {
-        if (!this.map) return;
+        if (!this.map || typeof this.map.getCenter !== 'function' || typeof this.map.getZoom !== 'function') return;
         const center = this.map.getCenter();
         const zoom = Math.min(Math.floor(this.map.getZoom()), 15);
         const lat = center.lat;
@@ -1085,6 +1094,8 @@ export const MapService = {
         if (!isTopo) {
             this.setLabelsVisibility(this.activeOverlays.labels);
         }
+
+        this.setAllExtrusionsVisibility(this.activeOverlays.perspective);
     },
 
     toggleOverlay(key, show) {
@@ -1122,6 +1133,11 @@ export const MapService = {
             if (this.map) {
                 this.setAllExtrusionsVisibility(show);
                 if (show) {
+                    if (typeof this.map.setSourceTileLodParams === 'function') {
+                        try {
+                            this.map.setSourceTileLodParams(4.0, 8.0);
+                        } catch {}
+                    }
                     this.ensureTerrainSource();
                     if (this.map.getSource('terrain-source')) {
                         this.map.setTerrain({ source: 'terrain-source', exaggeration: 1.2 });
@@ -1156,9 +1172,10 @@ export const MapService = {
         if (!this.map || typeof this.map.getStyle !== 'function') return;
         const style = this.map.getStyle();
         if (!style || !style.layers) return;
+        const isExtrusionVisible = Boolean(show) && this.activeLayerKey !== 'satellite';
         style.layers.forEach(layer => {
             if (layer.type === 'fill-extrusion') {
-                this.map.setLayoutProperty(layer.id, 'visibility', show ? 'visible' : 'none');
+                this.map.setLayoutProperty(layer.id, 'visibility', isExtrusionVisible ? 'visible' : 'none');
             }
         });
     },
