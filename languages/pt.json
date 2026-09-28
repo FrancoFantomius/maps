@@ -12,8 +12,17 @@
   "settings": {
     "title": "Configurações do Mapa",
     "subtitle": "Configure camadas de mapa, sobreposições e aparência",
+    "theme": "Tema",
+    "theme_subtitle": "Escolha um tema para o aplicativo",
     "language": "Idioma",
     "language_system": "Sistema (Auto)",
+    "language_subtitle": "Idioma do aplicativo",
+    "show_names": "Mostrar nomes",
+    "show_names_subtitle": "Exibir nomes de ruas na visualização de satélite",
+    "buildings_3d": "Edifícios 3D",
+    "buildings_3d_subtitle": "Exibir edifícios 3D na visualização de mapa",
+    "imperial_units": "Unidades imperiais",
+    "imperial_units_subtitle": "Exibir distância e área em milhas, pés e pés quadrados / acres",
     "show_details": "Mostrar Detalhes",
     "street_names": "Nomes das Ruas",
     "bike_paths": "Ciclovias",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "Incluir coordenadas no URL e abrir links no local especificado"
   },
   "hud": {
+    "apps": "Meus aplicativos",
     "search_placeholder": "Pesquisar",
+    "search_suggestions": "Lugares",
     "route": "Rota",
     "measure": "Medir",
     "layers": "Camadas",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "Planejador de Rotas",
+    "directions": "Direções",
     "origin": "Local de partida",
     "destination": "Local de destino",
     "profile_driving": "De carro",
@@ -73,6 +85,7 @@
     "add_marker": "Adicionar Marcador",
     "edit_marker": "Editar Marcador",
     "delete_marker": "Excluir Marcador",
+    "save_place": "Salvar lugar",
     "name": "Nome do Marcador",
     "category": "Categoria",
     "description": "Descrição",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Sincronização Cloud Filen",
     "subtitle": "Faça login para sincronizar seus locais com criptografia de ponta a ponta",
+    "account_storage": "Armazenamento da conta",
     "email": "Endereço de E-mail",
     "password": "Senha",
     "two_factor": "Código 2FA (se ativado)",

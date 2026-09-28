@@ -242,6 +242,14 @@ export const TranslationController = {
                 el.setAttribute('label', this.t(key, {}, el.getAttribute('label')));
             }
         });
+
+        // headline (e.g. for md-app-drawer, md-dialog)
+        root.querySelectorAll('[data-i18n-headline]').forEach(el => {
+            const key = el.getAttribute('data-i18n-headline');
+            if (key) {
+                el.setAttribute('headline', this.t(key, {}, el.getAttribute('headline')));
+            }
+        });
     },
 
     updateSettingsUI() {

@@ -12,8 +12,17 @@
   "settings": {
     "title": "地図設定",
     "subtitle": "地図レイヤー、オーバーレイ、外観テーマを設定",
+    "theme": "テーマ",
+    "theme_subtitle": "アプリケーションのテーマを選択",
     "language": "言語",
     "language_system": "システム（自動）",
+    "language_subtitle": "アプリケーション言語",
+    "show_names": "名前を表示",
+    "show_names_subtitle": "衛星画像表示時に道路名を表示",
+    "buildings_3d": "3D建物",
+    "buildings_3d_subtitle": "マップ表示時に3D建物を表示",
+    "imperial_units": "ヤード・ポンド法",
+    "imperial_units_subtitle": "距離と面積をマイル、フィート、平方フィート/エーカーで表示",
     "show_details": "詳細を表示",
     "street_names": "道路名",
     "bike_paths": "サイクリングロード",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "URL に座標を含め、指定した場所でリンクを開く"
   },
   "hud": {
+    "apps": "マイアプリ",
     "search_placeholder": "検索",
+    "search_suggestions": "場所",
     "route": "ルート",
     "measure": "測定",
     "layers": "レイヤー",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "ルート案内",
+    "directions": "ルート案内",
     "origin": "出発地",
     "destination": "目的地",
     "profile_driving": "車",
@@ -73,6 +85,7 @@
     "add_marker": "マーカーを追加",
     "edit_marker": "マーカーを編集",
     "delete_marker": "マーカーを削除",
+    "save_place": "場所を保存",
     "name": "マーカー名",
     "category": "カテゴリー",
     "description": "説明",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Filen クラウド同期",
     "subtitle": "ログインして保存した場所をエンドツーエンド暗号化で同期",
+    "account_storage": "アカウントストレージ",
     "email": "メールアドレス",
     "password": "パスワード",
     "two_factor": "2FA コード (有効な場合)",

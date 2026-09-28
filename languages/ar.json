@@ -12,8 +12,17 @@
   "settings": {
     "title": "إعدادات الخريطة",
     "subtitle": "تكوين طبقات الخريطة والمنظر الخارجي",
+    "theme": "المظهر",
+    "theme_subtitle": "اختر مظهرًا للتطبيق",
     "language": "اللغة",
     "language_system": "النظام (تلقائي)",
+    "language_subtitle": "لغة التطبيق",
+    "show_names": "إظهار الأسماء",
+    "show_names_subtitle": "عرض أسماء الشوارع في وضع القمر الصناعي",
+    "buildings_3d": "مباني ثلاثية الأبعاد",
+    "buildings_3d_subtitle": "عرض المباني ثلاثية الأبعاد في وضع الخريطة",
+    "imperial_units": "الوحدات الإمبراطورية",
+    "imperial_units_subtitle": "عرض المسافة والمساحة بالأميال والأقدام والقدم المربع / الفدان",
     "show_details": "إظهار التفاصيل",
     "street_names": "أسماء الشوارع",
     "bike_paths": "مسارات الدراجات",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "تضمين الإحداثيات في الرابط وفتح الروابط في الموقع المحدد"
   },
   "hud": {
+    "apps": "تطبيقاتي",
     "search_placeholder": "بحث",
+    "search_suggestions": "أماكن",
     "route": "مسار",
     "measure": "قياس",
     "layers": "طبقات",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "مخطط المسار",
+    "directions": "الاتجاهات",
     "origin": "نقطة البداية",
     "destination": "الوجهة",
     "profile_driving": "قيادة",
@@ -73,6 +85,7 @@
     "add_marker": "إضافة علامة",
     "edit_marker": "تعديل العلامة",
     "delete_marker": "حذف العلامة",
+    "save_place": "حفظ المكان",
     "name": "اسم العلامة",
     "category": "الفئة",
     "description": "الوصف",
@@ -83,6 +96,7 @@
   "login": {
     "title": "مزامنة سحابية عبر Filen",
     "subtitle": "سجل الدخول للمزامنة المشفرة بين الأطراف",
+    "account_storage": "سعة تخزين الحساب",
     "email": "البريد الإلكتروني",
     "password": "كلمة المرور",
     "two_factor": "رمز المصادقة الثنائية",

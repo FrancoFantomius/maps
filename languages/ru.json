@@ -12,8 +12,17 @@
   "settings": {
     "title": "Настройки карты",
     "subtitle": "Настройте слои, наложения и внешний вид",
+    "theme": "Тема",
+    "theme_subtitle": "Выберите тему для приложения",
     "language": "Язык",
     "language_system": "Системный (Авто)",
+    "language_subtitle": "Язык приложения",
+    "show_names": "Показывать названия",
+    "show_names_subtitle": "Отображать названия улиц на спутниковой карте",
+    "buildings_3d": "3D здания",
+    "buildings_3d_subtitle": "Показывать 3D здания на карте",
+    "imperial_units": "Имперские единицы",
+    "imperial_units_subtitle": "Отображать расстояния и площади в милях, футах и кв. футах / акрах",
     "show_details": "Показать детали",
     "street_names": "Названия улиц",
     "bike_paths": "Велодорожки",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "Включать координаты в URL и открывать ссылки в указанном месте"
   },
   "hud": {
+    "apps": "Мои приложения",
     "search_placeholder": "Поиск",
+    "search_suggestions": "Места",
     "route": "Маршрут",
     "measure": "Замер",
     "layers": "Слои",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "Планировщик маршрута",
+    "directions": "Маршрут",
     "origin": "Начальная точка",
     "destination": "Пункт назначения",
     "profile_driving": "На авто",
@@ -73,6 +85,7 @@
     "add_marker": "Добавить метку",
     "edit_marker": "Изменить метку",
     "delete_marker": "Удалить метку",
+    "save_place": "Сохранить место",
     "name": "Название метки",
     "category": "Категория",
     "description": "Описание",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Облачная синхронизация Filen",
     "subtitle": "Войдите для сквозного шифрования ваших мест",
+    "account_storage": "Хранилище аккаунта",
     "email": "Электронная почта",
     "password": "Пароль",
     "two_factor": "Код 2FA (если включен)",

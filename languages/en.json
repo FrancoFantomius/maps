@@ -12,8 +12,17 @@
   "settings": {
     "title": "Map Settings",
     "subtitle": "Configure map layers, overlays, and system appearance",
+    "theme": "Theme",
+    "theme_subtitle": "Choose a theme for the application",
     "language": "Language",
     "language_system": "System (Auto)",
+    "language_subtitle": "Application language",
+    "show_names": "Show Names",
+    "show_names_subtitle": "Display the streets names when on Satellite view",
+    "buildings_3d": "3D Buildings",
+    "buildings_3d_subtitle": "Show 3D buildings when in Map view",
+    "imperial_units": "Imperial Units",
+    "imperial_units_subtitle": "Display distance and area in miles, feet, and sq ft / acres",
     "show_details": "Show Details",
     "street_names": "Street Names",
     "bike_paths": "Bike Paths",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "Include coordinates in URL and open links at specified location"
   },
   "hud": {
+    "apps": "My Apps",
     "search_placeholder": "Search",
+    "search_suggestions": "Places",
     "route": "Route",
     "measure": "Measure",
     "layers": "Layers",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "Route Planner",
+    "directions": "Directions",
     "origin": "Start location",
     "destination": "Destination location",
     "profile_driving": "Driving",
@@ -73,6 +85,7 @@
     "add_marker": "Add Marker",
     "edit_marker": "Edit Marker",
     "delete_marker": "Delete Marker",
+    "save_place": "Save Place",
     "name": "Marker Name",
     "category": "Category",
     "description": "Description",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Filen Cloud Sync",
     "subtitle": "A Filen account is required to sync your saved places. All data is end-to-end encrypted client-side; neither this app nor Filen can see your password or plaintext places.",
+    "account_storage": "Account Storage",
     "email": "Email Address",
     "password": "Password",
     "two_factor": "2FA Code (if enabled)",

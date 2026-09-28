@@ -12,8 +12,17 @@
   "settings": {
     "title": "地图设置",
     "subtitle": "配置地图图层、图层叠加和外观主题",
+    "theme": "主题",
+    "theme_subtitle": "选择应用程序的主题",
     "language": "语言",
     "language_system": "系统（自动）",
+    "language_subtitle": "应用程序语言",
+    "show_names": "显示名称",
+    "show_names_subtitle": "在卫星视图中显示街道名称",
+    "buildings_3d": "3D 建筑物",
+    "buildings_3d_subtitle": "在地图视图中显示 3D 建筑物",
+    "imperial_units": "英制单位",
+    "imperial_units_subtitle": "以英里、英尺和平方英尺/英亩显示距离和面积",
     "show_details": "显示细节",
     "street_names": "街道名称",
     "bike_paths": "自行车道",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "在网址中包含坐标并在指定位置打开链接"
   },
   "hud": {
+    "apps": "我的应用",
     "search_placeholder": "搜索",
+    "search_suggestions": "地点",
     "route": "路线",
     "measure": "测量",
     "layers": "图层",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "路线规划",
+    "directions": "路线",
     "origin": "起点位置",
     "destination": "终点位置",
     "profile_driving": "驾车",
@@ -73,6 +85,7 @@
     "add_marker": "添加标记",
     "edit_marker": "编辑标记",
     "delete_marker": "删除标记",
+    "save_place": "保存地点",
     "name": "标记名称",
     "category": "类别",
     "description": "描述",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Filen 云同步",
     "subtitle": "登录以端到端加密同步您的地点",
+    "account_storage": "账户存储",
     "email": "电子邮箱",
     "password": "密码",
     "two_factor": "两步验证码（若启用）",

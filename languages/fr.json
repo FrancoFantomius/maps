@@ -12,8 +12,17 @@
   "settings": {
     "title": "Paramètres de la Carte",
     "subtitle": "Configurez les calques, superpositions et l'apparence",
+    "theme": "Thème",
+    "theme_subtitle": "Choisissez un thème pour l'application",
     "language": "Langue",
     "language_system": "Système (Auto)",
+    "language_subtitle": "Langue de l'application",
+    "show_names": "Afficher les noms",
+    "show_names_subtitle": "Afficher les noms de rues en vue satellite",
+    "buildings_3d": "Bâtiments 3D",
+    "buildings_3d_subtitle": "Afficher les bâtiments en 3D en vue carte",
+    "imperial_units": "Unités impériales",
+    "imperial_units_subtitle": "Afficher la distance et la superficie en milles, pieds et pieds carrés / acres",
     "show_details": "Afficher les Détails",
     "street_names": "Noms de Rues",
     "bike_paths": "Pistes Cyclables",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "Inclure les coordonnées dans l'URL et ouvrir les liens à l'emplacement spécifié"
   },
   "hud": {
+    "apps": "Mes applications",
     "search_placeholder": "Rechercher",
+    "search_suggestions": "Lieux",
     "route": "Itinéraire",
     "measure": "Mesurer",
     "layers": "Calques",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "Calculateur d'Itinéraire",
+    "directions": "Itinéraire",
     "origin": "Lieu de départ",
     "destination": "Lieu d'arrivée",
     "profile_driving": "Voiture",
@@ -73,6 +85,7 @@
     "add_marker": "Ajouter un Repère",
     "edit_marker": "Modifier le Repère",
     "delete_marker": "Supprimer le Repère",
+    "save_place": "Enregistrer le lieu",
     "name": "Nom du Repère",
     "category": "Catégorie",
     "description": "Description",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Synchronisation Cloud Filen",
     "subtitle": "Connectez-vous pour synchroniser vos lieux chiffrés de bout en bout",
+    "account_storage": "Stockage du compte",
     "email": "Adresse E-mail",
     "password": "Mot de Passe",
     "two_factor": "Code 2FA (si activé)",

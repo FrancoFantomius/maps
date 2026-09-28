@@ -12,8 +12,17 @@
   "settings": {
     "title": "मानचित्र सेटिंग्स",
     "subtitle": "मानचित्र परतें, ओवरले और सिस्टम स्वरूप कॉन्फ़िगर करें",
+    "theme": "थीम",
+    "theme_subtitle": "एप्लिकेशन के लिए थीम चुनें",
     "language": "भाषा",
     "language_system": "सिस्टम (स्वचालित)",
+    "language_subtitle": "एप्लिकेशन की भाषा",
+    "show_names": "नाम दिखाएं",
+    "show_names_subtitle": "सैटेलाइट दृश्य में सड़कों के नाम दिखाएं",
+    "buildings_3d": "3D इमारतें",
+    "buildings_3d_subtitle": "मानचित्र दृश्य में 3D इमारतें दिखाएं",
+    "imperial_units": "इंपीरियल इकाइयां",
+    "imperial_units_subtitle": "दूरी और क्षेत्रफल को मील, फीट और वर्ग फीट/एकड़ में दिखाएं",
     "show_details": "विवरण दिखाएं",
     "street_names": "सड़कों के नाम",
     "bike_paths": "साइकिल पथ",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "URL में निर्देशांक शामिल करें और निर्दिष्ट स्थान पर लिंक खोलें"
   },
   "hud": {
+    "apps": "मेरे ऐप्स",
     "search_placeholder": "खोजें",
+    "search_suggestions": "स्थान",
     "route": "मार्ग",
     "measure": "मापें",
     "layers": "परतें",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "मार्ग योजना",
+    "directions": "दिशा-निर्देश",
     "origin": "प्रस्थान स्थान",
     "destination": "गंतव्य स्थान",
     "profile_driving": "ड्राइविंग",
@@ -73,6 +85,7 @@
     "add_marker": "मार्कर जोड़ें",
     "edit_marker": "मार्कर संपादित करें",
     "delete_marker": "मार्कर हटाएं",
+    "save_place": "स्थान सहेजें",
     "name": "मार्कर का नाम",
     "category": "श्रेणी",
     "description": "विवरण",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Filen क्लाउड सिंक",
     "subtitle": "अपने सहेजे गए स्थानों को एंड-टू-एंड एन्क्रिप्टेड सिंक करने के लिए लॉग इन करें",
+    "account_storage": "खाता संग्रहण",
     "email": "ईमेल पता",
     "password": "पासवर्ड",
     "two_factor": "2FA कोड (यदि सक्षम है)",

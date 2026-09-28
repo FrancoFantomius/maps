@@ -12,8 +12,17 @@
   "settings": {
     "title": "Impostazioni Mappa",
     "subtitle": "Configura livelli della mappa, sovrapposizioni e aspetto",
+    "theme": "Tema",
+    "theme_subtitle": "Scegli un tema per l'applicazione",
     "language": "Lingua",
     "language_system": "Sistema (Auto)",
+    "language_subtitle": "Lingua dell'applicazione",
+    "show_names": "Mostra Nomi",
+    "show_names_subtitle": "Mostra i nomi delle strade nella vista Satellitare",
+    "buildings_3d": "Edifici 3D",
+    "buildings_3d_subtitle": "Mostra edifici 3D nella vista Mappa",
+    "imperial_units": "Unità Imperiali",
+    "imperial_units_subtitle": "Mostra distanza e area in miglia, piedi e piedi quadri / acri",
     "show_details": "Mostra Dettagli",
     "street_names": "Nomi delle Strade",
     "bike_paths": "Piste Ciclabili",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "Includi le coordinate nell'URL e apri i link nella posizione specificata"
   },
   "hud": {
+    "apps": "Le mie App",
     "search_placeholder": "Cerca",
+    "search_suggestions": "Luoghi",
     "route": "Percorsi",
     "measure": "Misura",
     "layers": "Livelli",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "Calcola Percorso",
+    "directions": "Indicazioni",
     "origin": "Luogo di partenza",
     "destination": "Luogo di arrivo",
     "profile_driving": "Auto",
@@ -73,6 +85,7 @@
     "add_marker": "Aggiungi Segnaposto",
     "edit_marker": "Modifica Segnaposto",
     "delete_marker": "Elimina Segnaposto",
+    "save_place": "Salva Luogo",
     "name": "Nome Segnaposto",
     "category": "Categoria",
     "description": "Descrizione",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Sincronizzazione Cloud Filen",
     "subtitle": "Accedi per sincronizzare i tuoi luoghi in modo crittografato end-to-end",
+    "account_storage": "Spazio Account",
     "email": "Indirizzo Email",
     "password": "Password",
     "two_factor": "Codice 2FA (se abilitato)",

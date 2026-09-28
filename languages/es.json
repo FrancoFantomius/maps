@@ -12,8 +12,17 @@
   "settings": {
     "title": "Configuración del Mapa",
     "subtitle": "Configura capas de mapa, superposiciones y apariencia del sistema",
+    "theme": "Tema",
+    "theme_subtitle": "Elige un tema para la aplicación",
     "language": "Idioma",
     "language_system": "Sistema (Auto)",
+    "language_subtitle": "Idioma de la aplicación",
+    "show_names": "Mostrar nombres",
+    "show_names_subtitle": "Muestra los nombres de las calles en la vista satélite",
+    "buildings_3d": "Edificios 3D",
+    "buildings_3d_subtitle": "Mostrar edificios en 3D en la vista de mapa",
+    "imperial_units": "Unidades imperiales",
+    "imperial_units_subtitle": "Muestra distancia y área en millas, pies y pies cuadrados / acres",
     "show_details": "Mostrar Detalles",
     "street_names": "Nombres de Calles",
     "bike_paths": "Carriles Bici",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "Incluir coordenadas en la URL y abrir enlaces en la ubicación especificada"
   },
   "hud": {
+    "apps": "Mis aplicaciones",
     "search_placeholder": "Buscar",
+    "search_suggestions": "Lugares",
     "route": "Ruta",
     "measure": "Medir",
     "layers": "Capas",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "Planificador de Rutas",
+    "directions": "Indicaciones",
     "origin": "Lugar de origen",
     "destination": "Lugar de destino",
     "profile_driving": "En coche",
@@ -73,6 +85,7 @@
     "add_marker": "Añadir Marcador",
     "edit_marker": "Editar Marcador",
     "delete_marker": "Eliminar Marcador",
+    "save_place": "Guardar lugar",
     "name": "Nombre del Marcador",
     "category": "Categoría",
     "description": "Descripción",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Sincronización en la Nube Filen",
     "subtitle": "Inicia sesión para sincronizar tus lugares guardados con cifrado de extremo a extremo",
+    "account_storage": "Almacenamiento de cuenta",
     "email": "Correo Electrónico",
     "password": "Contraseña",
     "two_factor": "Código 2FA (si está habilitado)",

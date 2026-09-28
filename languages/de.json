@@ -12,8 +12,17 @@
   "settings": {
     "title": "Karteneinstellungen",
     "subtitle": "Karten-Ebenen, Overlays und Aussehen konfigurieren",
+    "theme": "Design",
+    "theme_subtitle": "Wählen Sie ein Design für die Anwendung",
     "language": "Sprache",
     "language_system": "System (Auto)",
+    "language_subtitle": "Sprache der Anwendung",
+    "show_names": "Namen anzeigen",
+    "show_names_subtitle": "Straßennamen in der Satellitenansicht anzeigen",
+    "buildings_3d": "3D-Gebäude",
+    "buildings_3d_subtitle": "3D-Gebäude in der Kartenansicht anzeigen",
+    "imperial_units": "Imperiale Einheiten",
+    "imperial_units_subtitle": "Entfernungen und Flächen in Meilen, Fuß und Quadratfuß / Acres anzeigen",
     "show_details": "Details anzeigen",
     "street_names": "Straßennamen",
     "bike_paths": "Radwege",
@@ -37,7 +46,9 @@
     "url_location_subtitle": "Koordinaten in URL einschließen und Links am angegebenen Ort öffnen"
   },
   "hud": {
+    "apps": "Meine Apps",
     "search_placeholder": "Suchen",
+    "search_suggestions": "Orte",
     "route": "Route",
     "measure": "Messen",
     "layers": "Ebenen",
@@ -52,6 +63,7 @@
   },
   "routing": {
     "title": "Routenplaner",
+    "directions": "Wegbeschreibung",
     "origin": "Startpunkt",
     "destination": "Zielort",
     "profile_driving": "Auto",
@@ -73,6 +85,7 @@
     "add_marker": "Marker hinzufügen",
     "edit_marker": "Marker bearbeiten",
     "delete_marker": "Marker löschen",
+    "save_place": "Ort speichern",
     "name": "Marker-Name",
     "category": "Kategorie",
     "description": "Beschreibung",
@@ -83,6 +96,7 @@
   "login": {
     "title": "Filen Cloud-Synchro",
     "subtitle": "Anmelden um Orte Ende-zu-Ende verschlüsselt zu synchronisieren",
+    "account_storage": "Kontospeicher",
     "email": "E-Mail-Adresse",
     "password": "Passwort",
     "two_factor": "2FA-Code (falls aktiv)",
