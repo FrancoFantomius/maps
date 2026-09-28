@@ -33,8 +33,8 @@ export function openMarkerModal(lat, lng, id, tempDetails, customMarkers, callba
     } else {
         if (modalId) modalId.value = '';
         if (modalName) modalName.value = tempDetails ? tempDetails.name : '';
-        if (modalCategory) modalCategory.value = 'poi';
-        if (modalDesc) modalDesc.value = '';
+        if (modalCategory) modalCategory.value = (tempDetails && tempDetails.category) ? tempDetails.category : 'poi';
+        if (modalDesc) modalDesc.value = (tempDetails && tempDetails.desc) ? tempDetails.desc : '';
         if (modalTitle) modalTitle.innerText = "Save Location";
         if (markerModal) {
             markerModal.headline = "Save Location";
@@ -91,6 +91,7 @@ export async function saveMarkerFromForm(tempDetails, customMarkers, MapService,
     };
 
     if (modalId && !modalId.value && tempDetails) {
+        data.address = tempDetails.address || '';
         data.wikiImage = tempDetails.wikiImage || '';
         data.wikiSummary = tempDetails.wikiSummary || '';
         data.wikiUrl = tempDetails.wikiUrl || '';
@@ -98,6 +99,7 @@ export async function saveMarkerFromForm(tempDetails, customMarkers, MapService,
     } else if (modalId && modalId.value) {
         const existing = (customMarkers || []).find(x => x.id === modalId.value);
         if (existing) {
+            data.address = existing.address || (tempDetails && tempDetails.address) || '';
             data.wikiImage = existing.wikiImage || '';
             data.wikiSummary = existing.wikiSummary || '';
             data.wikiUrl = existing.wikiUrl || '';
@@ -109,7 +111,7 @@ export async function saveMarkerFromForm(tempDetails, customMarkers, MapService,
         await savePlace(id, data);
         if (data.category === 'home' && MapService && typeof MapService.setHomeAddress === 'function') {
             MapService.setHomeAddress({
-                address: data.name || `${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}`,
+                address: data.address || data.name || `${data.lat.toFixed(4)}, ${data.lng.toFixed(4)}`,
                 lat: data.lat,
                 lng: data.lng
             });

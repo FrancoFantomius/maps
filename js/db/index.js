@@ -20,8 +20,13 @@ db.changes({
  */
 export async function destroyDatabase() {
   stopSync();
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem('maps_home_address');
+  }
   await db.destroy();
-  window.location.reload();
+  if (typeof window !== 'undefined' && window.location && typeof window.location.reload === 'function') {
+    window.location.reload();
+  }
 }
 
 export * from './IO.js';

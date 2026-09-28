@@ -351,17 +351,24 @@ export function renderSuggestions(filterQuery = '') {
                     if (MapService.flyTo) {
                         MapService.flyTo([home.lng, home.lat], 15);
                     }
-                    if (MarkerController && MarkerController.setTempMarker) {
-                        MarkerController.setTempMarker(home.lat, home.lng);
-                    }
                     if (HUDController && HUDController.setState) {
-                        HUDController.setState('place-details', {
-                            isTemp: true,
+                        const existingMarker = (MarkerController && MarkerController.customMarkers)
+                            ? MarkerController.customMarkers.find(m => m.category === 'home' || (Math.abs(m.lat - home.lat) < 0.0001 && Math.abs(m.lng - home.lng) < 0.0001))
+                            : null;
+                        const details = existingMarker ? {
+                            ...existingMarker,
+                            category: 'home',
+                            name: existingMarker.name || 'Home',
+                            address: existingMarker.address || home.address || ''
+                        } : {
+                            category: 'home',
+                            name: 'Home',
+                            address: home.address || '',
                             lat: home.lat,
                             lng: home.lng,
-                            name: 'Home',
-                            address: home.address || ''
-                        });
+                            isTemp: true
+                        };
+                        HUDController.setState('place-details', details);
                     }
                 });
                 chipSet.appendChild(chip);

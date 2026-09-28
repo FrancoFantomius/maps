@@ -110,13 +110,21 @@ export const MarkerController = {
             if (MeasurementController.isMeasureMode || RoutingController.isRouteMode) {
                 return;
             }
-            HUDController.setState('place-details', {
-                isTemp: true,
+            const existingMarker = (this.customMarkers || []).find(m => m.category === 'home' || (Math.abs(m.lat - home.lat) < 0.0001 && Math.abs(m.lng - home.lng) < 0.0001));
+            const details = existingMarker ? {
+                ...existingMarker,
+                category: 'home',
+                name: existingMarker.name || 'Home',
+                address: existingMarker.address || home.address || ''
+            } : {
+                category: 'home',
+                name: 'Home',
+                address: home.address || '',
                 lat: home.lat,
                 lng: home.lng,
-                name: 'Home Address',
-                address: home.address
-            });
+                isTemp: true
+            };
+            HUDController.setState('place-details', details);
             MapService.flyTo([home.lng, home.lat], 15);
         });
     },

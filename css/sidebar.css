@@ -331,6 +331,8 @@
 }
 
 .sheet-info-card {
+  display: flex;
+  align-items: center;
   padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   background: var(--bg-subtle);
@@ -343,13 +345,25 @@
 .sheet-info-icon {
   color: var(--text-muted);
   font-size: 1.125rem;
-  margin-top: 1px;
+  margin-top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
 .sheet-info-text {
   flex: 1;
   word-break: break-word;
+  align-self: center;
+}
+
+#sheet-notes-section {
+  align-items: flex-start;
+}
+
+#sheet-notes-section .sheet-info-icon {
+  margin-top: 2px;
 }
 
 .sheet-shop-card {

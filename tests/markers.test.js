@@ -2,6 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { MarkerController, createPathPin } from '../js/markers/index.js';
 import { MapService } from '../js/map/index.js';
+import { HUDController } from '../js/hud/index.js';
 import { savePlace, deletePlaceFromDB, loadAllPlaces } from '../js/db/index.js';
 
 vi.mock('../js/map/index.js', () => ({
@@ -40,6 +41,7 @@ describe('MarkerController', () => {
       <select id="modal-category">
         <option value="poi">POI</option>
         <option value="food">Food</option>
+        <option value="home">Home</option>
       </select>
       <input id="modal-desc" />
       <h3 id="modal-title"></h3>
@@ -149,6 +151,29 @@ describe('MarkerController', () => {
         lng: 10.456
       }));
       expect(saved.name).toBe('Test Cafe');
+    });
+
+    it('preserves address from tempDetails when saving a place', async () => {
+      MarkerController.currentTempDetails = {
+        name: 'Rue des Serruriers',
+        address: 'Rue des Serruriers, 03100 Montluçon, France',
+        category: 'home'
+      };
+      document.getElementById('modal-lat').value = '46.34089';
+      document.getElementById('modal-lng').value = '2.60301';
+      document.getElementById('modal-name').value = 'Rue des Serruriers';
+      document.getElementById('modal-category').value = 'home';
+
+      const saved = await MarkerController.saveFromForm();
+
+      expect(savePlace).toHaveBeenCalledWith(expect.stringContaining('place_'), expect.objectContaining({
+        name: 'Rue des Serruriers',
+        address: 'Rue des Serruriers, 03100 Montluçon, France',
+        category: 'home',
+        lat: 46.34089,
+        lng: 2.60301
+      }));
+      expect(saved.address).toBe('Rue des Serruriers, 03100 Montluçon, France');
     });
   });
 
@@ -369,6 +394,52 @@ describe('MarkerController', () => {
       expect(MarkerController.visibleLimit).toBe(3);
       expect(listEl.querySelectorAll('.marker-item').length).toBe(3);
       expect(expandContainer.classList.contains('hidden')).toBe(false);
+    });
+  });
+
+  describe('renderHomeMarker', () => {
+    it('sets place-details state with matching custom marker if saved', () => {
+      MapService.getHomeAddress.mockReturnValue({ lat: 45.438, lng: 10.993, address: 'Via Roma 1, Verona' });
+      MarkerController.customMarkers = [
+        { id: 'home_1', name: 'My Home', category: 'home', desc: 'Home sweet home', lat: 45.438, lng: 10.993 }
+      ];
+
+      const setStateSpy = vi.spyOn(HUDController, 'setState');
+      MarkerController.renderHomeMarker();
+
+      expect(MapService.createMarker).toHaveBeenCalled();
+      const pinEl = MapService.createMarker.mock.calls[MapService.createMarker.mock.calls.length - 1][0];
+      pinEl.click();
+
+      expect(setStateSpy).toHaveBeenCalledWith('place-details', expect.objectContaining({
+        id: 'home_1',
+        name: 'My Home',
+        category: 'home',
+        desc: 'Home sweet home',
+        address: 'Via Roma 1, Verona',
+        lat: 45.438,
+        lng: 10.993
+      }));
+    });
+
+    it('sets place-details state with fallback category and Home name if not in customMarkers', () => {
+      MapService.getHomeAddress.mockReturnValue({ lat: 45.438, lng: 10.993, address: 'Via Roma 1, Verona' });
+      MarkerController.customMarkers = [];
+
+      const setStateSpy = vi.spyOn(HUDController, 'setState');
+      MarkerController.renderHomeMarker();
+
+      const pinEl = MapService.createMarker.mock.calls[MapService.createMarker.mock.calls.length - 1][0];
+      pinEl.click();
+
+      expect(setStateSpy).toHaveBeenCalledWith('place-details', expect.objectContaining({
+        name: 'Home',
+        category: 'home',
+        address: 'Via Roma 1, Verona',
+        lat: 45.438,
+        lng: 10.993,
+        isTemp: true
+      }));
     });
   });
 });

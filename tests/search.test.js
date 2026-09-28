@@ -12,6 +12,7 @@ let createdMarkers = [];
 vi.mock('../js/api/index.js', () => ({
   ApiService: {
     searchGeocode: vi.fn().mockResolvedValue([]),
+    reverseGeocode: vi.fn().mockResolvedValue({ display_name: 'Rue des Serruriers, 03100 Montluçon, France' }),
   },
 }));
 
@@ -1033,6 +1034,28 @@ describe('SearchController', () => {
 
       btnDelete.click();
       expect(MarkerController.delete).toHaveBeenCalledWith('place_saved_1');
+    });
+
+    it('enriches incomplete address using reverse geocoding in openPlaceDetails', async () => {
+      const placeData = {
+        name: 'Rue des Serruriers',
+        address: 'Rue des Serruriers',
+        lat: 46.34089,
+        lng: 2.60301,
+      };
+
+      SearchController.openPlaceDetails(placeData);
+
+      expect(ApiService.reverseGeocode).toHaveBeenCalledWith(46.34089, 2.60301);
+
+      // Wait for microtask promise resolution
+      await Promise.resolve();
+
+      const addressSec = document.getElementById('sheet-address-section');
+      const addressText = document.getElementById('sheet-address-text');
+      expect(addressSec.classList.contains('hidden')).toBe(false);
+      expect(addressText.textContent).toBe('Rue des Serruriers, 03100 Montluçon, France');
+      expect(placeData.address).toBe('Rue des Serruriers, 03100 Montluçon, France');
     });
   });
 });

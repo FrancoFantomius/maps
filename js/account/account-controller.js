@@ -3,6 +3,7 @@
  */
 
 import { getSyncSettings, saveSyncSettings, startSync, stopSync, destroyDatabase, loadAllPlaces } from '../db/index.js';
+import { MapService } from '../map/index.js';
 
 export const AccountController = {
   async init() {
@@ -53,7 +54,17 @@ export const AccountController = {
       delete settings.userId;
       delete settings.authVersion;
       delete settings.password;
+      delete settings.homeAddress;
       await saveSyncSettings(settings);
+
+      if (MapService && typeof MapService.clearHomeAddress === 'function') {
+        MapService.clearHomeAddress();
+      } else if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('maps_home_address');
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('maps-home-updated', { detail: null }));
+        }
+      }
 
       // Purge local database as part of signout
       await destroyDatabase();

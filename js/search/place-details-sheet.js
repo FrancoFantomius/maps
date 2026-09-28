@@ -1,5 +1,7 @@
 // maps Search - js/search/place-details-sheet.js
 
+import { ApiService } from '../api/index.js';
+
 let currentPlaceData = null;
 let isBound = false;
 
@@ -133,6 +135,22 @@ export function openPlaceDetails(data) {
             addressSec.classList.remove('hidden');
         } else {
             addressSec.classList.add('hidden');
+        }
+
+        const isIncomplete = !data.address || (data.name && data.address.trim() === data.name.trim()) || !data.address.includes(',');
+        if (isIncomplete && !isNaN(data.lat) && !isNaN(data.lng) && ApiService && typeof ApiService.reverseGeocode === 'function') {
+            const placeRef = data;
+            ApiService.reverseGeocode(data.lat, data.lng)
+                .then(res => {
+                    if (res && res.display_name && currentPlaceData === placeRef) {
+                        placeRef.address = res.display_name;
+                        addressText.textContent = res.display_name;
+                        addressSec.classList.remove('hidden');
+                    }
+                })
+                .catch(err => {
+                    console.warn("Reverse geocoding address enrichment failed", err);
+                });
         }
     }
 

@@ -238,6 +238,7 @@ describe('AccountController & UI', () => {
   });
 
   it('handles signout by stopping sync, saving settings, and destroying database without confirm prompt', async () => {
+    localStorage.setItem('maps_home_address', JSON.stringify({ lat: 45, lng: 10, address: 'Test Home' }));
     const confirmSpy = vi.spyOn(window, 'confirm');
     await AccountController.handleSignout();
 
@@ -245,6 +246,7 @@ describe('AccountController & UI', () => {
     expect(stopSync).toHaveBeenCalled();
     expect(saveSyncSettings).toHaveBeenCalledWith(expect.objectContaining({ enabled: false }));
     expect(destroyDatabase).toHaveBeenCalled();
+    expect(localStorage.getItem('maps_home_address')).toBeNull();
     expect(AccountController.handlePurge).toBeUndefined();
     confirmSpy.mockRestore();
   });
