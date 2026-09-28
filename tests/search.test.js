@@ -717,7 +717,7 @@ describe('SearchController', () => {
       expect(searchBar.close).toHaveBeenCalled();
     });
 
-    it('supports slotted searchbar buttons (menu, search submit) with tooltips and click actions', async () => {
+    it('supports slotted searchbar buttons (menu, search submit) and click actions', async () => {
       const searchBar = document.getElementById('search-bar');
       searchBar.value = 'Rome';
 
@@ -731,30 +731,7 @@ describe('SearchController', () => {
       btnSubmit.setAttribute('slot', 'trailing');
       searchBar.appendChild(btnSubmit);
 
-      const tooltipMenu = document.createElement('md-tooltip');
-      tooltipMenu.setAttribute('for', 'btn-search-menu');
-      tooltipMenu.setAttribute('position', 'bottom');
-      tooltipMenu.innerHTML = '<span data-i18n="markers.title">Saved Places</span>';
-      document.body.appendChild(tooltipMenu);
-
-      const tooltipSubmit = document.createElement('md-tooltip');
-      tooltipSubmit.setAttribute('for', 'btn-search-submit');
-      tooltipSubmit.setAttribute('position', 'bottom');
-      tooltipSubmit.innerHTML = '<span data-i18n="hud.search_placeholder">Search</span>';
-      document.body.appendChild(tooltipSubmit);
-
-      const clearTooltip = document.createElement('md-tooltip');
-      clearTooltip.id = 'search-clear-tooltip';
-      clearTooltip.setAttribute('position', 'bottom');
-      clearTooltip.innerHTML = '<span>Clear search</span>';
-      document.body.appendChild(clearTooltip);
-
       setupSearchUI(SearchController, HUDController, MarkerController, ApiService);
-
-      // Verify tooltips exist
-      expect(document.querySelector('md-tooltip[for="btn-search-menu"]')).not.toBeNull();
-      expect(document.querySelector('md-tooltip[for="btn-search-submit"]')).not.toBeNull();
-      expect(document.getElementById('search-clear-tooltip')).not.toBeNull();
 
       // Test clicking btn-search-menu toggles HUDController state
       HUDController.currentState = 'places';
@@ -770,25 +747,6 @@ describe('SearchController', () => {
       btnSubmit.click();
       await new Promise(r => setTimeout(r, 10));
       expect(ApiService.searchGeocode).toHaveBeenCalledWith('Rome', null, expect.any(Object));
-
-      // Test clear tooltip anchor binding
-      const mockClearBtn = document.createElement('button');
-      mockClearBtn.className = 'icon-btn clear-btn';
-      Object.defineProperty(searchBar, 'shadowRoot', {
-        value: {
-          querySelector: vi.fn((sel) => (sel === '.clear-btn' ? mockClearBtn : null)),
-          appendChild: vi.fn(),
-        },
-        configurable: true,
-      });
-
-      searchBar.dispatchEvent(new CustomEvent('input', { detail: { value: 'test' } }));
-      expect(clearTooltip.anchor).toBe(mockClearBtn);
-
-      // When search bar fires clear, tooltip is hidden
-      clearTooltip.hide = vi.fn();
-      searchBar.dispatchEvent(new CustomEvent('clear'));
-      expect(clearTooltip.hide).toHaveBeenCalled();
     });
 
     it('does not overwrite search results with in-flight suggestions when map shifts or debounce fires', async () => {

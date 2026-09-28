@@ -7,7 +7,6 @@ import '@francofantomius/material-components/button-group';
 import '@francofantomius/material-components/icon-button';
 import '@francofantomius/material-components/text-field';
 import '@francofantomius/material-components/fab';
-import '@francofantomius/material-components/tooltip';
 import '@francofantomius/material-components/icon';
 import '@francofantomius/material-components/app-drawer';
 import '@francofantomius/material-components/account-menu';
@@ -40,31 +39,6 @@ if (buttonClass && buttonClass.elementStyles && !buttonClass._responsivePatched)
             padding: 0 8px;
         }
     `);
-}
-
-// Add breathing space between md-tooltip and anchor buttons
-const tooltipClass = customElements.get('md-tooltip');
-if (tooltipClass && !tooltipClass.prototype._spacingPatched) {
-    tooltipClass.prototype._spacingPatched = true;
-    const originalUpdatePosition = tooltipClass.prototype.updatePosition;
-    tooltipClass.prototype.updatePosition = function() {
-        originalUpdatePosition.call(this);
-        if (!this.tooltipPanel) return;
-        const extraGap = 10; // Extra spacing (10px + 4px default = 14px total spacing)
-        if (this.position === 'left') {
-            const currentLeft = parseFloat(this.tooltipPanel.style.left) || 0;
-            this.tooltipPanel.style.left = `${currentLeft - extraGap}px`;
-        } else if (this.position === 'right') {
-            const currentLeft = parseFloat(this.tooltipPanel.style.left) || 0;
-            this.tooltipPanel.style.left = `${currentLeft + extraGap}px`;
-        } else if (this.position === 'top') {
-            const currentTop = parseFloat(this.tooltipPanel.style.top) || 0;
-            this.tooltipPanel.style.top = `${currentTop - extraGap}px`;
-        } else if (this.position === 'bottom') {
-            const currentTop = parseFloat(this.tooltipPanel.style.top) || 0;
-            this.tooltipPanel.style.top = `${currentTop + extraGap}px`;
-        }
-    };
 }
 
 // Remove duplicate horizontal line above footer in md-account-menu

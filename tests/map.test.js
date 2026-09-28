@@ -450,4 +450,50 @@ describe('MapService', () => {
       });
     });
   });
+
+  describe('Path display and markers', () => {
+    it('creates start and end markers when displayPath is called', () => {
+      const mockRemove = vi.fn();
+      const mockMarker = {
+        setLngLat: vi.fn().mockReturnThis(),
+        addTo: vi.fn().mockReturnThis(),
+        remove: mockRemove,
+      };
+      const createMarkerSpy = vi.spyOn(MapService, 'createMarker').mockReturnValue(mockMarker);
+      const updateSourceDataSpy = vi.spyOn(MapService, 'updateSourceData').mockReturnValue(true);
+      const fitBoundsSpy = vi.spyOn(MapService, 'fitBounds').mockImplementation(() => {});
+
+      MapService.map = { fitBounds: vi.fn() };
+
+      const points = [
+        { lat: 45.40, lng: 11.80 },
+        { lat: 45.41, lng: 11.81 },
+        { lat: 45.42, lng: 11.82 },
+      ];
+
+      MapService.displayPath(points);
+
+      expect(updateSourceDataSpy).toHaveBeenCalledWith('saved-path-source', expect.objectContaining({
+        type: 'Feature',
+        geometry: expect.objectContaining({
+          type: 'LineString',
+          coordinates: [[11.80, 45.40], [11.81, 45.41], [11.82, 45.42]]
+        })
+      }));
+      expect(createMarkerSpy).toHaveBeenCalledTimes(2);
+      expect(MapService.pathStartMarker).toBe(mockMarker);
+      expect(MapService.pathEndMarker).toBe(mockMarker);
+
+      MapService.clearDisplayedPath();
+      expect(mockRemove).toHaveBeenCalledTimes(2);
+      expect(MapService.pathStartMarker).toBeNull();
+      expect(MapService.pathEndMarker).toBeNull();
+      expect(MapService.displayedPathCoords).toBeNull();
+
+      createMarkerSpy.mockRestore();
+      updateSourceDataSpy.mockRestore();
+      fitBoundsSpy.mockRestore();
+    });
+  });
 });
+

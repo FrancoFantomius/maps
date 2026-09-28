@@ -1,6 +1,6 @@
 // tests/markers.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MarkerController } from '../js/markers/index.js';
+import { MarkerController, createPathPin } from '../js/markers/index.js';
 import { MapService } from '../js/map/index.js';
 import { savePlace, deletePlaceFromDB, loadAllPlaces } from '../js/db/index.js';
 
@@ -58,6 +58,20 @@ describe('MarkerController', () => {
       expect(pinEl).toBeInstanceOf(HTMLElement);
       expect(pinEl.className).toBe('custom-map-pin-div');
       expect(pinEl.innerHTML).toContain('🍕');
+    });
+
+    it('creates start and end path pin DOM elements with correct icons and colors', () => {
+      const startPin = createPathPin('start');
+      expect(startPin).toBeInstanceOf(HTMLElement);
+      expect(startPin.className).toContain('path-start-pin');
+      expect(startPin.getAttribute('title')).toBe('Start');
+      expect(startPin.innerHTML).toContain('#16a34a');
+
+      const endPin = createPathPin('end');
+      expect(endPin).toBeInstanceOf(HTMLElement);
+      expect(endPin.className).toContain('path-end-pin');
+      expect(endPin.getAttribute('title')).toBe('End');
+      expect(endPin.innerHTML).toContain('#dc2626');
     });
   });
 

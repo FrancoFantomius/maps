@@ -151,7 +151,6 @@ export const HUDController = {
 
     updateMenuIcon(hudState) {
         const btnSearchMenu = document.getElementById('btn-search-menu');
-        const tooltipSpan = document.querySelector('#search-menu-tooltip span') || document.querySelector('md-tooltip[for="btn-search-menu"] span');
         const isSidebarOpen = (hudState === 'saved-places' || hudState === 'place-details' || hudState === 'measure' || hudState === 'route');
 
         if (btnSearchMenu) {
@@ -160,13 +159,11 @@ export const HUDController = {
                 btnSearchMenu.icon = 'arrow_back';
                 btnSearchMenu.setAttribute('aria-label', 'Back');
                 btnSearchMenu.title = 'Back';
-                if (tooltipSpan) tooltipSpan.textContent = 'Back';
             } else {
                 btnSearchMenu.setAttribute('icon', 'menu');
                 btnSearchMenu.icon = 'menu';
                 btnSearchMenu.setAttribute('aria-label', 'Saved Places');
                 btnSearchMenu.title = 'Saved Places';
-                if (tooltipSpan) tooltipSpan.textContent = 'Saved Places';
             }
         }
     },

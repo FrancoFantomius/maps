@@ -93,22 +93,30 @@ export function updateUI(controller = GPSController) {
     const iconSpan = btn.querySelector('.gps-icon-main') || btn.querySelector('.material-symbols-outlined') || btn.querySelector('.material-icons-outlined');
     const isLocating = controller.isLocating || (controller.watchId !== null && !controller.gpsCoords);
 
+    const setIcon = (iconName) => {
+        if (!iconSpan) return;
+        iconSpan.textContent = iconName;
+        if (typeof iconSpan.setAttribute === 'function') {
+            iconSpan.setAttribute('name', iconName);
+        }
+    };
+
     if (controller.watchId === null && !controller.isLocating) {
         // State 1: Inactive (not tracking)
         btn.className = 'map-control-fab text-emerald-600';
-        if (iconSpan) iconSpan.textContent = 'my_location';
+        setIcon('my_location');
     } else if (isLocating) {
         // State 2: Locating (acquiring initial location fix)
         btn.className = 'map-control-fab text-emerald-600 is-locating';
-        if (iconSpan) iconSpan.textContent = 'location_searching';
+        setIcon('location_searching');
     } else if (controller.isFollowing) {
         // State 3: Position found & following
         btn.className = 'map-control-fab is-active bg-emerald-600 text-white';
-        if (iconSpan) iconSpan.textContent = 'gps_fixed';
+        setIcon('gps_fixed');
     } else {
         // State 4: Position found, tracking but not following
         btn.className = 'map-control-fab is-active text-emerald-600';
-        if (iconSpan) iconSpan.textContent = 'my_location';
+        setIcon('my_location');
     }
 }
 

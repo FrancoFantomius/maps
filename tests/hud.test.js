@@ -96,7 +96,6 @@ describe('HUDController', () => {
     it('morphs menu icon to arrow_back when sidebar is open and back to menu when closed', () => {
       document.body.innerHTML += `
         <md-icon-button id="btn-search-menu" icon="menu"></md-icon-button>
-        <md-tooltip id="search-menu-tooltip"><span>Saved Places</span></md-tooltip>
       `;
 
       HUDController.setState('saved-places');

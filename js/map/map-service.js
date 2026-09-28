@@ -1,7 +1,7 @@
 // maps Map Engine Module (Facade Pattern) - js/MapService.js
 
 import * as maplibregl from 'maplibre-gl';
-import { MarkerController } from '../markers/index.js';
+import { MarkerController, createPathPin } from '../markers/index.js';
 import { MeasurementController } from '../measurement/index.js';
 import { RoutingController } from '../routing/index.js';
 import { GPSController } from '../gps/index.js';
@@ -21,6 +21,8 @@ export const MapService = {
     isImperialUnits: false,
     highlightedPathCoords: null,
     displayedPathCoords: null,
+    pathStartMarker: null,
+    pathEndMarker: null,
 
     init() {
         let initialLat = 45.4064; // DEFAULT_LAT
@@ -669,6 +671,58 @@ export const MapService = {
             });
         }
 
+        // Register arrow icon for direction along paths
+        if (this.map && typeof this.map.hasImage === 'function' && !this.map.hasImage('path-direction-arrow')) {
+            try {
+                const size = 24;
+                const canvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
+                if (canvas && typeof canvas.getContext === 'function') {
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    if (ctx) {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.beginPath();
+                        ctx.moveTo(6, 5);
+                        ctx.lineTo(18, 12);
+                        ctx.lineTo(6, 19);
+                        ctx.lineTo(10, 12);
+                        ctx.closePath();
+                        ctx.fill();
+
+                        ctx.strokeStyle = 'rgba(2, 132, 199, 0.8)';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+
+                        const imgData = ctx.getImageData(0, 0, size, size);
+                        if (typeof this.map.addImage === 'function') {
+                            this.map.addImage('path-direction-arrow', imgData);
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Could not register path arrow image:", e);
+            }
+        }
+
+        if (!this.map.getLayer('saved-path-arrows')) {
+            this.map.addLayer({
+                id: 'saved-path-arrows',
+                source: 'saved-path-source',
+                type: 'symbol',
+                layout: {
+                    'symbol-placement': 'line',
+                    'symbol-spacing': 75,
+                    'icon-image': 'path-direction-arrow',
+                    'icon-size': 0.7,
+                    'icon-allow-overlap': true,
+                    'icon-ignore-placement': true,
+                    'icon-rotation-alignment': 'map',
+                    'icon-keep-upright': false
+                }
+            });
+        }
+
         this.setLabelsVisibility(this.activeOverlays.labels);
         this.updateStyleLayersVisibility();
         this.restoreActiveLayerData();
@@ -702,6 +756,7 @@ export const MapService = {
                     coordinates: this.displayedPathCoords
                 }
             });
+            this.updatePathMarkers(this.displayedPathCoords);
         }
 
         // Restore street highlighted path
@@ -1219,9 +1274,36 @@ export const MapService = {
         }
     },
 
+    updatePathMarkers(coords) {
+        if (this.pathStartMarker) {
+            try { this.pathStartMarker.remove(); } catch (e) { /* ignore */ }
+            this.pathStartMarker = null;
+        }
+        if (this.pathEndMarker) {
+            try { this.pathEndMarker.remove(); } catch (e) { /* ignore */ }
+            this.pathEndMarker = null;
+        }
+
+        if (!this.map || !coords || coords.length === 0) return;
+
+        // Start pin at coords[0]
+        const startEl = createPathPin('start');
+        this.pathStartMarker = this.createMarker(startEl, false, 'bottom')
+            .setLngLat(coords[0])
+            .addTo(this.map);
+
+        // End pin at coords[coords.length - 1] (if at least 2 points)
+        if (coords.length > 1) {
+            const endEl = createPathPin('end');
+            this.pathEndMarker = this.createMarker(endEl, false, 'bottom')
+                .setLngLat(coords[coords.length - 1])
+                .addTo(this.map);
+        }
+    },
+
     displayPath(points) {
         if (!points || !Array.isArray(points) || points.length === 0) return;
-        const coords = points.map(p => [p.lng, p.lat]);
+        const coords = points.map(p => Array.isArray(p) ? p : [p.lng, p.lat]);
         this.displayedPathCoords = coords;
         this.updateSourceData('saved-path-source', {
             type: 'Feature',
@@ -1230,6 +1312,7 @@ export const MapService = {
                 coordinates: coords
             }
         });
+        this.updatePathMarkers(coords);
 
         if (this.map && coords.length > 0) {
             if (maplibregl.LngLatBounds) {
@@ -1258,6 +1341,7 @@ export const MapService = {
                 coordinates: []
             }
         });
+        this.updatePathMarkers(null);
     },
 
     createMarker(element, draggable = false, anchor = 'center') {

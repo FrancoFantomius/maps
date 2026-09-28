@@ -188,19 +188,16 @@
     <!-- Mode Selector: Distance (geodesic straight) vs Path (routed road/path) vs Area (polygon area) -->
     <div class="measure-mode-wrapper">
         <md-button-group connected full-width class="measure-mode-group">
-            <md-button id="measure-mode-distance" variant="filled" icon="polyline">
+            <md-button id="measure-mode-distance" variant="filled" icon="polyline" aria-label="Straight-line distance">
                 <span>Distance</span>
             </md-button>
-            <md-button id="measure-mode-path" variant="outlined" icon="conversion_path">
+            <md-button id="measure-mode-path" variant="outlined" icon="conversion_path" aria-label="Path route distance">
                 <span>Path</span>
             </md-button>
-            <md-button id="measure-mode-area" variant="outlined" icon="square_foot">
+            <md-button id="measure-mode-area" variant="outlined" icon="square_foot" aria-label="Enclosed area measurement">
                 <span>Area</span>
             </md-button>
         </md-button-group>
-        <md-tooltip for="measure-mode-distance" position="bottom">Straight-line distance</md-tooltip>
-        <md-tooltip for="measure-mode-path" position="bottom">Path route distance</md-tooltip>
-        <md-tooltip for="measure-mode-area" position="bottom">Enclosed area measurement</md-tooltip>
     </div>
 
     <!-- Distance Output Top Summary (Not in a card) -->
@@ -227,7 +224,9 @@
     <div class="measure-breakdown-section">
         <div class="measure-breakdown-header">
             <span class="measure-breakdown-title">Points & Segments</span>
-            <button type="button" id="btn-clear-measure" class="measure-clear-btn hidden">Clear</button>
+            <md-button variant="text" id="btn-clear-measure" class="measure-clear-btn hidden">
+                <span>Clear</span>
+            </md-button>
         </div>
         <div id="measure-points-list" class="measure-points-list">
             <div class="measure-empty-state">
@@ -261,23 +260,19 @@
     <!-- Mode Selector Button Group: Driving / Cycling / Walking / Public Transport -->
     <div class="nav-mode-wrapper">
         <md-button-group connected full-width class="nav-mode-group">
-            <md-button id="nav-mode-driving" data-nav-mode="driving" variant="filled" icon="directions_car">
+            <md-button id="nav-mode-driving" data-nav-mode="driving" variant="filled" icon="directions_car" aria-label="Driving">
                 <span>Drive</span>
             </md-button>
-            <md-button id="nav-mode-cycling" data-nav-mode="cycling" variant="outlined" icon="directions_bike" icon-only>
+            <md-button id="nav-mode-cycling" data-nav-mode="cycling" variant="outlined" icon="directions_bike" icon-only aria-label="Cycling">
                 <span>Bike</span>
             </md-button>
-            <md-button id="nav-mode-foot" data-nav-mode="foot" variant="outlined" icon="directions_walk" icon-only>
+            <md-button id="nav-mode-foot" data-nav-mode="foot" variant="outlined" icon="directions_walk" icon-only aria-label="Walking">
                 <span>Walk</span>
             </md-button>
-            <md-button id="nav-mode-transit" data-nav-mode="transit" variant="outlined" icon="directions_transit" icon-only>
+            <md-button id="nav-mode-transit" data-nav-mode="transit" variant="outlined" icon="directions_transit" icon-only aria-label="Public Transport">
                 <span>Transit</span>
             </md-button>
         </md-button-group>
-        <md-tooltip for="nav-mode-driving" position="bottom">Driving</md-tooltip>
-        <md-tooltip for="nav-mode-cycling" position="bottom">Cycling</md-tooltip>
-        <md-tooltip for="nav-mode-foot" position="bottom">Walking</md-tooltip>
-        <md-tooltip for="nav-mode-transit" position="bottom">Public Transport</md-tooltip>
     </div>
 
     <!-- Waypoint Inputs -->
@@ -294,17 +289,17 @@
                     id="nav-origin-my-location"
                     icon="my_location"
                     variant="standard"
+                    aria-label="Use current location"
                 ></md-icon-button>
                 <md-icon-button
                     slot="trailing-icon"
                     id="nav-origin-clear"
                     icon="close"
                     variant="standard"
+                    aria-label="Clear"
                     class="hidden"
                 ></md-icon-button>
             </md-text-field>
-            <md-tooltip for="nav-origin-my-location" position="bottom">Use current location</md-tooltip>
-            <md-tooltip for="nav-origin-clear" position="bottom">Clear</md-tooltip>
             <div id="nav-origin-autocomplete" class="nav-autocomplete custom-scrollbar hidden"></div>
         </div>
         <div class="nav-input-box">
@@ -319,17 +314,17 @@
                     id="nav-dest-my-location"
                     icon="my_location"
                     variant="standard"
+                    aria-label="Use current location"
                 ></md-icon-button>
                 <md-icon-button
                     slot="trailing-icon"
                     id="nav-dest-clear"
                     icon="close"
                     variant="standard"
+                    aria-label="Clear"
                     class="hidden"
                 ></md-icon-button>
             </md-text-field>
-            <md-tooltip for="nav-dest-my-location" position="bottom">Use current location</md-tooltip>
-            <md-tooltip for="nav-dest-clear" position="bottom">Clear</md-tooltip>
             <div id="nav-dest-autocomplete" class="nav-autocomplete custom-scrollbar hidden"></div>
         </div>
     </div>
@@ -351,7 +346,7 @@
     <!-- Turn-by-turn directions list -->
     <div id="nav-steps-list" class="nav-steps-list custom-scrollbar">
         <div class="nav-steps-empty">
-            <span class="material-symbols-outlined nav-steps-empty-icon">alt_route</span>
+            <md-icon name="alt_route" class="nav-steps-empty-icon"></md-icon>
             <span>Set origin and destination to see route directions</span>
         </div>
     </div>

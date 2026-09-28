@@ -30,3 +30,28 @@ export function createPin(category = 'poi', colorOverride = null, content = null
     return el;
 }
 
+export function createPathPin(type = 'start') {
+    const isStart = type === 'start';
+    const displayColor = isStart ? '#16a34a' : '#dc2626';
+    const label = isStart ? 'Start' : 'End';
+    const iconSvg = isStart
+        ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="${displayColor}"><path d="M8 5v14l11-7z"/></svg>`
+        : `<svg width="14" height="14" viewBox="0 0 24 24" fill="${displayColor}"><path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z"/></svg>`;
+
+    const el = document.createElement('div');
+    el.className = `custom-map-pin-div path-${type}-pin`;
+    el.style.cursor = 'pointer';
+    el.style.width = '34px';
+    el.style.height = '42px';
+    el.setAttribute('title', label);
+
+    el.innerHTML = `<svg width="34" height="42" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+        <path d="M17 0C7.61 0 0 7.61 0 17C0 26.5 17 42 17 42C17 42 34 26.5 34 17C34 7.61 26.39 0 17 0Z" fill="${displayColor}"/>
+        <circle cx="17" cy="17" r="10" fill="white"/>
+    </svg>
+    <span style="position:absolute;top:7px;left:0;width:34px;height:20px;display:flex;align-items:center;justify-content:center;pointer-events:none;">${iconSvg}</span>`;
+
+    return el;
+}
+
+

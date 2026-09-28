@@ -184,7 +184,12 @@ export const RoutingController = {
                 clone.querySelector('.item-name').textContent = 'Home';
                 clone.querySelector('.item-address').textContent = home.address;
                 const iconSpan = clone.querySelector('.autocomplete-icon') || clone.querySelector('.material-symbols-outlined') || clone.querySelector('.material-icons-outlined');
-                if (iconSpan) iconSpan.textContent = 'home';
+                if (iconSpan) {
+                    iconSpan.textContent = 'home';
+                    if (typeof iconSpan.setAttribute === 'function') {
+                        iconSpan.setAttribute('name', 'home');
+                    }
+                }
 
                 const itemDiv = clone.querySelector('.nav-autocomplete-item');
 

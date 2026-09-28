@@ -398,15 +398,12 @@ export function renderSuggestions(filterQuery = '') {
             text.className = 'search-history-text';
             text.textContent = searchQuery;
 
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
+            const removeBtn = document.createElement('md-icon-button');
+            removeBtn.setAttribute('icon', 'close');
+            removeBtn.setAttribute('variant', 'standard');
             removeBtn.className = 'search-history-remove-btn';
             removeBtn.title = 'Remove';
             removeBtn.setAttribute('aria-label', 'Remove search');
-
-            const removeIcon = document.createElement('md-icon');
-            removeIcon.setAttribute('name', 'close');
-            removeBtn.appendChild(removeIcon);
 
             removeBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -603,26 +600,15 @@ export function setupSearchUI(SearchController, HUDController, MarkerController,
             }
         };
 
-        const attachClearTooltip = () => {
-            const clearBtn = searchBar.shadowRoot?.querySelector('.clear-btn');
-            const clearTooltip = document.getElementById('search-clear-tooltip');
-            if (clearBtn && clearTooltip && clearTooltip.anchor !== clearBtn) {
-                clearTooltip.anchor = clearBtn;
-            }
-        };
-
         disableScrim();
-        attachClearTooltip();
         if (searchBar.updateComplete) {
             searchBar.updateComplete.then(() => {
                 disableScrim();
-                attachClearTooltip();
             });
         }
         if (searchBar.shadowRoot && typeof MutationObserver !== 'undefined') {
             const observer = new MutationObserver(() => {
                 disableScrim();
-                attachClearTooltip();
             });
             observer.observe(searchBar.shadowRoot, { childList: true, subtree: true });
         }
@@ -633,7 +619,6 @@ export function setupSearchUI(SearchController, HUDController, MarkerController,
 
         searchBar.addEventListener('active-change', (e) => {
             disableScrim();
-            attachClearTooltip();
             if (e.detail?.active && !uiState.isShowingSearchResults) {
                 SearchController.renderSuggestions(searchBar.value);
             }
@@ -644,7 +629,6 @@ export function setupSearchUI(SearchController, HUDController, MarkerController,
             if (SearchController) {
                 SearchController.isShowingSearchResults = false;
             }
-            attachClearTooltip();
             SearchController.renderSuggestions(e.detail?.value ?? searchBar.value);
         });
 
@@ -765,10 +749,6 @@ export function setupSearchUI(SearchController, HUDController, MarkerController,
         });
 
         searchBar.addEventListener('clear', () => {
-            const clearTooltip = document.getElementById('search-clear-tooltip');
-            if (clearTooltip && typeof clearTooltip.hide === 'function') {
-                clearTooltip.hide();
-            }
             uiState.isShowingSearchResults = false;
             uiState.searchResults = [];
             HUDController.setState('places');
