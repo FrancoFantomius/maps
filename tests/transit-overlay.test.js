@@ -4,7 +4,7 @@ import {
     TransitOverlay,
     normalizeColor,
     escapeHtml,
-    parseOverpassToGeoJSON
+    registerPMTilesProtocol
 } from '../js/map/transit-overlay.js';
 
 describe('TransitOverlay helper functions', () => {
@@ -47,143 +47,9 @@ describe('TransitOverlay helper functions', () => {
             expect(escapeHtml(undefined)).toBe('');
         });
     });
-
-    describe('parseOverpassToGeoJSON', () => {
-        it('returns empty feature collection for invalid or empty input', () => {
-            expect(parseOverpassToGeoJSON(null)).toEqual({ type: 'FeatureCollection', features: [] });
-            expect(parseOverpassToGeoJSON([])).toEqual({ type: 'FeatureCollection', features: [] });
-        });
-
-        it('parses bus stop nodes into Point features', () => {
-            const elements = [
-                {
-                    type: 'node',
-                    id: 12345,
-                    lat: 45.4064,
-                    lon: 11.8768,
-                    tags: {
-                        highway: 'bus_stop',
-                        name: 'Central Station',
-                        ref: '101',
-                        operator: 'CityBus',
-                        colour: '008000'
-                    }
-                }
-            ];
-
-            const result = parseOverpassToGeoJSON(elements);
-            expect(result.features).toHaveLength(1);
-            const feat = result.features[0];
-            expect(feat.geometry.type).toBe('Point');
-            expect(feat.geometry.coordinates).toEqual([11.8768, 45.4064]);
-            expect(feat.properties.type).toBe('stop');
-            expect(feat.properties.name).toBe('Central Station');
-            expect(feat.properties.ref).toBe('101');
-            expect(feat.properties.routeType).toBe('bus');
-            expect(feat.properties.colour).toBe('#008000');
-            expect(feat.properties.operator).toBe('CityBus');
-        });
-
-        it('parses tram and train stops with correct routeType', () => {
-            const elements = [
-                {
-                    type: 'node',
-                    id: 1,
-                    lat: 45.4,
-                    lon: 11.8,
-                    tags: { railway: 'tram_stop', name: 'Piazza Garibaldi' }
-                },
-                {
-                    type: 'node',
-                    id: 2,
-                    lat: 45.41,
-                    lon: 11.81,
-                    tags: { railway: 'station', name: 'Main Station' }
-                }
-            ];
-
-            const result = parseOverpassToGeoJSON(elements);
-            expect(result.features).toHaveLength(2);
-            expect(result.features[0].properties.routeType).toBe('tram');
-            expect(result.features[1].properties.routeType).toBe('train');
-        });
-
-        it('parses route relations with member geometries into LineStrings', () => {
-            const elements = [
-                {
-                    type: 'relation',
-                    id: 999,
-                    tags: {
-                        type: 'route',
-                        route: 'bus',
-                        ref: '4',
-                        name: 'Line 4: North to South',
-                        from: 'North Terminal',
-                        to: 'South Hub',
-                        colour: '#ef4444',
-                        operator: 'Bus Transit Co'
-                    },
-                    members: [
-                        {
-                            type: 'way',
-                            ref: 1001,
-                            geometry: [
-                                { lat: 45.4, lon: 11.8 },
-                                { lat: 45.41, lon: 11.81 }
-                            ]
-                        },
-                        {
-                            type: 'way',
-                            ref: 1002,
-                            geometry: [
-                                { lat: 45.41, lon: 11.81 },
-                                { lat: 45.42, lon: 11.82 }
-                            ]
-                        }
-                    ]
-                }
-            ];
-
-            const result = parseOverpassToGeoJSON(elements);
-            expect(result.features).toHaveLength(2);
-            expect(result.features[0].geometry.type).toBe('LineString');
-            expect(result.features[0].geometry.coordinates).toEqual([
-                [11.8, 45.4],
-                [11.81, 45.41]
-            ]);
-            expect(result.features[0].properties.ref).toBe('4');
-            expect(result.features[0].properties.colour).toBe('#ef4444');
-            expect(result.features[0].properties.from).toBe('North Terminal');
-            expect(result.features[0].properties.to).toBe('South Hub');
-        });
-
-        it('parses standalone transit ways', () => {
-            const elements = [
-                {
-                    type: 'way',
-                    id: 777,
-                    tags: {
-                        railway: 'tram',
-                        ref: 'T1',
-                        colour: '#ea580c'
-                    },
-                    geometry: [
-                        { lat: 45.4, lon: 11.8 },
-                        { lat: 45.42, lon: 11.82 }
-                    ]
-                }
-            ];
-
-            const result = parseOverpassToGeoJSON(elements);
-            expect(result.features).toHaveLength(1);
-            expect(result.features[0].properties.type).toBe('route');
-            expect(result.features[0].properties.route).toBe('tram');
-            expect(result.features[0].properties.ref).toBe('T1');
-        });
-    });
 });
 
-describe('TransitOverlay lifecycle and map integration', () => {
+describe('TransitOverlay lifecycle and vector integration', () => {
     let mockMap;
     let layers;
     let sources;
@@ -196,19 +62,19 @@ describe('TransitOverlay lifecycle and map integration', () => {
 
         mockMap = {
             getZoom: vi.fn(() => 14),
-            getBounds: vi.fn(() => ({
-                getSouth: () => 45.40,
-                getWest: () => 11.85,
-                getNorth: () => 45.45,
-                getEast: () => 11.90
-            })),
             getSource: vi.fn(id => sources[id]),
             addSource: vi.fn((id, src) => {
-                sources[id] = { ...src, setData: vi.fn() };
+                sources[id] = src;
+            }),
+            removeSource: vi.fn(id => {
+                delete sources[id];
             }),
             getLayer: vi.fn(id => layers[id]),
             addLayer: vi.fn(layer => {
                 layers[layer.id] = layer;
+            }),
+            removeLayer: vi.fn(id => {
+                delete layers[id];
             }),
             setLayoutProperty: vi.fn((layerId, prop, value) => {
                 if (layers[layerId]) {
@@ -227,70 +93,172 @@ describe('TransitOverlay lifecycle and map integration', () => {
         // Pretend openmaptiles source exists
         sources['openmaptiles'] = { type: 'vector' };
 
-        TransitOverlay.featureCache.clear();
-        TransitOverlay.loadedBboxes = [];
         TransitOverlay.eventsBound = false;
-        TransitOverlay.debounceTimer = null;
-        TransitOverlay.currentAbortController = null;
+        TransitOverlay.activePopup = null;
     });
 
     afterEach(() => {
         vi.clearAllMocks();
     });
 
-    it('sets up base and detail layers when setup is called', () => {
+    it('sets up base and vector detail layers when setup is called', () => {
         TransitOverlay.setup(mockMap, true);
 
-        // Base layers
+        // Base vector layers
         expect(mockMap.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: 'transit-base-rail-casing' }));
         expect(mockMap.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: 'transit-base-rail' }));
         expect(mockMap.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: 'transit-base-transit' }));
         expect(mockMap.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: 'transit-base-stations' }));
 
-        // Detail source & layers
-        expect(mockMap.addSource).toHaveBeenCalledWith('transit-detail-source', expect.any(Object));
-        expect(mockMap.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: 'transit-detail-routes' }));
-        expect(mockMap.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: 'transit-detail-stops' }));
+        // Vector transit source & layers
+        expect(mockMap.addSource).toHaveBeenCalledWith('transit-vector-source', expect.any(Object));
+        expect(mockMap.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: 'transit-vector-routes' }));
+        expect(mockMap.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: 'transit-vector-stops' }));
+        expect(TransitOverlay.isVisible).toBe(true);
     });
 
     it('sets visibility to none when initialized with isVisible = false', () => {
         TransitOverlay.setup(mockMap, false);
 
-        expect(layers['transit-detail-routes'].layout.visibility).toBe('none');
+        expect(layers['transit-vector-routes'].layout.visibility).toBe('none');
         expect(layers['transit-base-rail'].layout.visibility).toBe('none');
+        expect(TransitOverlay.isVisible).toBe(false);
     });
 
     it('toggles layer visibility when setVisible is called', () => {
         TransitOverlay.setup(mockMap, false);
         TransitOverlay.setVisible(true);
 
-        expect(mockMap.setLayoutProperty).toHaveBeenCalledWith('transit-detail-routes', 'visibility', 'visible');
+        expect(mockMap.setLayoutProperty).toHaveBeenCalledWith('transit-vector-routes', 'visibility', 'visible');
         expect(mockMap.setLayoutProperty).toHaveBeenCalledWith('transit-base-rail', 'visibility', 'visible');
         expect(TransitOverlay.isVisible).toBe(true);
 
         TransitOverlay.setVisible(false);
-        expect(mockMap.setLayoutProperty).toHaveBeenCalledWith('transit-detail-routes', 'visibility', 'none');
+        expect(mockMap.setLayoutProperty).toHaveBeenCalledWith('transit-vector-routes', 'visibility', 'none');
         expect(TransitOverlay.isVisible).toBe(false);
     });
 
-    it('does not fetch detail transit if zoom is below minDetailZoom', () => {
-        mockMap.getZoom.mockReturnValue(11);
+    it('updates vector source url when setVectorSourceUrl is called', () => {
         TransitOverlay.setup(mockMap, true);
+        const newUrl = 'pmtiles://https://example.com/custom-transit.pmtiles';
+        TransitOverlay.setVectorSourceUrl(newUrl);
 
-        const fetchSpy = vi.spyOn(TransitOverlay, 'fetchViewportTransit');
-        TransitOverlay.scheduleFetch();
-
-        expect(fetchSpy).not.toHaveBeenCalled();
-        fetchSpy.mockRestore();
+        expect(TransitOverlay.vectorSourceUrl).toBe(newUrl);
     });
 
-    it('identifies covered bounds correctly', () => {
-        TransitOverlay.loadedBboxes = [
-            { south: 45.0, west: 11.0, north: 46.0, east: 12.0 }
-        ];
+    it('handles stop and route click popups without errors', () => {
+        TransitOverlay.setup(mockMap, true);
+        const showPopupSpy = vi.spyOn(TransitOverlay, 'showPopup').mockImplementation(() => {});
 
-        expect(TransitOverlay.isBoundsCovered(45.2, 11.2, 45.8, 11.8)).toBe(true);
-        expect(TransitOverlay.isBoundsCovered(44.0, 11.0, 46.0, 12.0)).toBe(false);
+        // Test stop click
+        TransitOverlay.handleStopClick({
+            lngLat: { lng: 11.87, lat: 45.40 },
+            features: [{
+                properties: {
+                    name: 'Main Central Station',
+                    ref: '10',
+                    routeType: 'train',
+                    operator: 'National Rail'
+                }
+            }]
+        });
+        expect(showPopupSpy).toHaveBeenCalledWith(
+            { lng: 11.87, lat: 45.40 },
+            expect.stringContaining('Main Central Station')
+        );
+
+        // Test route click
+        TransitOverlay.handleRouteClick({
+            lngLat: { lng: 11.87, lat: 45.40 },
+            features: [{
+                properties: {
+                    name: 'Metro Line Red',
+                    ref: 'M1',
+                    route: 'subway',
+                    colour: '#ef4444',
+                    from: 'North',
+                    to: 'South'
+                }
+            }]
+        });
+        expect(showPopupSpy).toHaveBeenCalledWith(
+            { lng: 11.87, lat: 45.40 },
+            expect.stringContaining('Metro Line Red')
+        );
+
+        showPopupSpy.mockRestore();
+    });
+
+    it('populates place-details sheet with transit route name, badge, and stops list', async () => {
+        const { openPlaceDetails } = await import('../js/search/place-details-sheet.js');
+
+        document.body.innerHTML = `
+            <div id="place-details-sheet">
+                <div id="sheet-image-container" class="hidden"><img id="sheet-image" /></div>
+                <div id="sheet-coords-chip"></div>
+                <div id="sheet-category-chip"></div>
+                <div id="sheet-notes-section" class="hidden"><span id="sheet-notes-text"></span></div>
+                <div id="sheet-address-section" class="hidden"><span id="sheet-address-text"></span></div>
+                <div id="sheet-street-section" class="hidden"><span id="sheet-street-text"></span></div>
+                <div id="sheet-shop-section" class="hidden"></div>
+                <div id="sheet-wiki-section" class="hidden"><span id="sheet-wiki-text"></span></div>
+                <div id="sheet-transit-section" class="hidden">
+                    <div id="sheet-transit-mode-icon"></div>
+                    <span id="sheet-transit-ref-badge"></span>
+                    <span id="sheet-transit-name"></span>
+                    <div id="sheet-transit-dest-row" class="hidden"><span id="sheet-transit-dest"></span></div>
+                    <div id="sheet-transit-operator-row" class="hidden"><span id="sheet-transit-operator"></span></div>
+                    <button id="sheet-btn-transit-overview"></button>
+                    <span id="sheet-transit-stops-count"></span>
+                    <div id="sheet-transit-stops-container"></div>
+                </div>
+            </div>
+        `;
+
+        const sampleTransitData = {
+            name: 'Bus 14: Station -> Hospital',
+            lat: 45.40,
+            lng: 11.87,
+            transitInfo: {
+                id: 101,
+                route: 'bus',
+                ref: '14',
+                name: 'Bus Line 14',
+                colour: '#0284c7',
+                from: 'Central Station',
+                to: 'City Hospital',
+                operator: 'Transit Agency',
+                lineCoords: [[11.87, 45.40], [11.88, 45.41]],
+                stops: [
+                    { id: 1, name: 'Central Station', lat: 45.40, lon: 11.87 },
+                    { id: 2, name: 'Piazza Garibaldi', lat: 45.405, lon: 11.875 },
+                    { id: 3, name: 'City Hospital', lat: 45.41, lon: 11.88 }
+                ]
+            }
+        };
+
+        openPlaceDetails(sampleTransitData);
+
+        const transitSec = document.getElementById('sheet-transit-section');
+        expect(transitSec.classList.contains('hidden')).toBe(false);
+
+        const badgeEl = document.getElementById('sheet-transit-ref-badge');
+        expect(badgeEl.textContent).toBe('14');
+        expect(badgeEl.style.backgroundColor).toBe('rgb(2, 132, 199)');
+
+        const nameEl = document.getElementById('sheet-transit-name');
+        expect(nameEl.textContent).toBe('Bus Line 14');
+
+        const destEl = document.getElementById('sheet-transit-dest');
+        expect(destEl.textContent).toBe('Central Station → City Hospital');
+
+        const countEl = document.getElementById('sheet-transit-stops-count');
+        expect(countEl.textContent).toBe('3 stops');
+
+        const stopsContainer = document.getElementById('sheet-transit-stops-container');
+        expect(stopsContainer.children.length).toBe(3);
+        expect(stopsContainer.children[0].textContent).toContain('Central Station');
+        expect(stopsContainer.children[1].textContent).toContain('Piazza Garibaldi');
+        expect(stopsContainer.children[2].textContent).toContain('City Hospital');
     });
 });
-

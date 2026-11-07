@@ -112,7 +112,7 @@ if (bottomSheetClass && !bottomSheetClass._scrimPatched) {
 }
 
 // Feature Module Imports
-import { MapService, DarkMapStyle, setupMapControlsUI, TransitOverlay, parseUrlCoordinates, formatUrlCoordinates, updateUrlHash } from './map/index.js';
+import { MapService, DarkMapStyle, setupMapControlsUI, TransitOverlay, normalizeColor, parseUrlCoordinates, formatUrlCoordinates, updateUrlHash } from './map/index.js';
 import { ApiService } from './api/index.js';
 import { HUDController, setupHUDUI } from './hud/index.js';
 import { MarkerController, setupMarkerModalUI, setupHomeAddressUI } from './markers/index.js';
@@ -181,6 +181,7 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
     let addressLine = "";
     let shopInfo = null;
     let streetName = "";
+    let transitInfo = null;
 
     try {
         // Run fetches in parallel via centralized ApiService
@@ -317,6 +318,130 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
                     placeName = shopInfo.name;
                 }
             }
+
+            // Process Transit Relations and Transit Stops
+            const transitRelations = elements.filter(el => el.type === 'relation' && el.tags && el.tags.route);
+            const transitNodes = elements.filter(el => el.type === 'node' && el.tags && (
+                el.tags.highway === 'bus_stop' ||
+                el.tags.railway === 'tram_stop' ||
+                el.tags.railway === 'station' ||
+                el.tags.railway === 'halt' ||
+                el.tags.public_transport === 'platform' ||
+                el.tags.public_transport === 'stop_position'
+            ));
+
+            if (transitRelations.length > 0) {
+                const rel = transitRelations[0];
+                const tags = rel.tags || {};
+                const routeType = tags.route || 'transit';
+                const ref = tags.ref || '';
+                const lineName = tags.name || (ref ? `${routeType.toUpperCase()} ${ref}` : routeType);
+                const colour = normalizeColor(tags.colour) || (
+                    routeType === 'subway' ? '#ef4444' :
+                    routeType === 'tram' ? '#ea580c' :
+                    routeType === 'train' ? '#7c3aed' :
+                    routeType === 'bus' ? '#0284c7' :
+                    routeType === 'ferry' ? '#06b6d4' : '#2563eb'
+                );
+
+                const lineCoords = [];
+                const stops = [];
+                const nodeMap = new Map();
+                elements.filter(el => el.type === 'node').forEach(n => nodeMap.set(n.id, n));
+
+                if (Array.isArray(rel.members)) {
+                    rel.members.forEach((m, idx) => {
+                        if (m.type === 'way' && Array.isArray(m.geometry)) {
+                            m.geometry.forEach(pt => lineCoords.push([pt.lon, pt.lat]));
+                        } else if (m.type === 'node') {
+                            const nodeObj = nodeMap.get(m.ref) || m;
+                            const nodeTags = nodeObj.tags || {};
+                            stops.push({
+                                id: m.ref || idx,
+                                name: nodeTags.name || nodeTags.ref || `Stop ${stops.length + 1}`,
+                                ref: nodeTags.ref || '',
+                                lat: nodeObj.lat || m.lat,
+                                lon: nodeObj.lon || m.lon
+                            });
+                        }
+                    });
+                }
+
+                if (lineCoords.length === 0) {
+                    const waysWithGeom = elements.filter(el => el.type === 'way' && Array.isArray(el.geometry));
+                    waysWithGeom.forEach(w => {
+                        w.geometry.forEach(pt => lineCoords.push([pt.lon, pt.lat]));
+                    });
+                }
+
+                if (stops.length === 0 && transitNodes.length > 0) {
+                    transitNodes.forEach((n, idx) => {
+                        stops.push({
+                            id: n.id || idx,
+                            name: n.tags.name || n.tags.ref || `Stop ${idx + 1}`,
+                            ref: n.tags.ref || '',
+                            lat: n.lat,
+                            lon: n.lon
+                        });
+                    });
+                }
+
+                transitInfo = {
+                    id: rel.id,
+                    route: routeType,
+                    ref: ref,
+                    name: lineName,
+                    from: tags.from || '',
+                    to: tags.to || '',
+                    operator: tags.operator || tags.network || '',
+                    colour: colour,
+                    stops: stops,
+                    lineCoords: lineCoords
+                };
+
+                if (placeName === "Dropped Pin" || !labelName) {
+                    placeName = lineName;
+                }
+
+                if (lineCoords.length > 0 && MapService) {
+                    MapService.highlightTransitRoute(lineCoords, colour);
+                    MapService.highlightTransitStops(stops, colour);
+                    MapService.fitCoordinates(lineCoords);
+                    MarkerController.removeTempMarker();
+                    TransitOverlay.showTransitPopup(latlng, transitInfo);
+                }
+            } else if (transitNodes.length > 0) {
+                const node = transitNodes[0];
+                const tags = node.tags || {};
+                const stopMode = tags.railway === 'tram_stop' ? 'tram'
+                    : (tags.railway === 'station' || tags.railway === 'halt' ? 'train' : 'bus');
+
+                transitInfo = {
+                    id: node.id,
+                    route: stopMode,
+                    ref: tags.ref || '',
+                    name: tags.name || `${stopMode.toUpperCase()} Stop`,
+                    operator: tags.operator || tags.network || '',
+                    colour: normalizeColor(tags.colour) || '#0284c7',
+                    stops: [{
+                        id: node.id,
+                        name: tags.name || 'Stop',
+                        ref: tags.ref || '',
+                        lat: node.lat,
+                        lon: node.lon
+                    }],
+                    lineCoords: []
+                };
+
+                if (placeName === "Dropped Pin" || !labelName) {
+                    placeName = tags.name || `${stopMode.toUpperCase()} Stop`;
+                }
+
+                if (MapService) {
+                    MapService.highlightTransitStops(transitInfo.stops, transitInfo.colour);
+                    TransitOverlay.showTransitPopup(latlng, transitInfo);
+                }
+            }
         }
 
     } catch (err) {
@@ -335,6 +460,7 @@ async function loadPoiAndPathDetails(latlng, labelName = '') {
         country: countryName,
         address: addressLine,
         shopInfo: shopInfo,
+        transitInfo: transitInfo,
         streetName: streetName
     });
 }

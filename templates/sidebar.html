@@ -77,6 +77,12 @@
         <div class="sheet-image-gradient"></div>
     </div>
 
+    <!-- Loading State Indicator -->
+    <div id="sheet-loading-section" class="sheet-section sheet-loading-container hidden">
+        <div class="sheet-loading-spinner"></div>
+        <span class="sheet-loading-text">Loading details...</span>
+    </div>
+
     <!-- Quick Actions Row -->
     <div class="sheet-actions-row">
         <md-button id="sheet-btn-directions" variant="filled" icon="directions">
@@ -112,6 +118,39 @@
     <div id="sheet-notes-section" class="sheet-section sheet-info-card hidden">
         <md-icon name="description" class="sheet-info-icon"></md-icon>
         <span id="sheet-notes-text" class="sheet-info-text"></span>
+    </div>
+
+    <!-- Public Transit Route & Stops Section -->
+    <div id="sheet-transit-section" class="sheet-section sheet-shop-card hidden">
+        <div class="sheet-transit-header">
+            <div class="sheet-transit-badge-row">
+                <md-icon id="sheet-transit-mode-icon" name="directions_bus"></md-icon>
+                <span id="sheet-transit-ref-badge" class="sheet-transit-badge"></span>
+                <span id="sheet-transit-name" class="sheet-transit-title"></span>
+            </div>
+            <div id="sheet-transit-dest-row" class="sheet-transit-dest-row hidden">
+                <md-icon name="east" style="font-size: 16px; color: var(--text-muted);"></md-icon>
+                <span id="sheet-transit-dest" class="sheet-transit-dest"></span>
+            </div>
+            <div id="sheet-transit-operator-row" class="sheet-transit-operator-row hidden">
+                <span id="sheet-transit-operator" class="sheet-transit-operator"></span>
+            </div>
+        </div>
+
+        <div class="sheet-transit-actions">
+            <md-button id="sheet-btn-transit-overview" variant="tonal" icon="route" style="width: 100%;">
+                <span>View Full Line Overview</span>
+            </md-button>
+        </div>
+
+        <div class="sheet-transit-stops-header">
+            <span class="sheet-transit-stops-title">Stops Along Line</span>
+            <span id="sheet-transit-stops-count" class="sheet-transit-stops-count">0 stops</span>
+        </div>
+
+        <div id="sheet-transit-stops-container" class="sheet-transit-stops-list custom-scrollbar">
+            <!-- Dynamic list of stops -->
+        </div>
     </div>
 
     <!-- Shop / POI Details Section -->

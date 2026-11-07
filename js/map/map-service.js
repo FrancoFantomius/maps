@@ -442,7 +442,31 @@ export const MapService = {
             });
         }
 
-        // 2c. Add custom OSM public transport overlay (Base + Detail)
+        // 2c. Add global public transport raster overlay (ÖPNV-Karte / Memomaps)
+        if (!this.map.getSource('transport-source')) {
+            this.map.addSource('transport-source', {
+                type: 'raster',
+                tiles: ['https://tile.memomaps.de/tilegen/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                maxzoom: 18,
+                attribution: 'Public transport map &copy; Memomaps.de, OpenStreetMap contributors'
+            });
+        }
+        if (!this.map.getLayer('transport-layer')) {
+            this.map.addLayer({
+                id: 'transport-layer',
+                type: 'raster',
+                source: 'transport-source',
+                layout: {
+                    visibility: this.activeOverlays.transport ? 'visible' : 'none'
+                },
+                paint: {
+                    'raster-opacity': 0.85
+                }
+            }, firstSymbolId || undefined);
+        }
+
+        // 2d. Add vector transit overlay (Interactive popups & vector base)
         TransitOverlay.setup(this.map, this.activeOverlays.transport);
 
         // 3. Add 3D buildings layer
@@ -619,6 +643,48 @@ export const MapService = {
                     'line-color': '#4f46e5',
                     'line-width': 3,
                     'line-opacity': 0.9
+                }
+            });
+        }
+
+        // 7b. Add Transit active stops point markers source and layers
+        if (!this.map.getSource('transit-stops-source')) {
+            this.map.addSource('transit-stops-source', {
+                type: 'geojson',
+                data: { type: 'FeatureCollection', features: [] }
+            });
+        }
+        if (!this.map.getLayer('transit-stops-layer')) {
+            this.map.addLayer({
+                id: 'transit-stops-layer',
+                source: 'transit-stops-source',
+                type: 'circle',
+                paint: {
+                    'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 4, 14, 6.5, 17, 9],
+                    'circle-color': ['coalesce', ['get', 'colour'], '#2563eb'],
+                    'circle-stroke-color': '#ffffff',
+                    'circle-stroke-width': 2,
+                    'circle-opacity': 0.95
+                }
+            });
+        }
+        if (!this.map.getLayer('transit-stops-label')) {
+            this.map.addLayer({
+                id: 'transit-stops-label',
+                source: 'transit-stops-source',
+                type: 'symbol',
+                minzoom: 12,
+                layout: {
+                    'text-field': ['get', 'name'],
+                    'text-size': 11,
+                    'text-offset': [0, 1.2],
+                    'text-anchor': 'top',
+                    'text-optional': true
+                },
+                paint: {
+                    'text-color': '#0f172a',
+                    'text-halo-color': '#ffffff',
+                    'text-halo-width': 1.75
                 }
             });
         }
@@ -1000,6 +1066,9 @@ export const MapService = {
         const savedTransport = localStorage.getItem('maps_transport_enabled') === 'true';
         this.activeOverlays.transport = savedTransport;
         TransitOverlay.setVisible(savedTransport);
+        if (this.map && typeof this.map.getLayer === 'function' && this.map.getLayer('transport-layer')) {
+            this.map.setLayoutProperty('transport-layer', 'visibility', savedTransport ? 'visible' : 'none');
+        }
 
         const savedPerspective = localStorage.getItem('maps_perspective_enabled');
         this.activeOverlays.perspective = (savedPerspective === 'true' || savedPerspective === null);
@@ -1127,6 +1196,9 @@ export const MapService = {
             this.syncSettingsSquaresUI();
         } else if (key === 'transport') {
             TransitOverlay.setVisible(show);
+            if (this.map && typeof this.map.getLayer === 'function' && this.map.getLayer('transport-layer')) {
+                this.map.setLayoutProperty('transport-layer', 'visibility', show ? 'visible' : 'none');
+            }
             localStorage.setItem('maps_transport_enabled', show ? 'true' : 'false');
             this.syncSettingsSquaresUI();
         } else if (key === 'perspective') {
@@ -1525,6 +1597,85 @@ export const MapService = {
 
     getImperialUnits() {
         return this.isImperialUnits;
+    },
+
+    highlightTransitRoute(coordinates, color = '#2563eb') {
+        if (!this.map || !coordinates || coordinates.length === 0) return;
+        this.highlightedPathCoords = coordinates;
+        this.updateSourceData('highlight-path-source', {
+            type: 'Feature',
+            geometry: {
+                type: 'LineString',
+                coordinates: coordinates
+            }
+        });
+        if (this.map.getLayer && this.map.getLayer('highlight-path-fg')) {
+            this.map.setPaintProperty('highlight-path-fg', 'line-color', color);
+            this.map.setPaintProperty('highlight-path-fg', 'line-width', 5);
+        }
+        if (this.map.getLayer && this.map.getLayer('highlight-path-bg')) {
+            this.map.setPaintProperty('highlight-path-bg', 'line-color', color);
+            this.map.setPaintProperty('highlight-path-bg', 'line-width', 12);
+            this.map.setPaintProperty('highlight-path-bg', 'line-opacity', 0.4);
+        }
+    },
+
+    highlightTransitStops(stops, color = '#2563eb') {
+        if (!this.map) return;
+        const features = (stops || []).map((stop, idx) => {
+            const lon = Number(stop.lon !== undefined ? stop.lon : stop.lng);
+            const lat = Number(stop.lat);
+            if (isNaN(lon) || isNaN(lat)) return null;
+            return {
+                type: 'Feature',
+                id: stop.id || idx,
+                properties: {
+                    name: stop.name || `Stop ${idx + 1}`,
+                    ref: stop.ref || '',
+                    index: idx + 1,
+                    colour: color
+                },
+                geometry: {
+                    type: 'Point',
+                    coordinates: [lon, lat]
+                }
+            };
+        }).filter(Boolean);
+
+        this.updateSourceData('transit-stops-source', {
+            type: 'FeatureCollection',
+            features: features
+        });
+    },
+
+    clearTransitStops() {
+        this.updateSourceData('transit-stops-source', {
+            type: 'FeatureCollection',
+            features: []
+        });
+    },
+
+    fitCoordinates(coordinates, padding = 80) {
+        if (!this.map || !coordinates || coordinates.length === 0) return;
+        let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+        coordinates.forEach(pt => {
+            const lng = pt[0] !== undefined ? pt[0] : pt.lng;
+            const lat = pt[1] !== undefined ? pt[1] : pt.lat;
+            if (typeof lng !== 'number' || typeof lat !== 'number') return;
+            if (lng < minLng) minLng = lng;
+            if (lng > maxLng) maxLng = lng;
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+        });
+        if (isFinite(minLng) && isFinite(minLat) && isFinite(maxLng) && isFinite(maxLat)) {
+            if (typeof this.map.fitBounds === 'function') {
+                this.map.fitBounds([[minLng, minLat], [maxLng, maxLat]], {
+                    padding: { top: padding, bottom: padding, left: padding + 150, right: padding },
+                    maxZoom: 16,
+                    duration: 800
+                });
+            }
+        }
     },
 
     clearUrlHash() {

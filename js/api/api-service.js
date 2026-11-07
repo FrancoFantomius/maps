@@ -45,9 +45,18 @@ export const ApiService = {
     },
 
     async fetchOverpassFeatures(lat, lng) {
-        const url = `https://overpass-api.de/api/interpreter?data=[out:json];(way(around:20,${lat},${lng})[highway];node(around:50,${lat},${lng})[shop];node(around:50,${lat},${lng})[amenity];);out geom;`;
+        const query = `[out:json][timeout:15];(way(around:25,${lat},${lng})[highway];node(around:50,${lat},${lng})[shop];node(around:50,${lat},${lng})[amenity];relation(around:35,${lat},${lng})[route~"bus|tram|subway|light_rail|train|ferry"];node(around:50,${lat},${lng})[highway=bus_stop];node(around:50,${lat},${lng})[railway~"tram_stop|station|halt"];node(around:50,${lat},${lng})[public_transport~"platform|stop_position"];);out body;>;out body geom qt 250;`;
+        const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
         const res = await fetch(url);
         if (!res.ok) throw new Error(`Overpass query failed: ${res.statusText}`);
+        return await res.json();
+    },
+
+    async fetchTransitRelation(relationId) {
+        const query = `[out:json][timeout:15];relation(${relationId});out body;>;out body geom qt;`;
+        const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Transit relation fetch failed: ${res.statusText}`);
         return await res.json();
     },
 

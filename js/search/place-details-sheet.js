@@ -1,6 +1,7 @@
 // maps Search - js/search/place-details-sheet.js
 
 import { ApiService } from '../api/index.js';
+import { MapService } from '../map/index.js';
 
 let currentPlaceData = null;
 let isBound = false;
@@ -16,10 +17,18 @@ export function openPlaceDetails(data) {
     const sheet = document.getElementById('place-details-sheet');
     if (!sheet) return;
 
+    const isLoading = Boolean(data.isLoading);
+
+    // 0. Loading state indicator
+    const loadingSec = document.getElementById('sheet-loading-section');
+    if (loadingSec) {
+        loadingSec.classList.toggle('hidden', !isLoading);
+    }
+
     // 1. Search bar text update & retraction
     const searchBar = document.getElementById('search-bar');
     const searchInput = document.getElementById('search-input');
-    const shortName = data.name || "Dropped Pin";
+    const shortName = isLoading ? "Loading details..." : (data.name || "Selected Location");
     if (searchBar) {
         searchBar.value = shortName;
         searchBar.active = false;
@@ -40,6 +49,27 @@ export function openPlaceDetails(data) {
     if (searchInput) {
         searchInput.value = shortName;
         if (typeof searchInput.blur === 'function') searchInput.blur();
+    }
+
+    // If still loading, open sheet and exit early
+    if (isLoading) {
+        const imageContainer = document.getElementById('sheet-image-container');
+        if (imageContainer) imageContainer.classList.add('hidden');
+        const transitSec = document.getElementById('sheet-transit-section');
+        if (transitSec) transitSec.classList.add('hidden');
+        const shopSec = document.getElementById('sheet-shop-section');
+        if (shopSec) shopSec.classList.add('hidden');
+        const wikiSec = document.getElementById('sheet-wiki-section');
+        if (wikiSec) wikiSec.classList.add('hidden');
+        const addressSec = document.getElementById('sheet-address-section');
+        if (addressSec) addressSec.classList.add('hidden');
+
+        if (typeof sheet.show === 'function') {
+            sheet.show();
+        } else {
+            sheet.open = true;
+        }
+        return;
     }
 
     // 2. Cover image banner
@@ -163,6 +193,146 @@ export function openPlaceDetails(data) {
             streetSec.classList.remove('hidden');
         } else {
             streetSec.classList.add('hidden');
+        }
+    }
+
+    // 5b. Public Transit route & stops section
+    const transitSec = document.getElementById('sheet-transit-section');
+    if (transitSec) {
+        if (data.transitInfo) {
+            transitSec.classList.remove('hidden');
+            const t = data.transitInfo;
+
+            const modeIconEl = document.getElementById('sheet-transit-mode-icon');
+            if (modeIconEl) {
+                const iconName = t.route === 'tram' ? 'tram'
+                    : (t.route === 'subway' ? 'subway'
+                    : (t.route === 'train' ? 'train'
+                    : (t.route === 'ferry' ? 'directions_boat' : 'directions_bus')));
+                modeIconEl.setAttribute('name', iconName);
+            }
+
+            const badgeEl = document.getElementById('sheet-transit-ref-badge');
+            if (badgeEl) {
+                if (t.ref) {
+                    badgeEl.textContent = t.ref;
+                    badgeEl.style.backgroundColor = t.colour || '#2563eb';
+                    badgeEl.style.color = '#ffffff';
+                    badgeEl.classList.remove('hidden');
+                } else {
+                    badgeEl.classList.add('hidden');
+                }
+            }
+
+            const nameEl = document.getElementById('sheet-transit-name');
+            if (nameEl) {
+                nameEl.textContent = t.name || (t.ref ? `Line ${t.ref}` : 'Transit Line');
+            }
+
+            const destRow = document.getElementById('sheet-transit-dest-row');
+            const destEl = document.getElementById('sheet-transit-dest');
+            if (destRow && destEl) {
+                if (t.from || t.to) {
+                    destEl.textContent = (t.from && t.to) ? `${t.from} → ${t.to}` : (t.to || t.from);
+                    destRow.classList.remove('hidden');
+                } else {
+                    destRow.classList.add('hidden');
+                }
+            }
+
+            const opRow = document.getElementById('sheet-transit-operator-row');
+            const opEl = document.getElementById('sheet-transit-operator');
+            if (opRow && opEl) {
+                if (t.operator) {
+                    opEl.textContent = t.operator;
+                    opRow.classList.remove('hidden');
+                } else {
+                    opRow.classList.add('hidden');
+                }
+            }
+
+            // Overview action button
+            const btnOverview = document.getElementById('sheet-btn-transit-overview');
+            if (btnOverview) {
+                btnOverview.onclick = (e) => {
+                    e.stopPropagation();
+                    if (t.lineCoords && t.lineCoords.length > 0 && MapService) {
+                        MapService.highlightTransitRoute(t.lineCoords, t.colour || '#2563eb');
+                        MapService.fitCoordinates(t.lineCoords);
+                    }
+                };
+            }
+
+            // Populate stops list
+            const stopsContainer = document.getElementById('sheet-transit-stops-container');
+            const countEl = document.getElementById('sheet-transit-stops-count');
+            const stops = Array.isArray(t.stops) ? t.stops : [];
+            if (countEl) {
+                countEl.textContent = `${stops.length} stop${stops.length !== 1 ? 's' : ''}`;
+            }
+
+            if (stopsContainer) {
+                stopsContainer.innerHTML = '';
+                if (stops.length === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'text-muted text-xs p-2 text-center';
+                    empty.textContent = 'No detailed stop list available';
+                    stopsContainer.appendChild(empty);
+                } else {
+                    stops.forEach((stop, idx) => {
+                        const item = document.createElement('div');
+                        item.className = 'transit-stop-item';
+                        item.setAttribute('role', 'button');
+                        item.setAttribute('tabindex', '0');
+
+                        const indexBadge = document.createElement('span');
+                        indexBadge.className = 'transit-stop-index';
+                        indexBadge.textContent = String(idx + 1);
+
+                        const info = document.createElement('div');
+                        info.className = 'transit-stop-info';
+
+                        const stopName = document.createElement('span');
+                        stopName.className = 'transit-stop-name';
+                        stopName.textContent = stop.name || `Stop #${idx + 1}`;
+
+                        info.appendChild(stopName);
+                        if (stop.ref) {
+                            const stopRef = document.createElement('span');
+                            stopRef.className = 'transit-stop-ref';
+                            stopRef.textContent = `Ref: ${stop.ref}`;
+                            info.appendChild(stopRef);
+                        }
+
+                        const pinIcon = document.createElement('md-icon');
+                        pinIcon.setAttribute('name', 'pin_drop');
+                        pinIcon.className = 'transit-stop-action-icon';
+
+                        item.appendChild(indexBadge);
+                        item.appendChild(info);
+                        item.appendChild(pinIcon);
+
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            if (stop.lat && (stop.lon || stop.lng) && MapService) {
+                                const lat = Number(stop.lat);
+                                const lng = Number(stop.lon || stop.lng);
+                                if (!isNaN(lat) && !isNaN(lng)) {
+                                    if (typeof MapService.flyTo === 'function') {
+                                        MapService.flyTo({ center: [lng, lat], zoom: 16 });
+                                    } else if (typeof MapService.panTo === 'function') {
+                                        MapService.panTo([lng, lat]);
+                                    }
+                                }
+                            }
+                        });
+
+                        stopsContainer.appendChild(item);
+                    });
+                }
+            }
+        } else {
+            transitSec.classList.add('hidden');
         }
     }
 

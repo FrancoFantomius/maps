@@ -179,6 +179,9 @@ export const HUDController = {
                 }
             });
         }
+        if (MapService && typeof MapService.clearTransitStops === 'function') {
+            MapService.clearTransitStops();
+        }
     },
 
     renderPlaceDetails(data) {
