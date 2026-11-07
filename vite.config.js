@@ -84,6 +84,14 @@ const manifestPlugin = () => ({
           return fs.createReadStream(iconPath).pipe(res);
         }
       }
+      if (rawUrl.startsWith('/img/M3icons/') || rawUrl.startsWith('/assets/img/M3icons/')) {
+        const fileName = path.basename(rawUrl);
+        const iconPath = path.join(__dirname, 'img', 'M3icons', fileName);
+        if (fs.existsSync(iconPath) && fs.statSync(iconPath).isFile()) {
+          res.setHeader('Content-Type', 'image/svg+xml');
+          return fs.createReadStream(iconPath).pipe(res);
+        }
+      }
       next();
     });
   },
@@ -117,6 +125,27 @@ const manifestPlugin = () => ({
         }
       }
     }
+
+    const m3IconsDir = path.join(__dirname, 'img', 'M3icons');
+    if (fs.existsSync(m3IconsDir)) {
+      const files = fs.readdirSync(m3IconsDir);
+      for (const file of files) {
+        const filePath = path.join(m3IconsDir, file);
+        if (fs.statSync(filePath).isFile()) {
+          const content = fs.readFileSync(filePath);
+          this.emitFile({
+            type: 'asset',
+            fileName: `img/M3icons/${file}`,
+            source: content,
+          });
+          this.emitFile({
+            type: 'asset',
+            fileName: `assets/img/M3icons/${file}`,
+            source: content,
+          });
+        }
+      }
+    }
   },
 });
 
@@ -125,11 +154,15 @@ try {
   const publicDir = path.join(__dirname, 'public');
   const publicImgIcons = path.join(publicDir, 'img', 'icons');
   const publicAssetsImgIcons = path.join(publicDir, 'assets', 'img', 'icons');
+  const publicM3Icons = path.join(publicDir, 'img', 'M3icons');
+  const publicAssetsM3Icons = path.join(publicDir, 'assets', 'img', 'M3icons');
 
   const publicLanguages = path.join(publicDir, 'languages');
 
   fs.mkdirSync(publicImgIcons, { recursive: true });
   fs.mkdirSync(publicAssetsImgIcons, { recursive: true });
+  fs.mkdirSync(publicM3Icons, { recursive: true });
+  fs.mkdirSync(publicAssetsM3Icons, { recursive: true });
   fs.mkdirSync(publicLanguages, { recursive: true });
 
   const manifestPath = path.join(__dirname, 'manifest.json');
@@ -145,6 +178,18 @@ try {
       if (fs.statSync(srcFile).isFile()) {
         fs.copyFileSync(srcFile, path.join(publicImgIcons, file));
         fs.copyFileSync(srcFile, path.join(publicAssetsImgIcons, file));
+      }
+    }
+  }
+
+  const m3IconsDir = path.join(__dirname, 'img', 'M3icons');
+  if (fs.existsSync(m3IconsDir)) {
+    const files = fs.readdirSync(m3IconsDir);
+    for (const file of files) {
+      const srcFile = path.join(m3IconsDir, file);
+      if (fs.statSync(srcFile).isFile()) {
+        fs.copyFileSync(srcFile, path.join(publicM3Icons, file));
+        fs.copyFileSync(srcFile, path.join(publicAssetsM3Icons, file));
       }
     }
   }

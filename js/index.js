@@ -2,6 +2,7 @@
 // Central Application Entry Point - js/index.js
 
 import '../css/style.css';
+import './icons/index.js';
 import '@francofantomius/material-components/button';
 import '@francofantomius/material-components/button-group';
 import '@francofantomius/material-components/icon-button';
